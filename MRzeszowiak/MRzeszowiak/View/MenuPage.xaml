@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MasterDetailPage xmlns="http://xamarin.com/schemas/2014/forms"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                  x:Class="MRzeszowiak.View.MenuPage"
+                  xmlns:View="clr-namespace:MRzeszowiak.View"
+                  x:Name="MenuPage"
+                  Title="Menu">
+    <MasterDetailPage.Master>
+        <ContentPage Title="Menu">
+            <StackLayout Orientation="Vertical"
+                         Margin="10">
+                <Label Text="Ogłoszenia" FontSize="Large"/>
+                <Label Text="Ustawienia" FontSize="Large"/>
+            </StackLayout>
+        </ContentPage>
+    </MasterDetailPage.Master>
+    <MasterDetailPage.Detail>
+        <NavigationPage>
+            <x:Arguments>
+                <View:ListPage/>
+            </x:Arguments>
+        </NavigationPage>
+    </MasterDetailPage.Detail>
+</MasterDetailPage>

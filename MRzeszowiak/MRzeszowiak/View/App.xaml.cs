@@ -1,3 +1,4 @@
+using MRzeszowiak.View;
 using System;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -9,9 +10,12 @@ namespace MRzeszowiak
 	{
 		public App ()
 		{
+            #if DEBUG
+                LiveReload.Init();
+            #endif
 			InitializeComponent();
 
-			MainPage = new MainPage();
+            MainPage = new MenuPage();
 		}
 
 		protected override void OnStart ()
