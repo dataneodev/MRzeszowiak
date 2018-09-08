@@ -1,10 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Xamarin.Forms;
 
 namespace MRzeszowiak.Model
 {
     class Advert
     {
+        //main
+        public int AdverIDinRzeszowiak { get; set; }
+        public byte Category { get; set; }
+        public string Title { get; set; }
+        public string DateAddString { get; set; }
+        public int Views { get; set; }
+        public int Price { get; set; }
+        public bool Highlighted { get; set; }
+        //description
+        public string DescriptionHTML { get; set; }
+        //phone image
+        public Image PhoneImage { get; set; }
+        //Additional data
+        public Dictionary<string, string> AdditionalData { get; set; }
+        //Image URLs
+        public IList<string> ImageURLsList {get; set; }
     }
 }

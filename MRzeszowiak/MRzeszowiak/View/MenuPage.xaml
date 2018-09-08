@@ -9,8 +9,8 @@
         <ContentPage Title="Menu">
             <StackLayout Orientation="Vertical"
                          Margin="10">
-                <Label Text="Ogłoszenia" FontSize="Large"/>
-                <Label Text="Ustawienia" FontSize="Large"/>
+                <Button Text="Ogłoszenia" FontSize="Large"/>
+                <Button Text="Ustawienia" FontSize="Large"/>
             </StackLayout>
         </ContentPage>
     </MasterDetailPage.Master>

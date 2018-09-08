@@ -13,8 +13,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Model\Advert.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\AdvertShort.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Category.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\IRzeszowiakRepository.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Model\ISetting.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\ISetting.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\RzeszowiakRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\SettingRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ListViewModel.cs" />
