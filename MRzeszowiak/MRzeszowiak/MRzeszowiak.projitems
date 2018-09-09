@@ -12,7 +12,9 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)View\App.xaml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Extends\GetFormInternet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Advert.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\AdvertSearch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\AdvertShort.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Category.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\IRzeszowiakRepository.cs" />
@@ -43,9 +45,6 @@
       <DependentUpon>SettingPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Extends\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)View\MenuPage.xaml">

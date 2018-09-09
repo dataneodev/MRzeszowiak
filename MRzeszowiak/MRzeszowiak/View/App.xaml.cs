@@ -11,15 +11,16 @@ namespace MRzeszowiak
         public static Color highlightRow = Color.FromHex("#f4f4f4");
         public static Color normalRow = Color.FromHex("#FFFFFF0");
 
+        public static INavigation GlobalNavigation { get; private set; }
+
         public App ()
 		{
             #if DEBUG
                 LiveReload.Init();
             #endif
 			InitializeComponent();
-
-            MainPage = new MenuPage();
-		}
+            MainPage = new MenuPage();   
+        }
 
 		protected override void OnStart ()
 		{

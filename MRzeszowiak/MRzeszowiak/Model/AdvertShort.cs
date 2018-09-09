@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Xamarin.Forms;
 
 namespace MRzeszowiak.Model
 {
-    class AdvertShort
+    public class AdvertShort
     {
         public int AdverIDinRzeszowiak { get; set; }
         public byte Category { get; set; }

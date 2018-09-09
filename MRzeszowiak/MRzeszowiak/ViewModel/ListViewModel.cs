@@ -1,28 +1,29 @@
 ﻿using MRzeszowiak.Model;
+using MRzeszowiak.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using Xamarin.Forms;
 
 namespace MRzeszowiak.ViewModel
 {
     class ListViewModel
     {
         public ObservableCollection<AdvertShort> AdvertShortList { get; private set; } = new ObservableCollection<AdvertShort>();
-        public string MyProperty { get; set; } = "HUJ";
+        protected IRzeszowiakRepository _rzeszowiakRepository;
 
-        public ListViewModel()
+        public ListViewModel(IRzeszowiakRepository RzeszowiakRepository)
         {
-            AdvertShortList.Add(new AdvertShort
+            _rzeszowiakRepository = RzeszowiakRepository ?? throw new NullReferenceException("ListViewModel => IRzeszowiakRepository RzeszowiakRepository == null !");
+
+            var lastAddAdvert = _rzeszowiakRepository.GetAdvertList();
+            //lastAddAdvert.Start();
+            lastAddAdvert.Wait();
+            foreach (var item in lastAddAdvert.Result)
             {
-                AdverIDinRzeszowiak = 6,
-                Title = "Auto – Naprawa Jerzy Szeliga - 37-114 Białobrzegi",
-                DescriptionShort = "sprzedam przepiękna szklaną paterę w kolorze niebieskim[wyrób włoski].bardzo ciekawy kształt,3 cm,",
-                DateAddString = "dziś",
-                Price = 126,
-                Highlighted = false,
-                ThumbnailUrl = "http://www.rzeszowiak.pl/img/ogl/105/mini/l_10577949_0.jpg?re=1149847778",
-            });
+                AdvertShortList.Add(item);
+            }
         }
     }
 }

@@ -16,5 +16,10 @@ namespace MRzeszowiak.View
 		{
 			InitializeComponent ();
 		}
-	}
+
+        private async void AdvertListView_ItemTapped(object sender, ItemTappedEventArgs e)
+        {
+            await Navigation.PushAsync(new PreviewPage(), true);
+        }
+    }
 }

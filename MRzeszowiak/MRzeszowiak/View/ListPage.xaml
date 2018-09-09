@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MRzeszowiak.View.ListPage"
              xmlns:ViewModel="clr-namespace:MRzeszowiak.ViewModel"
-             x:Name="ListPage"
              Title="Lista ogłoszeń"
              BindingContext="{Binding ListViewModel, Source={StaticResource Locator}}">
     <ContentPage.Resources>
@@ -17,7 +16,8 @@
                       ItemsSource="{Binding AdvertShortList}"
                       HasUnevenRows="True"
                       HorizontalOptions="FillAndExpand"
-                      VerticalOptions="FillAndExpand">
+                      VerticalOptions="FillAndExpand"
+                      ItemTapped="AdvertListView_ItemTapped">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
@@ -64,23 +64,25 @@
                                     <Label Grid.Column="1" Grid.Row="2">
                                         <Label.FormattedText>
                                             <FormattedString>
-                                                <Span Text="Cena: " FontAttributes="None" />
-                                                <Span Text="{Binding Price}" FontAttributes="Bold"/>
-                                                <Span Text=" zł"/>
+                                                <FormattedString.Spans>
+                                                    <Span Text="Cena: "/>
+                                                    <Span Text="{Binding Price}" FontAttributes="Bold"/>
+                                                    <Span Text="zł" FontAttributes="Bold"/>
+                                                </FormattedString.Spans>
                                             </FormattedString>
                                         </Label.FormattedText>
                                     </Label>
-
-                                    <Label Grid.Column="2" 
-                                        Grid.Row="2" 
-                                        Text="{Binding DateAddString, StringFormat='Data dodania: {0}'}"
-                                        TextColor="Black"
-                                        FontSize="Small"
-                                        HorizontalOptions="End"/>
-                                        
+                                    <Label Grid.Column="2" Grid.Row="2">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <FormattedString.Spans>
+                                                    <Span Text="Data dodania: "/>
+                                                    <Span Text="{Binding DateAddString}" FontAttributes="Bold"/>
+                                                </FormattedString.Spans>
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
                                 </Grid>
-
-
                             </StackLayout>
                         </ViewCell>
                     </DataTemplate>

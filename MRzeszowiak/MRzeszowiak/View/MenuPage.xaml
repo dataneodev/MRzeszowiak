@@ -1,16 +1,36 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <MasterDetailPage xmlns="http://xamarin.com/schemas/2014/forms"
                   xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                  xmlns:local="clr-namespace:MRzeszowiak.View"
                   x:Class="MRzeszowiak.View.MenuPage"
                   xmlns:View="clr-namespace:MRzeszowiak.View"
-                  x:Name="MenuPage"
                   Title="Menu">
     <MasterDetailPage.Master>
         <ContentPage Title="Menu">
-            <StackLayout Orientation="Vertical"
-                         Margin="10">
-                <Button Text="Ogłoszenia" FontSize="Large"/>
-                <Button Text="Ustawienia" FontSize="Large"/>
+            <StackLayout Orientation="Vertical" Margin="10">
+                <ListView x:Name="listView" x:FieldModifier="public">
+                    <ListView.ItemsSource>
+                        <x:Array Type="{x:Type local:MasterPageItem}">
+                            <local:MasterPageItem Title="Contacts" IconSource="contacts.png" TargetType="{x:Type local:SettingPage}" />
+                            <local:MasterPageItem Title="TodoList" IconSource="todo.png" TargetType="{x:Type local:SettingPage}" />
+                            <local:MasterPageItem Title="Reminders" IconSource="reminders.png" TargetType="{x:Type local:SettingPage}" />
+                        </x:Array>
+                    </ListView.ItemsSource>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <Grid Padding="5,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="30"/>
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Image Source="{Binding IconSource}" />
+                                    <Label Grid.Column="1" Text="{Binding Title}" />
+                                </Grid>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
             </StackLayout>
         </ContentPage>
     </MasterDetailPage.Master>

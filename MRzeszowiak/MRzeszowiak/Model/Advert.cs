@@ -5,13 +5,14 @@ using Xamarin.Forms;
 
 namespace MRzeszowiak.Model
 {
-    class Advert
+    public class Advert
     {
         //main
         public int AdverIDinRzeszowiak { get; set; }
         public byte Category { get; set; }
         public string Title { get; set; }
         public string DateAddString { get; set; }
+        public string ExpiredString { get; set; }
         public int Views { get; set; }
         public int Price { get; set; }
         public bool Highlighted { get; set; }
