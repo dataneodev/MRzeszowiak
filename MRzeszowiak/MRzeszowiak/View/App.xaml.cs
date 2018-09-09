@@ -8,7 +8,10 @@ namespace MRzeszowiak
 {
 	public partial class App : Application
 	{
-		public App ()
+        public static Color highlightRow = Color.FromHex("#f4f4f4");
+        public static Color normalRow = Color.FromHex("#FFFFFF0");
+
+        public App ()
 		{
             #if DEBUG
                 LiveReload.Init();

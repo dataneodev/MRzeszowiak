@@ -14,5 +14,6 @@ namespace MRzeszowiak.Model
         public bool Highlighted { get; set; }
         public string DescriptionShort { get; set; }
         public string ThumbnailUrl { get; set; }
+        public bool RowEven { get; set; }
     }
 }

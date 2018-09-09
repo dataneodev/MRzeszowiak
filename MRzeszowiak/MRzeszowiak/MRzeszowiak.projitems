@@ -22,6 +22,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ListViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\PreviewViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\SettingViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ViewModelLocator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ViewValueConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)View\App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
