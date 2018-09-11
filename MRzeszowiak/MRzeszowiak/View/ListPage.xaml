@@ -89,6 +89,7 @@
                 </ListView.ItemTemplate>
                 
             </ListView>
+            <Button Command="{Binding LoadTest}" Text="Load"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

@@ -7,21 +7,24 @@ namespace MRzeszowiak.Model
     public class Category
     {
         public short Id {get; set; } 
-        public short MasterId { get; set; }
-        public string MasterName { get; set; }
         public string Title { get; set; }
+        public short MasterId { get; set; } // if 0 then its master
+        public string MasterTitle { get; set; }
         public short Views { get; set; }
         public string GETPath { get; set; } //ex. Dla-domu-Meble-281
-        public IReadOnlyList<string> ChildCategory { get; set; }// ex. ciezarowe //http://www.rzeszowiak.pl/Motoryzacja-Sprzedam-3010011505?r=ciezarowe
+        public List<string> ChildCategory { get; set; }// ex. ciezarowe //http://www.rzeszowiak.pl/Motoryzacja-Sprzedam-3010011505?r=ciezarowe
 
-        private int selectedChildCategory;
-        public int SelectedChildCategory
+        private string selectedChildCategory;
+        public string SelectedChildCategory
         {
-            get {
-
-                return (selectedChildCategory < (ChildCategory?.Count ?? 0)) ? selectedChildCategory : 0;
+            get { return ((selectedChildCategory != null) && (ChildCategory.IndexOf(selectedChildCategory) != -1)) ? selectedChildCategory : null; }
+            set
+            {
+                if(value != null && ChildCategory.IndexOf(value) != -1)
+                    selectedChildCategory = value;
+                else
+                    selectedChildCategory = null;                
             }
-            set { selectedChildCategory = value; }
         }
 
     }
