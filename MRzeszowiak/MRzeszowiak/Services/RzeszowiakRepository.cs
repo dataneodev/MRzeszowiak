@@ -36,6 +36,78 @@ namespace MRzeszowiak.Services
                 return resultList;
             }
 
+            IEnumerable<AdvertShort> ProcessResponse(string ResponseHTMLBody)
+            {
+                if (ResponseHTMLBody.Length == 0) yield break;
+
+                // promo now
+                int promoPos, normalPos;
+                bool rowEven = false;
+                do
+                {
+                    promoPos = ResponseHTMLBody.IndexOf("promobox-title-left");
+                    normalPos = ResponseHTMLBody.IndexOf("normalbox-title-left");
+
+                    int nextPos = Math.Min(promoPos, normalPos);
+                    nextPos = (nextPos == -1 && promoPos > -1) ? promoPos : nextPos;
+                    nextPos = (nextPos == -1 && normalPos > -1) ? normalPos : nextPos;
+                    if (nextPos == -1) yield break;
+                    bool highlighted = (nextPos == promoPos) ? true : false;
+                    ResponseHTMLBody = ResponseHTMLBody.Substring(nextPos);
+
+                    //string aid = ResponseHTMLBody.GetItem("id=\"o", "\">" );
+                    //url
+                    ResponseHTMLBody = ResponseHTMLBody.CutFoward("<a href=\"/");
+                    string aUrl = ResponseHTMLBody.CutBacking("\">").Trim();
+                    //title
+                    ResponseHTMLBody = ResponseHTMLBody.CutFoward("\">");
+                    string aTitle = ResponseHTMLBody.CutBacking("</a>").CutFoward(".").Trim();
+                    //price
+                    ResponseHTMLBody = ResponseHTMLBody.CutFoward("cena: <strong>");
+                    string aPrice = ResponseHTMLBody.CutBacking("zł</strong>").Trim();
+                    if(!Int32.TryParse(aPrice, out int aPriceInt))
+                    {
+                        Debug.Write("GetAdvertListAsync(AdvertSearch searchParams) => !Int32.TryParse(aPrice, out int aPriceInt)");
+                        aPriceInt = 0;
+                    }
+                    //id
+                    ResponseHTMLBody = ResponseHTMLBody.CutFoward("id=\"zr");
+                    string aId = ResponseHTMLBody.CutBacking("\">").Trim();
+                    if (!Int32.TryParse(aId, out int aIdInt))
+                    {
+                        Debug.Write("GetAdvertListAsync(AdvertSearch searchParams) => !Int32.TryParse(aId, out int aIdInt))");
+                        yield break;
+                    }
+                    //thumb
+                    ResponseHTMLBody = ResponseHTMLBody.CutFoward("src=\"");
+                    string aThumb = ResponseHTMLBody.CutBacking("\"").Trim();
+                    //desc
+                    ResponseHTMLBody = ResponseHTMLBody.CutFoward("window.location");
+                    ResponseHTMLBody = ResponseHTMLBody.CutFoward("\">");
+                    string aDesc = ResponseHTMLBody.CutBacking("</div>").Trim().StripHTML();
+                    if (aDesc.Length > 100)
+                        aDesc = aDesc.Substring(0, 100) + "...";
+                    //add
+                    ResponseHTMLBody = ResponseHTMLBody.CutFoward("Dodane : <b>");
+                    string aAdd = ResponseHTMLBody.CutBacking("</b>").Trim().Replace("  ", " ");
+
+                    yield return new AdvertShort()
+                    {
+                        AdverIDinRzeszowiak = aIdInt,
+                        Title = aTitle,
+                        URLPath = aUrl,
+                        ThumbnailUrl = aThumb,
+                        DescriptionShort = aDesc,
+                        DateAddString = aAdd,
+                        Price = aPriceInt,
+                        Category = searchParams.Category,
+                        Highlighted = highlighted,
+                        RowEven = rowEven
+                    };
+                    rowEven = !rowEven;
+                } while (promoPos != -1 || normalPos != -1);
+            }
+
             using (HttpClient client = new HttpClient() { Timeout = TimeSpan.FromSeconds(6) })
             {
                 using (HttpResponseMessage response = await client.GetAsync(urlRequest))
@@ -48,11 +120,14 @@ namespace MRzeszowiak.Services
                     }
                     using (HttpContent content = response.Content)
                     {
-                        // ... Read the string.
-                        string result = await content.ReadAsStringAsync();
-                        result = result.CutFoward("<div id=\"query\">");
-                        result = result.CutBacking("google_ad_client ");
-                        Debug.Write("GetAdvertListAsync(AdvertSearch searchParams) => " + result);
+                        var byteArray = await content.ReadAsByteArrayAsync();
+
+                        Encoding iso = Encoding.GetEncoding("ISO-8859-2");
+                        Encoding utf8 = Encoding.UTF8;
+                        byte[] utf8Bytes = Encoding.Convert(iso, utf8, byteArray);
+                        string responseString = System.Net.WebUtility.HtmlDecode( utf8.GetString(utf8Bytes) );
+
+                        foreach (var item in ProcessResponse(responseString)) resultList.Add(item);
                     }
                 }
             }

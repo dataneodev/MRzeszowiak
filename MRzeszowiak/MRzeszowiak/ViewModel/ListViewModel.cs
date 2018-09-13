@@ -28,14 +28,12 @@ namespace MRzeszowiak.ViewModel
             _rzeszowiakRepository = RzeszowiakRepository ?? throw new NullReferenceException("ListViewModel => IRzeszowiakRepository RzeszowiakRepository == null !");
         }
 
-        public void LoadLast()
+        public async void LoadLast()
         {
-            var lastAddAdvert = _rzeszowiakRepository.GetAdvertList();
-
-            Task.WaitAll(lastAddAdvert);
+            var lastAddAdvert = await _rzeszowiakRepository.GetAdvertList();
 
             // lastAddAdvert.Wait();
-            foreach (var item in lastAddAdvert.Result)
+            foreach (var item in lastAddAdvert)
             {
                 AdvertShortList.Add(item);
             }

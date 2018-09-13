@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MRzeszowiak.View.ListPage"
              xmlns:ViewModel="clr-namespace:MRzeszowiak.ViewModel"
+             xmlns:Extends="clr-namespace:MRzeszowiak.Extends"
              Title="Lista ogłoszeń"
              BindingContext="{Binding ListViewModel, Source={StaticResource Locator}}">
     <ContentPage.Resources>
@@ -17,10 +18,14 @@
                       HasUnevenRows="True"
                       HorizontalOptions="FillAndExpand"
                       VerticalOptions="FillAndExpand"
-                      ItemTapped="AdvertListView_ItemTapped">
+                      ItemTapped="AdvertListView_ItemTapped"
+                      SeparatorVisibility="None">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
+                            <Frame CornerRadius="10"  
+                                    Margin="5"
+                                    Padding="0">
                             <StackLayout VerticalOptions="FillAndExpand" 
                                      HorizontalOptions="FillAndExpand" 
                                      BackgroundColor="{Binding RowEven, Converter={StaticResource boolToColor}}">
@@ -50,7 +55,7 @@
                                         Text="{Binding Title}" 
                                         FontAttributes="Bold" 
                                         TextColor="#183d7d"
-                                        FontSize="Small"
+                                        FontSize="14"
                                         HorizontalOptions="FillAndExpand"
                                         VerticalOptions="FillAndExpand"/>
                                     <Label Grid.Column="1" 
@@ -59,15 +64,21 @@
                                         Text="{Binding DescriptionShort}" 
                                         TextColor="#5774A5"
                                         VerticalOptions="End"
-                                        FontSize="Small" 
-                                        Margin="0"/>
+                                        FontSize="12" 
+                                        Margin="0"   
+                                        LineBreakMode="WordWrap"
+                                        />
                                     <Label Grid.Column="1" Grid.Row="2">
                                         <Label.FormattedText>
                                             <FormattedString>
                                                 <FormattedString.Spans>
-                                                    <Span Text="Cena: "/>
-                                                    <Span Text="{Binding Price}" FontAttributes="Bold"/>
-                                                    <Span Text="zł" FontAttributes="Bold"/>
+                                                    <Span Text="Cena: " FontSize="12"/>
+                                                    <Span Text="{Binding Price}" 
+                                                          FontAttributes="Bold"
+                                                          FontSize="13"/>
+                                                    <Span Text="zł" 
+                                                          FontAttributes="Bold"
+                                                          FontSize="13"/>
                                                 </FormattedString.Spans>
                                             </FormattedString>
                                         </Label.FormattedText>
@@ -76,14 +87,17 @@
                                         <Label.FormattedText>
                                             <FormattedString>
                                                 <FormattedString.Spans>
-                                                    <Span Text="Data dodania: "/>
-                                                    <Span Text="{Binding DateAddString}" FontAttributes="Bold"/>
+                                                    <!--<Span Text="Data dodania: "/>-->
+                                                    <Span Text="{Binding DateAddString}" 
+                                                          FontAttributes="Bold"
+                                                          FontSize="13"/>
                                                 </FormattedString.Spans>
                                             </FormattedString>
                                         </Label.FormattedText>
                                     </Label>
                                 </Grid>
                             </StackLayout>
+                                </Frame>
                         </ViewCell>
                     </DataTemplate>
                 </ListView.ItemTemplate>
