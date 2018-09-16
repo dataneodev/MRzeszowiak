@@ -3,6 +3,7 @@ using MRzeszowiak.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -10,32 +11,58 @@ using Xamarin.Forms;
 
 namespace MRzeszowiak.ViewModel
 {
-    class ListViewModel
+    class ListViewModel :  INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
         public ObservableCollection<AdvertShort> AdvertShortList { get; private set; } = new ObservableCollection<AdvertShort>();
         protected IRzeszowiakRepository _rzeszowiakRepository;
+
+        public bool ActivityListView => ! Activity;
+
+        private bool activity;
+        public bool Activity
+        {
+            get { return activity; }
+            set
+            {
+                activity = value;
+                OnPropertyChanged();
+                OnPropertyChanged("ActivityListView");
+            }
+        }
 
         public ICommand LoadTest
         {
             get
             {
-                return new Command(() => LoadLast());
+                return new Command(() => LoadLastOnStartup());
             }
         }
 
         public ListViewModel(IRzeszowiakRepository RzeszowiakRepository)
         {
             _rzeszowiakRepository = RzeszowiakRepository ?? throw new NullReferenceException("ListViewModel => IRzeszowiakRepository RzeszowiakRepository == null !");
+            MessagingCenter.Subscribe<View.ListPage>(this, "LoadLastOnStartup", (sender) => {
+                LoadLastOnStartup();
+            });
         }
 
-        public async void LoadLast()
+        // load last add on startup
+        protected async void LoadLastOnStartup()
         {
-            var lastAddAdvert = await _rzeszowiakRepository.GetAdvertList();
+            Activity = true;
+            AdvertShortList?.Clear();
+            var lastAddAdvert=  await _rzeszowiakRepository.GetAdvertListAsync();
+            foreach (var item in lastAddAdvert)  AdvertShortList?.Add(item);
+            Activity = false;
+        }
 
-            // lastAddAdvert.Wait();
-            foreach (var item in lastAddAdvert)
+        // Create the OnPropertyChanged method to raise the event
+        private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string name = "")
+        {
+            if (PropertyChanged != null)
             {
-                AdvertShortList.Add(item);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
             }
         }
     }

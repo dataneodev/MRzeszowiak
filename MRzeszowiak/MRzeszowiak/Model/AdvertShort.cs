@@ -17,14 +17,20 @@ namespace MRzeszowiak.Model
         protected string uRLPath;
         public string URLPath
         {
-            get { return RZESZOWIAK_BASE_URL + uRLPath;  }
+            get { return uRLPath.Length > 0 ? RZESZOWIAK_BASE_URL + uRLPath : 
+                        RZESZOWIAK_BASE_URL + "uslugi-transportowe-" + AdverIDinRzeszowiak.ToString();  }
             set { uRLPath = value; }
         }
         public string DescriptionShort { get; set; }
         protected string thumbnailUrl;
         public string ThumbnailUrl
         {
-            get { return RZESZOWIAK_BASE_URL + thumbnailUrl; }
+            get
+            {
+                return (thumbnailUrl.IndexOf("/wsp/mini/l_no.gif") != -1) ? 
+                        "https://sites.google.com/site/dataneosoftware/polski/mrzeszowiak/no-image.png?attredirects=0" : 
+                        RZESZOWIAK_BASE_URL + thumbnailUrl;
+            }
             set { thumbnailUrl = value; }
         }
         public bool RowEven { get; set; }

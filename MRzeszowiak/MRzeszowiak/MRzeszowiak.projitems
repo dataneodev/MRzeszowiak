@@ -13,6 +13,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Extends\MultiLineLabel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extends\StringBuilderExtension.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\StringExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Advert.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\AdvertSearch.cs" />

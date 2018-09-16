@@ -20,10 +20,14 @@ namespace MRzeszowiak.Droid
 {
     public class MultiLineLabelRendererDroid : LabelRenderer
     {
+        public MultiLineLabelRendererDroid(Context context) : base(context)
+        {
+
+        }
+
         protected override void OnElementChanged(ElementChangedEventArgs<Label> e)
         {
             base.OnElementChanged(e);
-
             var baseLabel = (MultiLineLabel)this.Element;
 
             Control.SetLines(baseLabel.Lines);

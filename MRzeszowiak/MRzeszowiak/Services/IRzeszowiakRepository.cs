@@ -8,10 +8,10 @@ namespace MRzeszowiak.Services
 {
     interface IRzeszowiakRepository
     {
-        Task<IList<Category>> GetCategoryList(bool ForceReload = false);
-        Task<IList<AdvertShort>> GetAdvertListAsync(AdvertSearch searchParams);
-        Task<IList<AdvertShort>> GetAdvertList(); // default last add
-        Task<Advert> GetAdvert(AdvertShort advertShort);
-        Task<Advert> GetAdvert(int advertId);
+        Task<IList<Category>> GetCategoryListAsync(bool ForceReload = false, Action<string> userNotify = null);
+        Task<IList<AdvertShort>> GetAdvertListAsync(AdvertSearch searchParams, Action<string> userNotify = null);
+        Task<IList<AdvertShort>> GetAdvertListAsync(Action<string> userNotify = null); // default last add
+        Task<Advert> GetAdvertAsync(AdvertShort advertShort, Action<string> userNotify = null);
+        Task<Advert> GetAdvertAsync(int advertId, Action<string> userNotify = null);
     }
 }

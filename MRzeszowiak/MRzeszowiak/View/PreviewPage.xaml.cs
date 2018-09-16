@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MRzeszowiak.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,9 +13,10 @@ namespace MRzeszowiak.View
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class PreviewPage : ContentPage
 	{
-		public PreviewPage ()
+		public PreviewPage (AdvertShort advertShort)
 		{
 			InitializeComponent ();
-		}
+            MessagingCenter.Send<View.PreviewPage, AdvertShort>(this, "LoadAdvertShort", advertShort);
+        }
 	}
 }

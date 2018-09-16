@@ -19,7 +19,7 @@ namespace MRzeszowiak
                 LiveReload.Init();
             #endif
 			InitializeComponent();
-            MainPage = new MenuPage();   
+            MainPage = new MenuPage();
         }
 
 		protected override void OnStart ()

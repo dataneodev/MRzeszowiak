@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MRzeszowiak.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,11 +16,15 @@ namespace MRzeszowiak.View
 		public ListPage ()
 		{
 			InitializeComponent ();
-		}
+            MessagingCenter.Send<View.ListPage>(this, "LoadLastOnStartup");
+        }
 
         private async void AdvertListView_ItemTapped(object sender, ItemTappedEventArgs e)
         {
-            await Navigation.PushAsync(new PreviewPage(), true);
+            ((ListView)sender).SelectedItem = null;
+            var advertShort = e.Item as AdvertShort;
+            if(advertShort != null)
+                await Navigation.PushModalAsync(new PreviewPage(advertShort), true);
         }
     }
 }

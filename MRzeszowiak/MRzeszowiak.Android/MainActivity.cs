@@ -20,6 +20,7 @@ namespace MRzeszowiak.Droid
             base.OnCreate(bundle);
 
             global::Xamarin.Forms.Forms.Init(this, bundle);
+            CarouselView.FormsPlugin.Android.CarouselViewRenderer.Init();
             LoadApplication(new App());
         }
     }

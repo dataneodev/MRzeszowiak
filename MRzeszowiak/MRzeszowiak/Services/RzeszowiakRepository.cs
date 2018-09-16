@@ -1,95 +1,92 @@
-﻿using MRzeszowiak.Model;
-using MRzeszowiak.Extends;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-
+using MRzeszowiak.Extends;
+using MRzeszowiak.Model;
 namespace MRzeszowiak.Services
 {
     class RzeszowiakRepository : IRzeszowiakRepository
     {
-        protected IList<Category> _lastCategoryList = new List<Category>();
         protected const string RZESZOWIAK_BASE_URL = "http://www.rzeszowiak.pl/";
-
+        protected IList<Category> _lastCategoryList = new List<Category>();
         // from inteface
-        public Task<IList<Category>> GetCategoryList(bool ForceReload = false)
+        public Task<IList<Category>> GetCategoryListAsync(bool ForceReload = false, Action<string> userNotify = null)
         {
             return new Task<IList<Category>>(() => new List<Category>() { new Category() });
         }
-        public async Task<IList<AdvertShort>> GetAdvertListAsync(AdvertSearch searchParams)
+        public async Task<IList<AdvertShort>> GetAdvertListAsync(AdvertSearch searchParams, Action<string> userNotify = null)
         {
             Debug.Write("GetAdvertListAsync(AdvertSearch searchParams)");
+            if (searchParams == null) 
+                throw new NullReferenceException("AdvertSearch is null");
+
             var resultList = new List<AdvertShort>();
-            if (searchParams == null)
-            {
-                Debug.Write("GetAdvertListAsync(AdvertSearch searchParams) => searchParams == null");
-                return resultList;
-            }
-
             var urlRequest = searchParams.GetURL;
-            if (urlRequest == String.Empty)
+            if (urlRequest.Length == 0)
             {
-                Debug.Write("GetAdvertListAsync(AdvertSearch searchParams) => urlRequest == String.Empty");
+                Debug.Write("GetAdvertListAsync(AdvertSearch searchParams) => urlRequest.Length == 0");
                 return resultList;
             }
 
-            IEnumerable<AdvertShort> ProcessResponse(string ResponseHTMLBody)
+            IEnumerable<AdvertShort> ProcessResponse(StringBuilder ResponseHTMLBody)
             {
                 if (ResponseHTMLBody.Length == 0) yield break;
 
-                // promo now
                 int promoPos, normalPos;
                 bool rowEven = false;
                 do
                 {
-                    promoPos = ResponseHTMLBody.IndexOf("promobox-title-left");
-                    normalPos = ResponseHTMLBody.IndexOf("normalbox-title-left");
+                    promoPos = ResponseHTMLBody.IndexOf("promobox-title-left", 0, true);
+                    normalPos = ResponseHTMLBody.IndexOf("normalbox-title-left", 0, true);
 
                     int nextPos = Math.Min(promoPos, normalPos);
                     nextPos = (nextPos == -1 && promoPos > -1) ? promoPos : nextPos;
                     nextPos = (nextPos == -1 && normalPos > -1) ? normalPos : nextPos;
                     if (nextPos == -1) yield break;
                     bool highlighted = (nextPos == promoPos) ? true : false;
-                    ResponseHTMLBody = ResponseHTMLBody.Substring(nextPos);
-
-                    //string aid = ResponseHTMLBody.GetItem("id=\"o", "\">" );
+                    ResponseHTMLBody.Remove(0, nextPos);
+                    
                     //url
-                    ResponseHTMLBody = ResponseHTMLBody.CutFoward("<a href=\"/");
-                    string aUrl = ResponseHTMLBody.CutBacking("\">").Trim();
+                    ResponseHTMLBody.CutFoward("<a href=\"/");
+                    string aUrl = ResponseHTMLBody.ToString(0, ResponseHTMLBody.IndexOf("\">", 0, true)).Trim();
+                    
                     //title
-                    ResponseHTMLBody = ResponseHTMLBody.CutFoward("\">");
-                    string aTitle = ResponseHTMLBody.CutBacking("</a>").CutFoward(".").Trim();
+                    ResponseHTMLBody.CutFoward("\">");
+                    string aTitle = ResponseHTMLBody.ToString(0, ResponseHTMLBody.IndexOf("</a>", 0, true)).CutFoward(".").Trim();
+                    
                     //price
-                    ResponseHTMLBody = ResponseHTMLBody.CutFoward("cena: <strong>");
-                    string aPrice = ResponseHTMLBody.CutBacking("zł</strong>").Trim();
-                    if(!Int32.TryParse(aPrice, out int aPriceInt))
+                    ResponseHTMLBody.CutFoward("cena: <strong>");
+                    string aPrice = ResponseHTMLBody.ToString(0, ResponseHTMLBody.IndexOf("zł</strong>", 0, true)).Trim();
+                    if (!Int32.TryParse(aPrice, out int aPriceInt))
                     {
                         Debug.Write("GetAdvertListAsync(AdvertSearch searchParams) => !Int32.TryParse(aPrice, out int aPriceInt)");
                         aPriceInt = 0;
                     }
                     //id
-                    ResponseHTMLBody = ResponseHTMLBody.CutFoward("id=\"zr");
-                    string aId = ResponseHTMLBody.CutBacking("\">").Trim();
+                    ResponseHTMLBody.CutFoward("id=\"zr");
+                    string aId = ResponseHTMLBody.ToString(0, ResponseHTMLBody.IndexOf("\">", 0, true)).Trim();
+
                     if (!Int32.TryParse(aId, out int aIdInt))
                     {
                         Debug.Write("GetAdvertListAsync(AdvertSearch searchParams) => !Int32.TryParse(aId, out int aIdInt))");
                         yield break;
                     }
                     //thumb
-                    ResponseHTMLBody = ResponseHTMLBody.CutFoward("src=\"");
-                    string aThumb = ResponseHTMLBody.CutBacking("\"").Trim();
+                    ResponseHTMLBody.CutFoward("src=\"");
+                    string aThumb = ResponseHTMLBody.ToString(0, ResponseHTMLBody.IndexOf("\"", 0, true)).Trim();
+
                     //desc
-                    ResponseHTMLBody = ResponseHTMLBody.CutFoward("window.location");
-                    ResponseHTMLBody = ResponseHTMLBody.CutFoward("\">");
-                    string aDesc = ResponseHTMLBody.CutBacking("</div>").Trim().StripHTML();
-                    if (aDesc.Length > 100)
-                        aDesc = aDesc.Substring(0, 100) + "...";
+                    ResponseHTMLBody.CutFoward("window.location");
+                    ResponseHTMLBody.CutFoward("\">");
+                    string aDesc = ResponseHTMLBody.ToString(0, ResponseHTMLBody.IndexOf("</div>", 0, true)).StripHTML().Trim();
+
                     //add
-                    ResponseHTMLBody = ResponseHTMLBody.CutFoward("Dodane : <b>");
-                    string aAdd = ResponseHTMLBody.CutBacking("</b>").Trim().Replace("  ", " ");
+                    ResponseHTMLBody.CutFoward("Dodane : <b>");
+                    string aAdd = ResponseHTMLBody.ToString(0, ResponseHTMLBody.IndexOf("</b>", 0, true)).Trim();
 
                     yield return new AdvertShort()
                     {
@@ -107,58 +104,152 @@ namespace MRzeszowiak.Services
                     rowEven = !rowEven;
                 } while (promoPos != -1 || normalPos != -1);
             }
+            var responseString =  await GetWebPage(searchParams.GetURL, userNotify);
+            foreach (var item in ProcessResponse(responseString))
+                resultList.Add(item);
+            responseString.Clear();
+            return resultList;
+        }
 
-            using (HttpClient client = new HttpClient() { Timeout = TimeSpan.FromSeconds(6) })
+        public Task<IList<AdvertShort>> GetAdvertListAsync(Action<string> userNotify = null)
+        {
+            return GetAdvertListAsync(new AdvertSearch(), userNotify);
+        }
+
+        public async Task<Advert> GetAdvertAsync(AdvertShort advertShort, Action<string> userNotify = null)
+        {
+            Debug.Write("GetAdvert(AdvertShort advertShort)");
+            if (advertShort == null)
+                throw new NullReferenceException("advertShort == null");
+
+            var BodyResult = await GetWebPage(advertShort.URLPath);
+            if(BodyResult.Length == 0)
             {
-                using (HttpResponseMessage response = await client.GetAsync(urlRequest))
-                {
-                    if(!response.IsSuccessStatusCode)
-                    {
-                        Debug.Write("GetAdvertListAsync(AdvertSearch searchParams) => !response.IsSuccessStatusCode");
-                        // command to user
-                        return resultList;
-                    }
-                    using (HttpContent content = response.Content)
-                    {
-                        var byteArray = await content.ReadAsByteArrayAsync();
-
-                        Encoding iso = Encoding.GetEncoding("ISO-8859-2");
-                        Encoding utf8 = Encoding.UTF8;
-                        byte[] utf8Bytes = Encoding.Convert(iso, utf8, byteArray);
-                        string responseString = System.Net.WebUtility.HtmlDecode( utf8.GetString(utf8Bytes) );
-
-                        foreach (var item in ProcessResponse(responseString)) resultList.Add(item);
-                    }
-                }
+                Debug.Write("GetAdvertAsync => BodyResult.Length == 0");
+                return null;
             }
 
-            return resultList;
+            BodyResult.CutFoward("ogloszeniebox-top");
+            
+            string GetValue(StringBuilder bodyResult, string category)
+            {
+                BodyResult.CutFoward(category + "</div>");
+                BodyResult.CutFoward("<div class=\"value\">");
+                return BodyResult.ToString(0, BodyResult.IndexOf("</div>", 0, true)).Trim();
+            }
+            
+            string aCategory = GetValue(BodyResult, "kategoria :");
+            string aTitle = GetValue(BodyResult, "tytuł :").CutFoward(".").Trim();
+            string aDateAdd = GetValue(BodyResult, "data dodania :");
+            string aViews = GetValue(BodyResult, "wyświetleń :").Replace(" razy","");
+            if (!Int32.TryParse(aViews, out int aViewsInt))
+            {
+                Debug.Write("GetAdvert(AdvertShort advertShort, Action<string> userNotify = null) => !Int32.TryParse(aViews, out int aViewsInt)");
+                return null;
+            }
+            string aPrice = GetValue(BodyResult, "cena :").Replace(" PLN", "");
+            if (!Int32.TryParse(aPrice, out int aPriceInt))
+            {
+                Debug.Write("GetAdvert(AdvertShort advertShort, Action<string> userNotify = null) => !Int32.TryParse(aPrice, out int aPriceInt)");
+                return null;
+            }
+            BodyResult.CutFoward("Treść ogłoszenia");
+            BodyResult.CutFoward("<div class=\"content\">");
+            string aDesc = BodyResult.ToString(0, BodyResult.IndexOf("</div>", 0, true)).Replace("<br />","\n\n").StripHTML();
 
-            //var result = new List<AdvertShort>
-            //{
-            //    new AdvertShort()
-            //    {
-            //        AdverIDinRzeszowiak = 6,
-            //        Title = "Auto – Naprawa Jerzy Szeliga - 37-114 Białobrzegi",
-            //        DescriptionShort = "sprzedam przepiękna szklaną paterę w kolorze niebieskim[wyrób włoski].bardzo ciekawy kształt,3 cm,",
-            //        DateAddString = "dziś",
-            //        Price = 126,
-            //        Highlighted = false,
-            //        ThumbnailUrl = "http://www.rzeszowiak.pl/img/ogl/105/mini/l_10577949_0.jpg?re=1149847778",
-            //    }                
-            //};
+            var additionalData = new Dictionary<string, string>();
+            if (BodyResult.IndexOf("Dane dodatkowe", 0, true) != -1)
+            {
+                BodyResult.CutFoward("Dane dodatkowe");
+                StringBuilder addData = new StringBuilder(BodyResult.ToString(0, BodyResult.IndexOf("ogloszeniebox-bottom", 0, true)));
+                do
+                {
+                    int posLab = addData.IndexOf("<div class=\"label\">", 0, true);
+                    if (posLab == -1) break;
+                    addData.CutFoward("<div class=\"label\">");
+                    string key = addData.ToString(0, addData.IndexOf("</div>", 0, true));
+                    addData.CutFoward("</div>");
+                    addData.CutFoward("\">");
+                    string value = addData.ToString(0, addData.IndexOf("</div>", 0, true));
+                    additionalData.Add(key, value);
+                } while (true);
+            }
+
+            var pictureList = new List<string>();
+            if (BodyResult.IndexOf("Zdjęcia", 0, true) != -1)
+            {
+                BodyResult.CutFoward("Zdjęcia");
+                StringBuilder addData = new StringBuilder(BodyResult.ToString(0, BodyResult.IndexOf("ogloszeniebox-bottom", 0, true)));
+                do
+                {
+                    int posLab = addData.IndexOf("<img src=\"/", 0, true);
+                    if (posLab == -1) break;
+                    addData.CutFoward("<img src=\"/");
+                    var picUrl = RZESZOWIAK_BASE_URL + addData.ToString(0, addData.IndexOf("\"", 0, true)).Replace("mini/o_", "");
+                    pictureList.Add(picUrl);
+                } while (true);
+            }
+
+            return new Advert()
+            {
+                AdverIDinRzeszowiak = advertShort.AdverIDinRzeszowiak,
+                Category = null,
+                Title = aTitle,
+                DateAddString = aDateAdd,
+                ExpiredString = String.Empty,
+                Views = aViewsInt,
+                Price = aPriceInt,
+                Highlighted = advertShort.Highlighted,
+                DescriptionHTML = aDesc,
+                AdditionalData = additionalData,
+                ImageURLsList = pictureList,
+            };
         }
-        public Task<IList<AdvertShort>> GetAdvertList()
+
+        public Task<Advert> GetAdvertAsync(int advertId, Action<string> userNotify = null)
         {
-            return GetAdvertListAsync(new AdvertSearch());
+            return GetAdvertAsync(new AdvertShort() { AdverIDinRzeszowiak = advertId }, userNotify);
         }
-        public Task<Advert> GetAdvert(AdvertShort advertShort)
+
+        protected async Task<StringBuilder> GetWebPage(string Url, Action<string> userNotify = null)
         {
-            return new Task<Advert>(() => new Advert() );
-        }
-        public Task<Advert> GetAdvert(int advertId)
-        {
-            return new Task<Advert>(() =>  new Advert());
+            StringBuilder BodyString = new StringBuilder();
+            using (HttpClient client = new HttpClient() { Timeout = TimeSpan.FromSeconds(6) })
+            {
+                try
+                {
+                    using (HttpResponseMessage response = await client.GetAsync(Url))
+                    {
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            Debug.Write("GetAdvertListAsync(AdvertSearch searchParams) => !response.IsSuccessStatusCode");
+                            userNotify?.Invoke("Niepoprawna odpowiedź z serwera");
+                            return BodyString;
+                        }
+                        using (HttpContent content = response.Content)
+                        {
+                            var byteArray = await content.ReadAsByteArrayAsync();
+                            Encoding iso = Encoding.GetEncoding("ISO-8859-2");
+                            Encoding utf8 = Encoding.UTF8;
+                            byte[] utf8Bytes = Encoding.Convert(iso, utf8, byteArray);
+                            BodyString.Append(System.Net.WebUtility.HtmlDecode(utf8.GetString(utf8Bytes))); 
+                        }
+                    }
+                }
+                catch (System.Threading.Tasks.TaskCanceledException)
+                {
+                    Debug.Write("GetAdvertListAsync(AdvertSearch searchParams) => System.Threading.Tasks.TaskCanceledException");
+                    userNotify?.Invoke("Błąd połączenia. Przekroczono limit połączenia");
+                    return BodyString;
+                }
+                catch(Exception e)
+                {
+                    Debug.Write("GetAdvertListAsync(AdvertSearch searchParams) => " + e.Message);
+                    userNotify?.Invoke("Błąd połączenia z serwerem.");
+                    return BodyString;
+                }
+            }
+            return BodyString;
         }
     }
 }
