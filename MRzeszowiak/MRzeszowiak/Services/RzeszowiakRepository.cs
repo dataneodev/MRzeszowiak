@@ -139,7 +139,7 @@ namespace MRzeszowiak.Services
             }
             
             string aCategory = GetValue(BodyResult, "kategoria :");
-            string aTitle = GetValue(BodyResult, "tytuł :").CutFoward(".").Trim();
+            string aTitle = GetValue(BodyResult, "tytuł :").Trim();
             string aDateAdd = GetValue(BodyResult, "data dodania :");
             string aViews = GetValue(BodyResult, "wyświetleń :").Replace(" razy","");
             if (!Int32.TryParse(aViews, out int aViewsInt))
@@ -156,6 +156,7 @@ namespace MRzeszowiak.Services
             BodyResult.CutFoward("Treść ogłoszenia");
             BodyResult.CutFoward("<div class=\"content\">");
             string aDesc = BodyResult.ToString(0, BodyResult.IndexOf("</div>", 0, true)).Replace("<br />","\n\n").StripHTML();
+            aDesc = aDesc.Replace("\n\n\n", "\n");
 
             var additionalData = new Dictionary<string, string>();
             if (BodyResult.IndexOf("Dane dodatkowe", 0, true) != -1)

@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MRzeszowiak.View.PreviewPage"
              xmlns:forms="clr-namespace:CarouselView.FormsPlugin.Abstractions;assembly=CarouselView.FormsPlugin.Abstractions"
+             xmlns:Extends="clr-namespace:MRzeszowiak.Extends"
              Title="Podgląd ogłoszenia"
              BindingContext="{Binding PreviewViewModel, Source={StaticResource Locator}}"
              x:Name="PreviewPageN">
@@ -12,18 +13,30 @@
             <ActivityIndicator VerticalOptions="CenterAndExpand" 
                                IsRunning="{Binding Activity}"
                                IsVisible="{Binding Activity}"/>
-
-            <forms:CarouselViewControl ItemsSource="{Binding _advert.ImageURLsList}"
+                <Label IsVisible="{Binding ErrorPanelVisible}" 
+                       Text="{Binding ErrorMessage}" 
+                       FontSize="Medium" 
+                       VerticalOptions="CenterAndExpand"
+                       HorizontalOptions="FillAndExpand"
+                       HorizontalTextAlignment="Center"
+                       />
+                <forms:CarouselViewControl ItemsSource="{Binding ImageURLsList}"
                                        IsVisible="{Binding ImageVisible}"
                                        IsEnabled="{Binding ImageVisible}"               
-                                       HeightRequest="240"
+                                       HeightRequest="220"
                                        HorizontalOptions="FillAndExpand"
                                        ShowArrows="True"
                                        ShowIndicators="True"
                                        IsSwipeEnabled="True">
                 <forms:CarouselViewControl.ItemTemplate>
                     <DataTemplate>
-                        <Image Source="{Binding .}"/>
+                        <ScrollView>
+                            <Extends:ImageFit Source="{Binding .}" 
+                               VerticalOptions="Center"           
+                               HorizontalOptions="FillAndExpand"
+                               Aspect="AspectFit"
+                               x:Name="image"/>
+                        </ScrollView>
                     </DataTemplate>
                 </forms:CarouselViewControl.ItemTemplate>
             </forms:CarouselViewControl>
@@ -31,29 +44,43 @@
             <StackLayout Orientation="Vertical" 
                          IsVisible="{Binding ActivityForm}"
                          Margin="10,0,10,0">
-                    <Label Text="{Binding _advert.Title}"
+                <Label Text="{Binding Title}"
                        FontSize="Large"
-                       TextColor="Black"/>
-                    <Label>
-                        <Label.FormattedText>
-                            <FormattedString>
-                                <FormattedString.Spans>
-                                    <Span Text="Cena: " FontSize="Medium"/>
-                                    <Span Text="{Binding _advert.Price}" 
-                                                          FontAttributes="Bold"
-                                                          FontSize="Large"
-                                                          TextColor="Black"/>
-                                    <Span Text=" zł" 
-                                                          FontAttributes="Bold"
-                                                          FontSize="Medium"/>
-                                </FormattedString.Spans>
-                            </FormattedString>
-                        </Label.FormattedText>
-                    </Label>
-                
-                <Label Text="{Binding _advert.DescriptionHTML}"
                        TextColor="Black"
-                       FontSize="Small"/>
+                       LineBreakMode="WordWrap"/>
+                <Label>
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <FormattedString.Spans>
+                                <Span Text="Cena: " FontSize="Medium"/>
+                                <Span Text="{Binding Price, Mode=OneWay}" 
+                                      FontAttributes="Bold"
+                                      FontSize="Large"
+                                      TextColor="Black"/>
+                                <Span Text=" zł" 
+                                      FontAttributes="Bold"
+                                      FontSize="Medium"/>
+                            </FormattedString.Spans>
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+
+                <Label Text="{Binding DescriptionHTML}"
+                       TextColor="Black"
+                       FontSize="Small"
+                       LineBreakMode="WordWrap"/>
+                <Label HorizontalTextAlignment="End" HorizontalOptions="FillAndExpand">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <FormattedString.Spans>
+                                    <Span Text="Wyświetleń: "
+                                          FontSize="12"/>
+                                    <Span Text="{Binding Views, Mode=OneWay}"
+                                      TextColor="Black"/>
+                                </FormattedString.Spans>        
+                        </FormattedString>        
+                    </Label.FormattedText>            
+                </Label>
                 
                 <!--<WebView HorizontalOptions="FillAndExpand" 
                          VerticalOptions="FillAndExpand"

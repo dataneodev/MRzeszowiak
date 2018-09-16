@@ -8,10 +8,8 @@ using Xamarin.Forms;
 
 namespace MRzeszowiak.Model
 {
-    public class Advert : INotifyPropertyChanged
-    {
-        public event PropertyChangedEventHandler PropertyChanged;
-       
+    public class Advert
+    {      
         //main
         public int AdverIDinRzeszowiak { get; set; }
         public Category Category { get; set; }
@@ -29,19 +27,6 @@ namespace MRzeszowiak.Model
         public Dictionary<string, string> AdditionalData { get; set; }
         //Image URLs
         public IList<string> ImageURLsList {get; set; }
-
-        public void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string name = "")
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-            }
-        }
-
-        public void PropertyRefresh()
-        {
-            foreach (PropertyInfo property in typeof(Advert).GetProperties())
-                OnPropertyChanged(property.Name); 
-        }
+        public bool IsFavorite { get; set; }
     }
 }

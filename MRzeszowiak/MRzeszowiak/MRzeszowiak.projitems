@@ -12,6 +12,7 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)View\App.xaml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Extends\ImageFit.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\MultiLineLabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\StringBuilderExtension.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\StringExtensions.cs" />
@@ -37,6 +38,10 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)View\MenuPage.xaml.cs">
       <DependentUpon>MenuPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)View\PreviewImagePage.xaml.cs">
+      <DependentUpon>PreviewImagePage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)View\PreviewPage.xaml.cs">
@@ -68,6 +73,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)View\PreviewPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)View\PreviewImagePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
