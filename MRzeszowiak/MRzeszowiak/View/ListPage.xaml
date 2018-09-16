@@ -110,7 +110,7 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <Button Command="{Binding LoadTest}" Text="Load"/>
+            <Button Command="{Binding LoadTest}" Text="Load" IsVisible="False"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

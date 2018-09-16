@@ -18,8 +18,7 @@
                        FontSize="Medium" 
                        VerticalOptions="CenterAndExpand"
                        HorizontalOptions="FillAndExpand"
-                       HorizontalTextAlignment="Center"
-                       />
+                       HorizontalTextAlignment="Center"/>
                 <forms:CarouselViewControl ItemsSource="{Binding ImageURLsList}"
                                        IsVisible="{Binding ImageVisible}"
                                        IsEnabled="{Binding ImageVisible}"               
@@ -27,15 +26,20 @@
                                        HorizontalOptions="FillAndExpand"
                                        ShowArrows="True"
                                        ShowIndicators="True"
-                                       IsSwipeEnabled="True">
-                <forms:CarouselViewControl.ItemTemplate>
+                                       IsSwipeEnabled="True"
+                                       x:Name="CarouselViewImageList">                    
+                    <forms:CarouselViewControl.ItemTemplate>
                     <DataTemplate>
                         <ScrollView>
                             <Extends:ImageFit Source="{Binding .}" 
-                               VerticalOptions="Center"           
+                               VerticalOptions="Center"
                                HorizontalOptions="FillAndExpand"
                                Aspect="AspectFit"
-                               x:Name="image"/>
+                               x:Name="image">
+                                <Extends:ImageFit.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped" NumberOfTapsRequired="1" />
+                                </Extends:ImageFit.GestureRecognizers>
+                            </Extends:ImageFit>
                         </ScrollView>
                     </DataTemplate>
                 </forms:CarouselViewControl.ItemTemplate>
@@ -64,12 +68,67 @@
                         </FormattedString>
                     </Label.FormattedText>
                 </Label>
+                <Frame CornerRadius="10" 
+                       Margin="0" 
+                       Padding="0">
+                    <Label Text="{Binding DescriptionHTML}"
+                           TextColor="Black"
+                           FontSize="Small"
+                           LineBreakMode="WordWrap"
+                           Margin="8,5,8,5"/>
+                </Frame>
+                <Frame CornerRadius="10" 
+                       Margin="0" 
+                       Padding="0"
+                       IsVisible="{Binding AddDataVisible}">
+                    <ListView x:Name="AddDataList"
+                                ItemsSource="{Binding AdditionalData}"
+                                HasUnevenRows="True"
+                                HorizontalOptions="FillAndExpand"
+                                ItemTapped="AddDataList_ItemTapped"
+                                BindingContextChanged="AddDataList_BindingContextChanged"
+                                SizeChanged="AddDataList_BindingContextChanged"
+                                IsVisible="{Binding AddDataVisible}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <ViewCell>
+                                    <StackLayout HorizontalOptions="FillAndExpand"
+                                                 Orientation="Horizontal" 
+                                                 Margin="8,5,8,5"
+                                                 Padding="2">
+                                            <Label Text="{Binding Key}" TextColor="Black"/>
+                                            <Label Text="{Binding Value}" TextColor="Black"/>
 
-                <Label Text="{Binding DescriptionHTML}"
-                       TextColor="Black"
-                       FontSize="Small"
-                       LineBreakMode="WordWrap"/>
-                <Label HorizontalTextAlignment="End" HorizontalOptions="FillAndExpand">
+                                    </StackLayout>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Frame>
+                <Frame CornerRadius="10" 
+                       Margin="0" 
+                       Padding="0">
+                    <StackLayout Orientation="Horizontal">
+                            <Button Text="Odśwież"/>
+                            <Button Text="Strona"/>
+                            <Button Text="Wiadomość"/>
+                            <Button Text="Ulubiony"/>
+                        </StackLayout>
+                </Frame>
+                <StackLayout Orientation="Horizontal">
+                    <Label HorizontalTextAlignment="Start" HorizontalOptions="FillAndExpand">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <FormattedString.Spans>
+                                        <Span Text="ID: "
+                                          FontSize="12"/>
+                                        <Span Text="{Binding AdverIDinRzeszowiak, Mode=OneWay}"
+                                      FontSize="12"/>
+                                    </FormattedString.Spans>
+                                </FormattedString>
+                            </Label.FormattedText>
+                    </Label>
+                    <Label HorizontalTextAlignment="End" HorizontalOptions="FillAndExpand">
                     <Label.FormattedText>
                         <FormattedString>
                             <FormattedString.Spans>
@@ -80,9 +139,10 @@
                                 </FormattedString.Spans>        
                         </FormattedString>        
                     </Label.FormattedText>            
-                </Label>
-                
-                <!--<WebView HorizontalOptions="FillAndExpand" 
+                    </Label>
+                </StackLayout>
+
+                    <!--<WebView HorizontalOptions="FillAndExpand" 
                          VerticalOptions="FillAndExpand"
                          
                          BackgroundColor="{Binding Source={x:Reference PreviewPageN}, Path=BackgroundColor}">

@@ -1,4 +1,5 @@
-﻿using MRzeszowiak.Model;
+﻿using CarouselView.FormsPlugin.Abstractions;
+using MRzeszowiak.Model;
 using MRzeszowiak.Services;
 using Newtonsoft.Json;
 using System;
@@ -7,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
+using System.Windows.Input;
 using Xamarin.Forms;
 
 namespace MRzeszowiak.ViewModel
@@ -29,8 +31,6 @@ namespace MRzeszowiak.ViewModel
                 OnPropertyChanged("ActivityForm");
             }
         }
-
-        public bool ImageVisible => (ImageURLsList?.Count ?? 0) > 0 ? true: false ; 
 
         private int adverIDinRzeszowiak;
         public int AdverIDinRzeszowiak
@@ -147,16 +147,33 @@ namespace MRzeszowiak.ViewModel
 
 
         public ObservableCollection<KeyValue> AdditionalData { get; set; } = new ObservableCollection<KeyValue>();
+        public bool AddDataVisible => (AdditionalData?.Count ?? 0) > 0 ? true : false;
         public ObservableCollection<string> ImageURLsList { get; set; } = new ObservableCollection<string>();
+        public bool ImageVisible => (ImageURLsList?.Count ?? 0) > 0 ? true : false;
+
+        //public ICommand ImageTap
+        //{
+        //    get
+        //    {
+        //        return new Command(async (imageCarousel) => 
+        //        {
+        //            await Navigation.PushModalAsync(new PreviewImagePage(AdditionalData), true);
+        //        });
+        //    }
+        //}
 
         public PreviewViewModel(IRzeszowiakRepository RzeszowiakRepository)
         {
             _rzeszowiakRepository = RzeszowiakRepository ?? throw new NullReferenceException("ListViewModel => IRzeszowiakRepository RzeszowiakRepository == null !");
             ImageURLsList.CollectionChanged += (s, e) => { OnPropertyChanged("ImageVisible"); };
+            AdditionalData.CollectionChanged += (s, e) => { OnPropertyChanged("AddDataVisible"); };
 
             MessagingCenter.Subscribe<View.PreviewPage, AdvertShort>(this, "LoadAdvertShort", (sender, advertShort) => {
                 LoadAdvert(advertShort);
             });
+
+            ErrorMessage = String.Empty;
+            Activity = true;
         }
 
         async void LoadAdvert(AdvertShort advertShort)
@@ -176,7 +193,7 @@ namespace MRzeszowiak.ViewModel
             else
                 CopyAdverToViewModel(_advert);
             Activity = false;
-            Debug.Write(JsonConvert.SerializeObject(_advert));
+            //Debug.Write(JsonConvert.SerializeObject(_advert));
         }
 
         void CopyAdverToViewModel(Advert advert)

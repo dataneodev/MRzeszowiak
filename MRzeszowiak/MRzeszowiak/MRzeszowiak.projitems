@@ -25,6 +25,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Services\RzeszowiakRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\SettingRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ListViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\PreViewImageViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\PreviewViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\SettingViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ViewModelLocator.cs" />

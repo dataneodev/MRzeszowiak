@@ -9,12 +9,13 @@ using Xamarin.Forms.Xaml;
 
 namespace MRzeszowiak.View
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class PreviewImagePage : ContentPage
-	{
-		public PreviewImagePage ()
-		{
-			InitializeComponent ();
-		}
-	}
+    [XamlCompilation(XamlCompilationOptions.Compile)]
+    public partial class PreviewImagePage : ContentPage
+    {
+        public PreviewImagePage()
+        {
+            InitializeComponent();
+        }
+
+    }
 }

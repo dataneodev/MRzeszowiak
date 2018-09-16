@@ -13,6 +13,7 @@ namespace MRzeszowiak.ViewModel
         public ListViewModel ListViewModel => ServiceLocator.Current.GetInstance<ListViewModel>();
         public PreviewViewModel PreviewViewModel => ServiceLocator.Current.GetInstance<PreviewViewModel>(Guid.NewGuid().ToString());
         public SettingViewModel SettingViewModel => ServiceLocator.Current.GetInstance<SettingViewModel>();
+        public PreViewImageViewModel PreViewImageViewModel => ServiceLocator.Current.GetInstance<PreViewImageViewModel>(Guid.NewGuid().ToString());
 
         static ViewModelLocator()
         {
@@ -21,6 +22,7 @@ namespace MRzeszowiak.ViewModel
             SimpleIoc.Default.Register<ListViewModel>(() => new ListViewModel(new RzeszowiakRepository()));
             SimpleIoc.Default.Register<PreviewViewModel>(() => new PreviewViewModel(new RzeszowiakRepository()));
             SimpleIoc.Default.Register<SettingViewModel>();
+            SimpleIoc.Default.Register<PreViewImageViewModel>();
         }          
     }
 }

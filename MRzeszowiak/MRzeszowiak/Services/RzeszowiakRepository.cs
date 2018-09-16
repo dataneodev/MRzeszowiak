@@ -156,12 +156,12 @@ namespace MRzeszowiak.Services
             BodyResult.CutFoward("Treść ogłoszenia");
             BodyResult.CutFoward("<div class=\"content\">");
             string aDesc = BodyResult.ToString(0, BodyResult.IndexOf("</div>", 0, true)).Replace("<br />","\n\n").StripHTML();
-            aDesc = aDesc.Replace("\n\n\n", "\n");
+            aDesc = aDesc.Replace("\n\n\n", "\n").Trim();
 
             var additionalData = new Dictionary<string, string>();
-            if (BodyResult.IndexOf("Dane dodatkowe", 0, true) != -1)
+            if (BodyResult.IndexOf("<div>Dane dodatkowe</div>", 0, true) != -1)
             {
-                BodyResult.CutFoward("Dane dodatkowe");
+                BodyResult.CutFoward("<div>Dane dodatkowe</div>");
                 StringBuilder addData = new StringBuilder(BodyResult.ToString(0, BodyResult.IndexOf("ogloszeniebox-bottom", 0, true)));
                 do
                 {
@@ -177,9 +177,9 @@ namespace MRzeszowiak.Services
             }
 
             var pictureList = new List<string>();
-            if (BodyResult.IndexOf("Zdjęcia", 0, true) != -1)
+            if (BodyResult.IndexOf("<div>Zdjęcia</div>", 0, true) != -1)
             {
-                BodyResult.CutFoward("Zdjęcia");
+                BodyResult.CutFoward("<div>Zdjęcia</div>");
                 StringBuilder addData = new StringBuilder(BodyResult.ToString(0, BodyResult.IndexOf("ogloszeniebox-bottom", 0, true)));
                 do
                 {

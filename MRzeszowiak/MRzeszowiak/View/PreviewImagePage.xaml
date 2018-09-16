@@ -1,12 +1,33 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MRzeszowiak.View.PreviewImagePage">
+             xmlns:forms="clr-namespace:CarouselView.FormsPlugin.Abstractions;assembly=CarouselView.FormsPlugin.Abstractions"
+             xmlns:Extends="clr-namespace:MRzeszowiak.Extends"
+             x:Class="MRzeszowiak.View.PreviewImagePage"
+             BindingContext="{Binding PreViewImageViewModel, Source={StaticResource Locator}}"
+             BackgroundColor="Black"
+             x:Name="PreViewImagePageN">
     <ContentPage.Content>
-        <StackLayout>
-            <Label Text="Welcome to Xamarin.Forms!"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
-        </StackLayout>
+        <ScrollView HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+            <forms:CarouselViewControl ItemsSource="{Binding ImageURLsList}"    
+                                       VerticalOptions="FillAndExpand"
+                                       HorizontalOptions="FillAndExpand"
+                                       ShowArrows="True"
+                                       ShowIndicators="True"
+                                       IsSwipeEnabled="True">
+                <forms:CarouselViewControl.ItemTemplate>
+                    <DataTemplate>
+                        <ScrollView>
+                            <Extends:ImageFit Source="{Binding .}" 
+                               VerticalOptions="Center"           
+                               HorizontalOptions="FillAndExpand"
+                               Aspect="AspectFit"
+                               x:Name="image">
+                            </Extends:ImageFit>
+                        </ScrollView>
+                    </DataTemplate>
+                </forms:CarouselViewControl.ItemTemplate>
+            </forms:CarouselViewControl>
+        </ScrollView>
     </ContentPage.Content>
 </ContentPage>
