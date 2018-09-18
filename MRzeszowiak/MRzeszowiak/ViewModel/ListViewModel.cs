@@ -19,7 +19,7 @@ namespace MRzeszowiak.ViewModel
 
         public bool ActivityListView => ! Activity;
 
-        private bool activity;
+        private bool activity = true;
         public bool Activity
         {
             get { return activity; }
@@ -31,39 +31,29 @@ namespace MRzeszowiak.ViewModel
             }
         }
 
-        public ICommand LoadTest
-        {
-            get
-            {
-                return new Command(() => LoadLastOnStartup());
-            }
-        }
-
         public ListViewModel(IRzeszowiakRepository RzeszowiakRepository)
         {
             _rzeszowiakRepository = RzeszowiakRepository ?? throw new NullReferenceException("ListViewModel => IRzeszowiakRepository RzeszowiakRepository == null !");
             MessagingCenter.Subscribe<View.ListPage>(this, "LoadLastOnStartup", (sender) => {
                 LoadLastOnStartup();
             });
+            Activity = true;
         }
 
         // load last add on startup
         protected async void LoadLastOnStartup()
         {
             Activity = true;
-            AdvertShortList?.Clear();
+            AdvertShortList.Clear();
             var lastAddAdvert=  await _rzeszowiakRepository.GetAdvertListAsync();
-            foreach (var item in lastAddAdvert)  AdvertShortList?.Add(item);
+            foreach (var item in lastAddAdvert)  AdvertShortList.Add(item);
             Activity = false;
         }
 
         // Create the OnPropertyChanged method to raise the event
         private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string name = "")
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
 }

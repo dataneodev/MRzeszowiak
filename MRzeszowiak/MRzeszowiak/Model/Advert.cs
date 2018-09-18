@@ -8,25 +8,14 @@ using Xamarin.Forms;
 
 namespace MRzeszowiak.Model
 {
-    public class Advert
+    public class Advert : AdvertShort
     {      
-        //main
-        public int AdverIDinRzeszowiak { get; set; }
-        public Category Category { get; set; }
-        public string Title { get; set; }
-        public string DateAddString { get; set; }
-        public string ExpiredString { get; set; }
+        public string ExpiredString { get; set; } = String.Empty;
         public int Views { get; set; }
-        public int Price { get; set; }
-        public bool Highlighted { get; set; }
-        //description
-        public string DescriptionHTML { get; set; }
-        //phone image
+        public string DescriptionHTML { get; set; } = String.Empty;
         public Image PhoneImage { get; set; }
-        //Additional data
-        public Dictionary<string, string> AdditionalData { get; set; }
-        //Image URLs
-        public IList<string> ImageURLsList {get; set; }
+        public Dictionary<string, string> AdditionalData { get; set; } = new Dictionary<string, string>();
+        public List<string> ImageURLsList { get; set; } = new List<string>();
         public bool IsFavorite { get; set; }
     }
 }

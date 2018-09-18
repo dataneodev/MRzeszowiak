@@ -12,6 +12,6 @@ namespace MRzeszowiak.Services
         Task<IList<AdvertShort>> GetAdvertListAsync(AdvertSearch searchParams, Action<string> userNotify = null);
         Task<IList<AdvertShort>> GetAdvertListAsync(Action<string> userNotify = null); // default last add
         Task<Advert> GetAdvertAsync(AdvertShort advertShort, Action<string> userNotify = null);
-        Task<Advert> GetAdvertAsync(int advertId, Action<string> userNotify = null);
+        //Task<Advert> GetAdvertAsync(int advertId, Action<string> userNotify = null);
     }
 }

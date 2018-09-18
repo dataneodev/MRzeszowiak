@@ -14,12 +14,19 @@ namespace MRzeszowiak.Model
         public string DateAddString { get; set; }
         public int Price { get; set; }
         public bool Highlighted { get; set; }
+
         protected string uRLPath;
         public string URLPath
         {
-            get { return uRLPath.Length > 0 ? RZESZOWIAK_BASE_URL + uRLPath : 
-                        RZESZOWIAK_BASE_URL + "uslugi-transportowe-" + AdverIDinRzeszowiak.ToString();  }
+            get { return uRLPath; }
             set { uRLPath = value; }
+        }
+
+        public string URL
+        {
+            get { return URLPath.Length > 0 ? RZESZOWIAK_BASE_URL + URLPath : 
+                        RZESZOWIAK_BASE_URL + "uslugi-transportowe-" + AdverIDinRzeszowiak.ToString();  }
+            set { URLPath = value; }
         }
         public string DescriptionShort { get; set; }
         protected string thumbnailUrl;

@@ -24,7 +24,7 @@ namespace MRzeszowiak.View
             ((ListView)sender).SelectedItem = null;
             var advertShort = e.Item as AdvertShort;
             if(advertShort != null)
-                await Navigation.PushModalAsync(new PreviewPage(advertShort), true);
+                await Navigation.PushModalAsync(new PreviewPage(advertShort), false);
         }
     }
 }

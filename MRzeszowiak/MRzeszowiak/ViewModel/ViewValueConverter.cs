@@ -21,4 +21,20 @@ namespace MRzeszowiak.ViewModel
             return true;
         }
     }
+
+    public class ImageFromFavorite : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if ((bool)value)
+            { return "star_yellow.png"; }
+            else
+            { return "star_gray.png"; }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return true;
+        }
+    }
 }

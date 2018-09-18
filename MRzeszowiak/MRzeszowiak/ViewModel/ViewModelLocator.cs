@@ -11,9 +11,9 @@ namespace MRzeszowiak.ViewModel
     class ViewModelLocator
     {
         public ListViewModel ListViewModel => ServiceLocator.Current.GetInstance<ListViewModel>();
-        public PreviewViewModel PreviewViewModel => ServiceLocator.Current.GetInstance<PreviewViewModel>(Guid.NewGuid().ToString());
+        public PreviewViewModel PreviewViewModel => ServiceLocator.Current.GetInstance<PreviewViewModel>();
         public SettingViewModel SettingViewModel => ServiceLocator.Current.GetInstance<SettingViewModel>();
-        public PreViewImageViewModel PreViewImageViewModel => ServiceLocator.Current.GetInstance<PreViewImageViewModel>(Guid.NewGuid().ToString());
+        public PreViewImageViewModel PreViewImageViewModel => ServiceLocator.Current.GetInstance<PreViewImageViewModel>();
 
         static ViewModelLocator()
         {

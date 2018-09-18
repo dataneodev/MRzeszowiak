@@ -1,4 +1,5 @@
 ﻿using CarouselView.FormsPlugin.Abstractions;
+using GalaSoft.MvvmLight.Command;
 using MRzeszowiak.Model;
 using MRzeszowiak.Services;
 using Newtonsoft.Json;
@@ -131,7 +132,19 @@ namespace MRzeszowiak.ViewModel
             }
         }
 
-        private string errorMessage;
+        private bool isFavorite;
+        public bool IsFavorite
+        {
+            get { return isFavorite; }
+            set
+            {
+                isFavorite = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+        private string errorMessage = String.Empty;
         public string ErrorMessage
         {
             get { return errorMessage; }
@@ -145,22 +158,16 @@ namespace MRzeszowiak.ViewModel
         }
         public bool ErrorPanelVisible => (errorMessage?.Length ?? 0) > 0 ? true : false;
 
-
         public ObservableCollection<KeyValue> AdditionalData { get; set; } = new ObservableCollection<KeyValue>();
         public bool AddDataVisible => (AdditionalData?.Count ?? 0) > 0 ? true : false;
         public ObservableCollection<string> ImageURLsList { get; set; } = new ObservableCollection<string>();
         public bool ImageVisible => (ImageURLsList?.Count ?? 0) > 0 ? true : false;
 
-        //public ICommand ImageTap
-        //{
-        //    get
-        //    {
-        //        return new Command(async (imageCarousel) => 
-        //        {
-        //            await Navigation.PushModalAsync(new PreviewImagePage(AdditionalData), true);
-        //        });
-        //    }
-        //}
+        private Advert _lastAdvert;
+        public ICommand OpenAdvertPage { get; private set; }
+        public ICommand RefreshAdvert { get; private set; }
+        public ICommand MailAdvert { get; private set; }
+        public ICommand FavoriteAdvert { get; private set; }
 
         public PreviewViewModel(IRzeszowiakRepository RzeszowiakRepository)
         {
@@ -169,14 +176,39 @@ namespace MRzeszowiak.ViewModel
             AdditionalData.CollectionChanged += (s, e) => { OnPropertyChanged("AddDataVisible"); };
 
             MessagingCenter.Subscribe<View.PreviewPage, AdvertShort>(this, "LoadAdvertShort", (sender, advertShort) => {
-                LoadAdvert(advertShort);
+                LoadAdvertMessage(advertShort);
             });
 
-            ErrorMessage = String.Empty;
-            Activity = true;
+            OpenAdvertPage = new RelayCommand(()=> 
+            {
+                if(_lastAdvert?.URL?.Length > 0)
+                    Device.OpenUri(new Uri(_lastAdvert?.URL));
+            });
+
+            RefreshAdvert = new RelayCommand(() =>
+            {
+                if (_lastAdvert != null)             
+                    LoadAdvertMessage(_lastAdvert);
+            });
+
+            MailAdvert = new RelayCommand(() =>
+            {
+                
+            });
+
+            FavoriteAdvert = new RelayCommand(() =>
+            {
+                IsFavorite = ! IsFavorite;
+                if (_lastAdvert != null) _lastAdvert.IsFavorite = IsFavorite;
+            });
         }
 
-        async void LoadAdvert(AdvertShort advertShort)
+        ~PreviewViewModel()
+        {
+            MessagingCenter.Unsubscribe<View.PreviewPage, AdvertShort>(this, "LoadAdvertShort");
+        }
+
+        async void LoadAdvertMessage(AdvertShort advertShort)
         {
             if(advertShort == null)
                 throw new NullReferenceException("LoadAdvert => advertShort == null !");
@@ -185,7 +217,8 @@ namespace MRzeszowiak.ViewModel
 
             ErrorMessage = String.Empty;
             Activity = true;
-   
+            CopyAdverToViewModel(new Advert());
+
             var _advert = await _rzeszowiakRepository.GetAdvertAsync(advertShort);
                      
             if (_advert == null)
@@ -193,7 +226,6 @@ namespace MRzeszowiak.ViewModel
             else
                 CopyAdverToViewModel(_advert);
             Activity = false;
-            //Debug.Write(JsonConvert.SerializeObject(_advert));
         }
 
         void CopyAdverToViewModel(Advert advert)
@@ -212,16 +244,15 @@ namespace MRzeszowiak.ViewModel
             ImageURLsList.Clear();
             foreach (var item in advert.ImageURLsList)
                 ImageURLsList.Add(item);
+            IsFavorite = advert.IsFavorite;
 
+            _lastAdvert = advert;
         }
 
         // Create the OnPropertyChanged method to raise the event
         private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string name = "")
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
 

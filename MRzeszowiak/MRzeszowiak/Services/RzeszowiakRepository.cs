@@ -122,7 +122,7 @@ namespace MRzeszowiak.Services
             if (advertShort == null)
                 throw new NullReferenceException("advertShort == null");
 
-            var BodyResult = await GetWebPage(advertShort.URLPath);
+            var BodyResult = await GetWebPage(advertShort.URL);
             if(BodyResult.Length == 0)
             {
                 Debug.Write("GetAdvertAsync => BodyResult.Length == 0");
@@ -204,13 +204,14 @@ namespace MRzeszowiak.Services
                 DescriptionHTML = aDesc,
                 AdditionalData = additionalData,
                 ImageURLsList = pictureList,
+                URLPath = advertShort.URLPath,
             };
         }
 
-        public Task<Advert> GetAdvertAsync(int advertId, Action<string> userNotify = null)
-        {
-            return GetAdvertAsync(new AdvertShort() { AdverIDinRzeszowiak = advertId }, userNotify);
-        }
+        //public Task<Advert> GetAdvertAsync(int advertId, Action<string> userNotify = null)
+        //{
+        //    return GetAdvertAsync(new AdvertShort() { AdverIDinRzeszowiak = advertId }, userNotify);
+        //}
 
         protected async Task<StringBuilder> GetWebPage(string Url, Action<string> userNotify = null)
         {

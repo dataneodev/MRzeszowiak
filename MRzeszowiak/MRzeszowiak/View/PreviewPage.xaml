@@ -3,10 +3,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MRzeszowiak.View.PreviewPage"
              xmlns:forms="clr-namespace:CarouselView.FormsPlugin.Abstractions;assembly=CarouselView.FormsPlugin.Abstractions"
+             xmlns:ViewModel="clr-namespace:MRzeszowiak.ViewModel"
              xmlns:Extends="clr-namespace:MRzeszowiak.Extends"
              Title="Podgląd ogłoszenia"
              BindingContext="{Binding PreviewViewModel, Source={StaticResource Locator}}"
              x:Name="PreviewPageN">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <ViewModel:ImageFromFavorite x:Key="ImageFromFavorite" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <ContentPage.Content>
         <ScrollView>
         <StackLayout Orientation="Vertical">
@@ -80,15 +86,14 @@
                 <Frame CornerRadius="10" 
                        Margin="0" 
                        Padding="0"
-                       IsVisible="{Binding AddDataVisible}">
+                       IsVisible="{Binding AddDataVisible}">                   
                     <ListView x:Name="AddDataList"
+                              Grid.Row="0"
                                 ItemsSource="{Binding AdditionalData}"
                                 HasUnevenRows="True"
                                 HorizontalOptions="FillAndExpand"
                                 ItemTapped="AddDataList_ItemTapped"
-                                BindingContextChanged="AddDataList_BindingContextChanged"
-                                SizeChanged="AddDataList_BindingContextChanged"
-                                IsVisible="{Binding AddDataVisible}">
+                                IsVisible="{Binding AddDataVisible}"> 
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <ViewCell>
@@ -108,12 +113,29 @@
                 <Frame CornerRadius="10" 
                        Margin="0" 
                        Padding="0">
-                    <StackLayout Orientation="Horizontal">
-                            <Button Text="Odśwież"/>
-                            <Button Text="Strona"/>
-                            <Button Text="Wiadomość"/>
-                            <Button Text="Ulubiony"/>
-                        </StackLayout>
+                    <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand" Padding="4">
+                            <Button HeightRequest="44" 
+                                    WidthRequest="78"  
+                                    Image="refresh.png"  
+                                    BackgroundColor="#f4f4f4"
+                                    Command="{Binding RefreshAdvert}"
+                                    />
+                            <Button HeightRequest="44" 
+                                    WidthRequest="78"  
+                                    Image="internet.png" 
+                                    BackgroundColor="#f4f4f4"
+                                    Command="{Binding OpenAdvertPage}"/>
+                            <Button HeightRequest="44" 
+                                    WidthRequest="78"  
+                                    Image="mail.png" 
+                                    BackgroundColor="#f4f4f4"
+                                    Command="{Binding MailAdvert}"/>
+                            <Button HeightRequest="44" 
+                                    WidthRequest="78"  
+                                    Image="{Binding IsFavorite, Converter={StaticResource ImageFromFavorite}}" 
+                                    BackgroundColor="#f4f4f4"
+                                    Command="{Binding FavoriteAdvert}"/>
+                    </StackLayout>
                 </Frame>
                 <StackLayout Orientation="Horizontal">
                     <Label HorizontalTextAlignment="Start" HorizontalOptions="FillAndExpand">
@@ -135,7 +157,8 @@
                                     <Span Text="Wyświetleń: "
                                           FontSize="12"/>
                                     <Span Text="{Binding Views, Mode=OneWay}"
-                                      TextColor="Black"/>
+                                        TextColor="Black"
+                                        FontSize="12"/>
                                 </FormattedString.Spans>        
                         </FormattedString>        
                     </Label.FormattedText>            

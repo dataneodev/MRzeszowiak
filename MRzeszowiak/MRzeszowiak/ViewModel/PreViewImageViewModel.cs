@@ -20,18 +20,21 @@ namespace MRzeszowiak.ViewModel
             });  
         }
 
+        ~PreViewImageViewModel()
+        {
+            MessagingCenter.Unsubscribe<View.PreviewPage, IEnumerable<string>>(this, "ShowImagePreview");
+        }
+
         void LoadImage(IEnumerable<string> imageList)
         {
+            ImageURLsList.Clear();
             foreach (var item in imageList)
                 ImageURLsList.Add(item);
         }
 
         private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string name = "")
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
 }
