@@ -1,0 +1,68 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Windows.Input;
+using Xamarin.Forms;
+
+namespace MRzeszowiak.Behaviors
+{
+    public class InfiniteScroll : Behavior<ListView>
+    {
+        public static readonly BindableProperty LoadMoreCommandProperty = BindableProperty.Create("LoadMoreCommand", typeof(ICommand), typeof(InfiniteScroll), null);
+        public ICommand LoadMoreCommand
+        {
+            get
+            {
+                return (ICommand)GetValue(LoadMoreCommandProperty);
+            }
+            set
+            {
+                SetValue(LoadMoreCommandProperty, value);
+            }
+        }
+        public ListView AssociatedObject
+        {
+            get;
+            private set;
+        }
+        protected override void OnAttachedTo(ListView bindable)
+        {
+            base.OnAttachedTo(bindable);
+            AssociatedObject = bindable;
+            bindable.BindingContextChanged += Bindable_BindingContextChanged;
+            bindable.ItemAppearing += InfiniteListView_ItemAppearing;
+        }
+        private void Bindable_BindingContextChanged(object sender, EventArgs e)
+        {
+            OnBindingContextChanged();
+        }
+        protected override void OnBindingContextChanged()
+        {
+            base.OnBindingContextChanged();
+            BindingContext = AssociatedObject.BindingContext;
+        }
+        protected override void OnDetachingFrom(ListView bindable)
+        {
+            base.OnDetachingFrom(bindable);
+            bindable.BindingContextChanged -= Bindable_BindingContextChanged;
+            bindable.ItemAppearing -= InfiniteListView_ItemAppearing;
+        }
+        void InfiniteListView_ItemAppearing(object sender, ItemVisibilityEventArgs e)
+        {
+            byte visibleLoad = 5;
+            var items = AssociatedObject.ItemsSource as IList;
+            if ((items == null) || (items?.Count ?? 0) < visibleLoad || (e?.Item ?? null) == null)
+            {
+                return;
+            }
+
+            if (items.IndexOf(e?.Item ?? null) >= items.Count - (visibleLoad + 1))
+            {
+                if (LoadMoreCommand != null && LoadMoreCommand.CanExecute(null)) LoadMoreCommand.Execute(null);
+            }
+        }
+    }
+}

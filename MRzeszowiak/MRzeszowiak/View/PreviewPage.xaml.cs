@@ -19,26 +19,6 @@ namespace MRzeszowiak.View
 		{
 			InitializeComponent ();
             MessagingCenter.Send<View.PreviewPage, AdvertShort>(this, "LoadAdvertShort", advertShort);
-
-            AddDataList.ItemAppearing += (object sender, ItemVisibilityEventArgs e) =>
-            {
-                Debug.Write("New hight: ////////////////////////");
-                try
-                    {
-                        //if (AddDataList.ItemsSource != null)
-                        {
-                            var slv = (sender as ListView);
-                            var count = slv?.ItemsSource?.GetCount();
-                            slv.HeightRequest = count * slv.RowHeight ?? 40;
-                            Debug.Write("New hight: " + slv.HeightRequest);
-                        }
-                    }
-                    catch (Exception)
-                    {
-
-                    }
-                
-            };
         }
 
         private void AddDataList_ItemTapped(object sender, ItemTappedEventArgs e)
@@ -55,6 +35,13 @@ namespace MRzeszowiak.View
                 MessagingCenter.Send<View.PreviewPage, IEnumerable<string>>(this, "ShowImagePreview", 
                     CarouselViewImageList?.ItemsSource?.Cast<string>());
             }
+        }
+
+        private void AddDataList_ItemAppearing(object sender, ItemVisibilityEventArgs e)
+        {
+            var slv = (sender as ListView);
+            var count = slv?.ItemsSource?.GetCount();
+            slv.HeightRequest = (count ?? 0) * (slv.RowHeight + 2) + 14;
         }
     }
 }

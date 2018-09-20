@@ -12,15 +12,17 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)View\App.xaml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Behaviors\InfiniteScrolling.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\ImageFit.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\MultiLineLabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\StringBuilderExtension.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\StringExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Advert.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\AdvertSearch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\AdvertSearchResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\AdvertShort.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Category.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\IRzeszowiakRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\IRzeszowiak.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\ISetting.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\RzeszowiakRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\SettingRepository.cs" />

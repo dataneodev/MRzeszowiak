@@ -9,7 +9,7 @@ using MRzeszowiak.Extends;
 using MRzeszowiak.Model;
 namespace MRzeszowiak.Services
 {
-    class RzeszowiakRepository : IRzeszowiakRepository
+    class RzeszowiakRepository : IRzeszowiak
     {
         protected const string RZESZOWIAK_BASE_URL = "http://www.rzeszowiak.pl/";
         protected IList<Category> _lastCategoryList = new List<Category>();
@@ -18,17 +18,26 @@ namespace MRzeszowiak.Services
         {
             return new Task<IList<Category>>(() => new List<Category>() { new Category() });
         }
-        public async Task<IList<AdvertShort>> GetAdvertListAsync(AdvertSearch searchParams, Action<string> userNotify = null)
+        public async Task<AdvertSearchResult> GetAdvertListAsync(AdvertSearch searchParams, Action<string> userNotify = null)
         {
             Debug.Write("GetAdvertListAsync(AdvertSearch searchParams)");
             if (searchParams == null) 
                 throw new NullReferenceException("AdvertSearch is null");
 
-            var resultList = new List<AdvertShort>();
+            var resultList = new AdvertSearchResult()
+            {
+                Correct = false,
+                ErrorMessage = String.Empty,
+                Page = 1,
+                AllPage = 1,
+                AdvertShortsList = new List<AdvertShort>(),
+            };
+
             var urlRequest = searchParams.GetURL;
             if (urlRequest.Length == 0)
             {
                 Debug.Write("GetAdvertListAsync(AdvertSearch searchParams) => urlRequest.Length == 0");
+                resultList.ErrorMessage = "Błędny URL";
                 return resultList;
             }
 
@@ -104,14 +113,43 @@ namespace MRzeszowiak.Services
                     rowEven = !rowEven;
                 } while (promoPos != -1 || normalPos != -1);
             }
-            var responseString =  await GetWebPage(searchParams.GetURL, userNotify);
+            var responseString =  await GetWebPage(urlRequest, userNotify);
+            if(responseString.Length == 0)
+            {
+                resultList.ErrorMessage = "Sprawdź połączenie internetowe i spróbuj ponownie.";
+                responseString.Clear();
+                return resultList;
+            }
             foreach (var item in ProcessResponse(responseString))
-                resultList.Add(item);
+                resultList.AdvertShortsList.Add(item);
+
+            if (responseString.IndexOf("<div id=\"oDnns\">Strona  ", 0, true) != -1)
+            {
+                responseString.CutFoward("<div id=\"oDnns\">Strona  ");
+                string aPage = responseString.ToString(0, responseString.IndexOf("z", 0, true)).Trim();
+                if (!Int32.TryParse(aPage, out int aPageInt))
+                {
+                    Debug.Write("GetAdvertListAsync(AdvertSearch searchParams) => !Int32.TryParse(aPage, out int aPageInt)");
+                    aPageInt = 0;
+                }
+                resultList.Page = aPageInt;
+                responseString.CutFoward("z");
+
+                string aPageAll = responseString.ToString(0, responseString.IndexOf("</div>", 0, true)).Trim();
+                if (!Int32.TryParse(aPageAll, out int aPageAllInt))
+                {
+                    Debug.Write("GetAdvertListAsync(AdvertSearch searchParams) => !Int32.TryParse(aPageAll, out int aPageAllInt)");
+                    aPageAllInt = 0;
+                }
+                resultList.AllPage = aPageAllInt;
+            }
+
             responseString.Clear();
+            resultList.Correct = true;
             return resultList;
         }
 
-        public Task<IList<AdvertShort>> GetAdvertListAsync(Action<string> userNotify = null)
+        public Task<AdvertSearchResult> GetAdvertListAsync(Action<string> userNotify = null)
         {
             return GetAdvertListAsync(new AdvertSearch(), userNotify);
         }

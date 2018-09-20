@@ -88,23 +88,30 @@
                        Padding="0"
                        IsVisible="{Binding AddDataVisible}">                   
                     <ListView x:Name="AddDataList"
-                              Grid.Row="0"
+                                Grid.Row="0"
                                 ItemsSource="{Binding AdditionalData}"
                                 HasUnevenRows="True"
+                                RowHeight="26"
                                 HorizontalOptions="FillAndExpand"
                                 ItemTapped="AddDataList_ItemTapped"
+                                ItemAppearing="AddDataList_ItemAppearing"
                                 IsVisible="{Binding AddDataVisible}"> 
+                        <ListView.Header>
+                            <Label Text="Dane dodatkowe:"
+                                   FontSize="10"
+                                   Margin="8,0,8,0"
+                                   />
+                        </ListView.Header>
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <ViewCell>
                                     <StackLayout HorizontalOptions="FillAndExpand"
                                                  Orientation="Horizontal" 
-                                                 Margin="8,5,8,5"
+                                                 Margin="8,2,8,2"
                                                  Padding="2">
                                             <Label Text="{Binding Key}" TextColor="Black"/>
                                             <Label Text="{Binding Value}" TextColor="Black"/>
-
-                                    </StackLayout>
+                                        </StackLayout>
                                 </ViewCell>
                             </DataTemplate>
                         </ListView.ItemTemplate>
@@ -118,8 +125,7 @@
                                     WidthRequest="78"  
                                     Image="refresh.png"  
                                     BackgroundColor="#f4f4f4"
-                                    Command="{Binding RefreshAdvert}"
-                                    />
+                                    Command="{Binding RefreshAdvert}"/>
                             <Button HeightRequest="44" 
                                     WidthRequest="78"  
                                     Image="internet.png" 

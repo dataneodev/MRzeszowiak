@@ -17,7 +17,7 @@ namespace MRzeszowiak.ViewModel
     class PreviewViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        protected IRzeszowiakRepository _rzeszowiakRepository;
+        protected IRzeszowiak _rzeszowiakRepository;
 
         public bool ActivityForm => !Activity && !ErrorPanelVisible ? true : false;
     
@@ -169,7 +169,7 @@ namespace MRzeszowiak.ViewModel
         public ICommand MailAdvert { get; private set; }
         public ICommand FavoriteAdvert { get; private set; }
 
-        public PreviewViewModel(IRzeszowiakRepository RzeszowiakRepository)
+        public PreviewViewModel(IRzeszowiak RzeszowiakRepository)
         {
             _rzeszowiakRepository = RzeszowiakRepository ?? throw new NullReferenceException("ListViewModel => IRzeszowiakRepository RzeszowiakRepository == null !");
             ImageURLsList.CollectionChanged += (s, e) => { OnPropertyChanged("ImageVisible"); };

@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MRzeszowiak.View.ListPage"
              xmlns:ViewModel="clr-namespace:MRzeszowiak.ViewModel"
+             xmlns:Behaviors="clr-namespace:MRzeszowiak.Behaviors"
              xmlns:Extends="clr-namespace:MRzeszowiak.Extends"
              Title="Lista ogłoszeń"
              x:Name="ListPageXaml"
@@ -17,6 +18,12 @@
             <ActivityIndicator IsRunning="{Binding Activity}" 
                                IsVisible="{Binding Activity}" 
                                VerticalOptions="CenterAndExpand"/>
+            <Label IsVisible="{Binding ErrorPanelVisible}" 
+                       Text="{Binding ErrorMessage}" 
+                       FontSize="Medium" 
+                       VerticalOptions="CenterAndExpand"
+                       HorizontalOptions="FillAndExpand"
+                       HorizontalTextAlignment="Center"/>
             <ListView x:Name="AdvertListView"
                       ItemsSource="{Binding AdvertShortList}"
                       HasUnevenRows="True"
@@ -25,6 +32,9 @@
                       ItemTapped="AdvertListView_ItemTapped"
                       SeparatorVisibility="None"
                       IsVisible="{Binding Source={x:Reference ListPageXaml}, Path=BindingContext.ActivityListView}">
+             <ListView.Behaviors>
+                <Behaviors:InfiniteScroll LoadMoreCommand="{Binding LoadNextAdvert}" />
+            </ListView.Behaviors>
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
@@ -109,6 +119,12 @@
                         </ViewCell>
                     </DataTemplate>
                 </ListView.ItemTemplate>
+                <ListView.Footer>
+                    <ActivityIndicator IsRunning="{Binding FotterActivity}"
+                                       IsEnabled="{Binding FotterActivity}"
+                                       IsVisible="{Binding FotterActivity}"
+                                       HeightRequest="32"/>
+                </ListView.Footer>
             </ListView>
             <Button Command="{Binding LoadTest}" Text="Load" IsVisible="False"/>
         </StackLayout>
