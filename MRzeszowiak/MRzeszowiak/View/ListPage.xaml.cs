@@ -16,6 +16,7 @@ namespace MRzeszowiak.View
 		public ListPage ()
 		{
 			InitializeComponent ();
+            NavigationPage.SetHasNavigationBar(this, false);
             MessagingCenter.Send<View.ListPage>(this, "LoadLastOnStartup");
         }
 
@@ -24,7 +25,7 @@ namespace MRzeszowiak.View
             ((ListView)sender).SelectedItem = null;
             var advertShort = e.Item as AdvertShort;
             if(advertShort != null)
-                await Navigation.PushModalAsync(new PreviewPage(advertShort), false);
+                await Navigation.PushAsync(new PreviewPage(advertShort), false);
         }
     }
 }

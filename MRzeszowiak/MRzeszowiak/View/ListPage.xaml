@@ -5,6 +5,7 @@
              xmlns:ViewModel="clr-namespace:MRzeszowiak.ViewModel"
              xmlns:Behaviors="clr-namespace:MRzeszowiak.Behaviors"
              xmlns:Extends="clr-namespace:MRzeszowiak.Extends"
+             ControlTemplate="{StaticResource ListPageControlTemplate}"
              Title="Lista ogłoszeń"
              x:Name="ListPageXaml"
              BindingContext="{Binding ListViewModel, Source={StaticResource Locator}}">
@@ -32,9 +33,9 @@
                       ItemTapped="AdvertListView_ItemTapped"
                       SeparatorVisibility="None"
                       IsVisible="{Binding Source={x:Reference ListPageXaml}, Path=BindingContext.ActivityListView}">
-             <ListView.Behaviors>
-                <Behaviors:InfiniteScroll LoadMoreCommand="{Binding LoadNextAdvert}" />
-            </ListView.Behaviors>
+                <ListView.Behaviors>
+                    <Behaviors:InfiniteScroll LoadMoreCommand="{Binding LoadNextAdvert}" />
+                </ListView.Behaviors>
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
@@ -126,7 +127,6 @@
                                        HeightRequest="32"/>
                 </ListView.Footer>
             </ListView>
-            <Button Command="{Binding LoadTest}" Text="Load" IsVisible="False"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

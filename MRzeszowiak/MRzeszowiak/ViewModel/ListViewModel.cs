@@ -27,9 +27,13 @@ namespace MRzeszowiak.ViewModel
             get { return activity; }
             set
             {
+                bool changed = activity == value ? false : true;
                 activity = value;
-                OnPropertyChanged();
-                OnPropertyChanged("ActivityListView");
+                if (changed)
+                {
+                    OnPropertyChanged();
+                    OnPropertyChanged("ActivityListView");
+                }   
             }
         }
 
@@ -42,19 +46,10 @@ namespace MRzeszowiak.ViewModel
             }
             set
             {
+                bool changed = fotterActivity == value ? false : true;
                 fotterActivity = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private bool loadingNexPage;
-        public bool LoadingNextPage
-        {
-            get { return loadingNexPage; }
-            set
-            {
-                loadingNexPage = value;
-                OnPropertyChanged();
+                if (changed)
+                    OnPropertyChanged();
             }
         }
 
@@ -64,11 +59,15 @@ namespace MRzeszowiak.ViewModel
             get { return errorMessage; }
             set
             {
+                bool changed = errorMessage == value ? false : true;
                 errorMessage = value;
-                OnPropertyChanged();
-                OnPropertyChanged("ErrorPanelVisible");
-                OnPropertyChanged("Activity");
-                OnPropertyChanged("ActivityListView");
+                if (changed)
+                {
+                    OnPropertyChanged();
+                    OnPropertyChanged("ErrorPanelVisible");
+                    OnPropertyChanged("Activity");
+                    OnPropertyChanged("ActivityListView");
+                }
             }
         }
         public bool ErrorPanelVisible => (errorMessage?.Length ?? 0) > 0 ? true : false;
@@ -83,18 +82,18 @@ namespace MRzeszowiak.ViewModel
                 LoadLastOnStartup();
             });
 
-            LoadNextAdvert = new RelayCommand(()=>LoadNextItem());
+            LoadNextAdvert = new RelayCommand(async ()=> await LoadNextItem());
             Activity = true;
         }
 
         // load last add on startup
         protected void LoadLastOnStartup()
         {
-            Debug.Write("LoadLastOnStartup");
+            //Debug.Write("LoadLastOnStartup");
             SearchExecute(new AdvertSearch(), false);
         }
 
-        protected void LoadNextItem()
+        protected async Task<bool> LoadNextItem()
         {
             Debug.Write("LoadNextItem");
             int setting = 100;
@@ -103,17 +102,18 @@ namespace MRzeszowiak.ViewModel
                 !Activity && !FotterActivity )
             {
                 _lastAdvertSearch.RequestPage = ++_lastAdvertSearchResult.Page;
-                SearchExecute(_lastAdvertSearch, true);
+                return await SearchExecute(_lastAdvertSearch, true).ConfigureAwait(false);
             }
+            return false;
         }
 
-        protected async void SearchExecute(AdvertSearch advertSearch, bool addLoad = false)
+        protected async Task<bool> SearchExecute(AdvertSearch advertSearch, bool addLoad = false)
         {
             Debug.Write("SearchExecute");
             if (advertSearch == null)
             {
                 Debug.Write("SearchExecute => advertSearch == null");
-                return;
+                return false;
             }
 
             _lastAdvertSearch = advertSearch;
@@ -143,11 +143,12 @@ namespace MRzeszowiak.ViewModel
                 foreach (var item in lastAddAdvert.AdvertShortsList)
                 {
                     AdvertShortList.Add(item);
-                    await Task.Delay(100);
-                }     
+                    await Task.Delay(50);
+                }
             }
             Activity = false;
             FotterActivity = false;
+            return true;
         }
 
         // Create the OnPropertyChanged method to raise the event

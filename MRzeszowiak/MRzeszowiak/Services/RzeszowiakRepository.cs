@@ -258,7 +258,7 @@ namespace MRzeszowiak.Services
             {
                 try
                 {
-                    using (HttpResponseMessage response = await client.GetAsync(Url))
+                    using (HttpResponseMessage response = await client.GetAsync(Url).ConfigureAwait(false))
                     {
                         if (!response.IsSuccessStatusCode)
                         {

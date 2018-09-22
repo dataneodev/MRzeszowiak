@@ -52,7 +52,7 @@ namespace MRzeszowiak.Behaviors
         }
         void InfiniteListView_ItemAppearing(object sender, ItemVisibilityEventArgs e)
         {
-            byte visibleLoad = 5;
+            byte visibleLoad = 2;
             var items = AssociatedObject.ItemsSource as IList;
             if ((items == null) || (items?.Count ?? 0) < visibleLoad || (e?.Item ?? null) == null)
             {

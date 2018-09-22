@@ -11,8 +11,6 @@ namespace MRzeszowiak
         public static Color highlightRow = Color.FromHex("#f4f4f4");
         public static Color normalRow = Color.FromHex("#FFFFFF0");
 
-        public static INavigation GlobalNavigation { get; private set; }
-
         public App ()
 		{
             #if DEBUG
@@ -22,7 +20,12 @@ namespace MRzeszowiak
             MainPage = new MenuPage();
         }
 
-		protected override void OnStart ()
+        public async void OnBackButtonPressed(object sender, EventArgs e)
+        {
+            //await Navigation.PopAsync();
+        }
+
+        protected override void OnStart ()
 		{
 			// Handle when your app starts
 		}

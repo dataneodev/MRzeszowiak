@@ -18,6 +18,7 @@ namespace MRzeszowiak.View
 		public PreviewPage (AdvertShort advertShort)
 		{
 			InitializeComponent ();
+            NavigationPage.SetHasNavigationBar(this, false);
             MessagingCenter.Send<View.PreviewPage, AdvertShort>(this, "LoadAdvertShort", advertShort);
         }
 
@@ -31,7 +32,7 @@ namespace MRzeszowiak.View
             Debug.Write("TapGestureRecognizer_Tapped");
             if(CarouselViewImageList?.ItemsSource?.GetCount() > 0)
             {
-                await Navigation.PushModalAsync(new PreviewImagePage(), false);
+                await Navigation.PushAsync(new PreviewImagePage(), false);
                 MessagingCenter.Send<View.PreviewPage, IEnumerable<string>>(this, "ShowImagePreview", 
                     CarouselViewImageList?.ItemsSource?.Cast<string>());
             }
