@@ -27,7 +27,7 @@
                        HorizontalOptions="FillAndExpand"
                        HorizontalTextAlignment="Center"/>
                 <AbsoluteLayout HeightRequest="{Binding ImageVisible, Converter={StaticResource AbsHeight}}"
-                                HorizontalOptions="FillAndExpand" 
+                                HorizontalOptions="FillAndExpand"
                                 Padding="0">                    
                     <forms:CarouselViewControl ItemsSource="{Binding ImageURLsList}"
                                        IsVisible="{Binding ImageVisible}"
@@ -35,16 +35,18 @@
                                        ShowArrows="True"
                                        ShowIndicators="True"
                                        IsSwipeEnabled="True"
+                                       HorizontalOptions="FillAndExpand"
+                                       HeightRequest="220"
                                        AbsoluteLayout.LayoutBounds="0,0,1,220"
                                        AbsoluteLayout.LayoutFlags="WidthProportional"       
                                        x:Name="CarouselViewImageList">                    
                     <forms:CarouselViewControl.ItemTemplate>
                     <DataTemplate>
-                        <ScrollView Orientation="Horizontal">
+                        <ScrollView Orientation="Horizontal" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
                             <Extends:ImageFit Source="{Binding .}" 
                                VerticalOptions="Center"
-                               HorizontalOptions="CenterAndExpand"
-                               Aspect="AspectFit"
+                               HorizontalOptions="FillAndExpand"              
+                               Aspect="AspectFill"
                                x:Name="image">
                                 <Extends:ImageFit.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped" NumberOfTapsRequired="1" />
