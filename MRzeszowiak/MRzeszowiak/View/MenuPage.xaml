@@ -4,28 +4,38 @@
                   xmlns:local="clr-namespace:MRzeszowiak.View"
                   x:Class="MRzeszowiak.View.MenuPage"
                   xmlns:View="clr-namespace:MRzeszowiak.View"
-                  Title="Menu">
+                  Title="Menu"
+                  BackgroundColor="#f4f4f4">
     <MasterDetailPage.Master>
         <ContentPage Title="Menu">
-            <StackLayout Orientation="Vertical" Margin="10">
-                <ListView x:Name="listView" x:FieldModifier="public">
+            <StackLayout Orientation="Vertical" 
+                         Margin="0" 
+                         BackgroundColor="#f4f4f4"
+                         HorizontalOptions="FillAndExpand"
+                         VerticalOptions="FillAndExpand">
+            <Image Source="logo.png"  HorizontalOptions="StartAndExpand"></Image>
+            <ListView x:Name="listView" 
+                          x:FieldModifier="public"
+                          ItemTapped="listView_ItemTapped">
                     <ListView.ItemsSource>
                         <x:Array Type="{x:Type local:MasterPageItem}">
-                            <local:MasterPageItem Title="Contacts" IconSource="contacts.png" TargetType="{x:Type local:SettingPage}" />
-                            <local:MasterPageItem Title="TodoList" IconSource="todo.png" TargetType="{x:Type local:SettingPage}" />
-                            <local:MasterPageItem Title="Reminders" IconSource="reminders.png" TargetType="{x:Type local:SettingPage}" />
+                            <local:MasterPageItem Title="Kategorie" IconSource="menu_category.png" TargetType="{x:Type local:SettingPage}" />
+                            <local:MasterPageItem Title="Ulubione wyszukiwania" IconSource="menu_favsearch.png" TargetType="{x:Type local:SettingPage}" />
+                            <local:MasterPageItem Title="Ulubione ogłoszenia" IconSource="menu_favadvert.png" TargetType="{x:Type local:SettingPage}" />
+                            <local:MasterPageItem Title="Ustawienia" IconSource="menu_setting.png" TargetType="{x:Type local:SettingPage}" />
+                            <local:MasterPageItem Title="O aplikacji" IconSource="menu_about.png" TargetType="{x:Type local:AboutPage}" />
                         </x:Array>
                     </ListView.ItemsSource>
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
-                                <Grid Padding="5,10">
+                                <Grid Padding="10">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="30"/>
+                                        <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <Image Source="{Binding IconSource}" />
-                                    <Label Grid.Column="1" Text="{Binding Title}" />
+                                    <Image Source="{Binding IconSource}"/>
+                                    <Label Grid.Column="1" Text="{Binding Title}" TextColor="Black"/>
                                 </Grid>
                             </ViewCell>
                         </DataTemplate>

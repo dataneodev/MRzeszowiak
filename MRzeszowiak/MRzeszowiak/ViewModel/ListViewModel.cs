@@ -72,6 +72,7 @@ namespace MRzeszowiak.ViewModel
         }
         public bool ErrorPanelVisible => (errorMessage?.Length ?? 0) > 0 ? true : false;
         public ICommand LoadNextAdvert { get; private set; }
+        public ICommand ListViewItemTapped { get; private set; }
         protected AdvertSearchResult _lastAdvertSearchResult;
         protected AdvertSearch _lastAdvertSearch;
 
@@ -82,15 +83,57 @@ namespace MRzeszowiak.ViewModel
                 LoadLastOnStartup();
             });
 
+            MessagingCenter.Subscribe<View.ListPage>(this, "RefreshList", (sender) => {
+                RefreshList();
+            });
+
+            MessagingCenter.Subscribe<View.PreviewPage>(this, "PreViewFowardRequest", (sender) =>
+            {
+
+            });
+
+            MessagingCenter.Subscribe<View.PreviewPage>(this, "PreViewBackRequest", (sender) =>
+            {
+
+            });
+
             LoadNextAdvert = new RelayCommand(async ()=> await LoadNextItem());
+            ListViewItemTapped = new RelayCommand<AdvertShort>((item) => ListViewTapped(item));
             Activity = true;
         }
 
+        protected async void ListViewTapped(AdvertShort advertShort)
+        {
+
+        }
+
+        protected void LoadPreviewFoward(AdvertShort advertShort)
+        {
+            if(advertShort == null)
+            {
+                Debug.Write("LoadPreviewFoward => advertShort == null");
+                return;
+            }
+
+            var index = AdvertShortList?.IndexOf(advertShort) ?? -1;
+            if( index != -1 && index < (AdvertShortList?.Count ?? 0) - 1)
+            {
+
+            }
+        }
+
+        // refreshing list
+        protected async void RefreshList()
+        {
+            if(_lastAdvertSearch != null)
+                await SearchExecute(_lastAdvertSearch, false);
+        }
+
         // load last add on startup
-        protected void LoadLastOnStartup()
+        protected async void LoadLastOnStartup()
         {
             //Debug.Write("LoadLastOnStartup");
-            SearchExecute(new AdvertSearch(), false);
+            await SearchExecute(new AdvertSearch(), false);
         }
 
         protected async Task<bool> LoadNextItem()
@@ -140,8 +183,14 @@ namespace MRzeszowiak.ViewModel
             else
             {
                 _lastAdvertSearchResult = lastAddAdvert;
+
+                var adverId = new List<int>();
+                foreach (var item in AdvertShortList)
+                    adverId.Add(item.AdverIDinRzeszowiak);
+
                 foreach (var item in lastAddAdvert.AdvertShortsList)
                 {
+                    if (adverId.IndexOf(item.AdverIDinRzeszowiak) != -1) continue;
                     AdvertShortList.Add(item);
                     await Task.Delay(50);
                 }

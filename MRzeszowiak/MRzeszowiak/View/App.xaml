@@ -4,6 +4,20 @@
              x:Class="MRzeszowiak.App">
     <Application.Resources>
         <ResourceDictionary>
+            <Style x:Key="backGroundColor" TargetType="Button">
+                <Setter Property="BackgroundColor">
+                    <Setter.Value>
+                        <OnPlatform x:TypeArguments="Color" Android="#2196F3"/>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="backGroundColorS" TargetType="Grid">
+                <Setter Property="BackgroundColor">
+                    <Setter.Value>
+                        <OnPlatform x:TypeArguments="Color" Android="#2196F3"/>
+                    </Setter.Value>
+                </Setter>
+            </Style>
             <vm:ViewModelLocator x:Key="Locator" xmlns:vm="clr-namespace:MRzeszowiak.ViewModel" />
             <ControlTemplate x:Key="ListPageControlTemplate">
                 <Grid>
@@ -29,7 +43,7 @@
                     <!-- My header content to make my app the prettiest. -->
                         <Image Source="Icon.png" WidthRequest="30" HeightRequest="30">
                             <Image.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnBackButtonPressed" />
+                                <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped" />
                             </Image.GestureRecognizers>
                         </Image>
                     </StackLayout>

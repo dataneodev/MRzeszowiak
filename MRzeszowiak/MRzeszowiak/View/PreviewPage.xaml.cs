@@ -44,5 +44,30 @@ namespace MRzeszowiak.View
             var count = slv?.ItemsSource?.GetCount();
             slv.HeightRequest = (count ?? 0) * (slv.RowHeight + 2) + 14;
         }
+
+        private void PanGestureRecognizer_PanUpdated(object sender, PanUpdatedEventArgs e)
+        {
+            switch (e.StatusType)
+            {
+                case GestureStatus.Running:
+                    if(e.TotalX > (App.DisplayScreenWidth  / 2))
+                    {
+                        Debug.Write("PreviewPage -> ładowanie do przodu");
+                        MessagingCenter.Send<View.PreviewPage>(this, "PreViewFowardRequest");
+                    }
+
+                    if (e.TotalX > (App.DisplayScreenWidth / 2))
+                    {
+                        Debug.Write("PreviewPage -> ładowanie do tyłu");
+                        MessagingCenter.Send<View.PreviewPage>(this, "PreViewBackRequest");
+                    }
+                    break;
+            }
+        }
+
+        private async void BackButton_Clicked(object sender, EventArgs e)
+        {
+            await Navigation.PopAsync();
+        }
     }
 }

@@ -10,6 +10,9 @@ namespace MRzeszowiak
 	{
         public static Color highlightRow = Color.FromHex("#f4f4f4");
         public static Color normalRow = Color.FromHex("#FFFFFF0");
+        public static double DisplayScreenWidth = 0f;
+        public static double DisplayScreenHeight = 0f;
+        public static double DisplayScaleFactor = 0f;
 
         public App ()
 		{
@@ -18,11 +21,6 @@ namespace MRzeszowiak
             #endif
 			InitializeComponent();
             MainPage = new MenuPage();
-        }
-
-        public async void OnBackButtonPressed(object sender, EventArgs e)
-        {
-            //await Navigation.PopAsync();
         }
 
         protected override void OnStart ()
@@ -39,5 +37,10 @@ namespace MRzeszowiak
 		{
 			// Handle when your app resumes
 		}
-	}
+
+        private void TapGestureRecognizer_Tapped(object sender, EventArgs e)
+        {
+
+        }
+    }
 }

@@ -16,7 +16,25 @@ namespace MRzeszowiak.View
 		{
             InitializeComponent();
         }
-	}
+
+        private async void listView_ItemTapped(object sender, ItemTappedEventArgs e)
+        {
+            ((ListView)sender).SelectedItem = null;
+            var item = e.Item as MasterPageItem;
+
+            if(item?.TargetType == typeof(SettingPage))
+            {
+                await (Detail as NavigationPage)?.PushAsync(new SettingPage(), false);
+            }
+
+            if (item?.TargetType == typeof(AboutPage))
+            {
+                await (Detail as NavigationPage)?.PushAsync(new AboutPage(), false);
+            }
+
+            IsPresented = false;
+        }
+    }
 
     public class MasterPageItem
     {

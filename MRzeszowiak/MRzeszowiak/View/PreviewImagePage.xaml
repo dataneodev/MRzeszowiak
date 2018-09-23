@@ -7,23 +7,35 @@
              BackgroundColor="Black"
              x:Name="PreViewImagePageN">
     <ContentPage.Content>
-        <ScrollView HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-            <forms:CarouselViewControl ItemsSource="{Binding ImageURLsList}"    
+        <AbsoluteLayout HorizontalOptions="FillAndExpand" 
+                        VerticalOptions="FillAndExpand"
+                        Padding="0">
+            <ScrollView AbsoluteLayout.LayoutFlags="SizeProportional" 
+                        AbsoluteLayout.LayoutBounds="0,0,1,1">
+                <forms:CarouselViewControl ItemsSource="{Binding ImageURLsList}"    
                                        VerticalOptions="FillAndExpand"
                                        HorizontalOptions="FillAndExpand"
                                        ShowArrows="True"
                                        ShowIndicators="True"
                                        IsSwipeEnabled="True">
-                <forms:CarouselViewControl.ItemTemplate>
-                    <DataTemplate>
-                        <Image Source="{Binding .}" 
+                    <forms:CarouselViewControl.ItemTemplate>
+                        <DataTemplate>
+                            <Image Source="{Binding .}" 
                                VerticalOptions="FillAndExpand"           
                                HorizontalOptions="FillAndExpand"
                                Aspect="AspectFit" >
-                        </Image>
-                    </DataTemplate>
-                </forms:CarouselViewControl.ItemTemplate>
-            </forms:CarouselViewControl>
-        </ScrollView>
+                            </Image>
+                        </DataTemplate>
+                    </forms:CarouselViewControl.ItemTemplate>
+                </forms:CarouselViewControl>
+            </ScrollView>
+            <Button Image="back.png"
+                        x:Name="BackButton"
+                        Text="" 
+                        AbsoluteLayout.LayoutBounds="10,10,44,32"
+                        AbsoluteLayout.LayoutFlags="None"
+                        BackgroundColor="#50e2e2e2"
+                        Clicked="BackButton_Clicked"/>
+        </AbsoluteLayout>
     </ContentPage.Content>
 </ContentPage>

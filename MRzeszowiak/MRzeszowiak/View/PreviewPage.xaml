@@ -11,12 +11,13 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <ViewModel:ImageFromFavorite x:Key="ImageFromFavorite" />
+            <ViewModel:AbsHeight x:Key="AbsHeight" />
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Content>
-        <ScrollView>
-        <StackLayout Orientation="Vertical">
-            <ActivityIndicator VerticalOptions="CenterAndExpand" 
+        <ScrollView Orientation="Vertical">
+            <StackLayout Orientation="Vertical" CompressedLayout.IsHeadless="True">
+                <ActivityIndicator VerticalOptions="CenterAndExpand" 
                                IsRunning="{Binding Activity}"
                                IsVisible="{Binding Activity}"/>
                 <Label IsVisible="{Binding ErrorPanelVisible}" 
@@ -25,21 +26,24 @@
                        VerticalOptions="CenterAndExpand"
                        HorizontalOptions="FillAndExpand"
                        HorizontalTextAlignment="Center"/>
-                <forms:CarouselViewControl ItemsSource="{Binding ImageURLsList}"
+                <AbsoluteLayout HeightRequest="{Binding ImageVisible, Converter={StaticResource AbsHeight}}"
+                                HorizontalOptions="FillAndExpand" 
+                                Padding="0">                    
+                    <forms:CarouselViewControl ItemsSource="{Binding ImageURLsList}"
                                        IsVisible="{Binding ImageVisible}"
-                                       IsEnabled="{Binding ImageVisible}"               
-                                       HeightRequest="220"
-                                       HorizontalOptions="FillAndExpand"
+                                       IsEnabled="{Binding ImageVisible}"              
                                        ShowArrows="True"
                                        ShowIndicators="True"
                                        IsSwipeEnabled="True"
+                                       AbsoluteLayout.LayoutBounds="0,0,1,220"
+                                       AbsoluteLayout.LayoutFlags="WidthProportional"       
                                        x:Name="CarouselViewImageList">                    
                     <forms:CarouselViewControl.ItemTemplate>
                     <DataTemplate>
-                        <ScrollView>
+                        <ScrollView Orientation="Horizontal">
                             <Extends:ImageFit Source="{Binding .}" 
                                VerticalOptions="Center"
-                               HorizontalOptions="FillAndExpand"
+                               HorizontalOptions="CenterAndExpand"
                                Aspect="AspectFit"
                                x:Name="image">
                                 <Extends:ImageFit.GestureRecognizers>
@@ -48,9 +52,17 @@
                             </Extends:ImageFit>
                         </ScrollView>
                     </DataTemplate>
-                </forms:CarouselViewControl.ItemTemplate>
-            </forms:CarouselViewControl>
-            
+                    </forms:CarouselViewControl.ItemTemplate>
+                </forms:CarouselViewControl>
+                <Button Image="back.png"
+                        x:Name="BackButton"
+                        Text="" 
+                        IsVisible="{Binding ActivityForm}"
+                        AbsoluteLayout.LayoutBounds="10,10,44,32"
+                        AbsoluteLayout.LayoutFlags="None"
+                        BackgroundColor="#50e2e2e2"
+                        Clicked="BackButton_Clicked"/>
+                </AbsoluteLayout>
             <StackLayout Orientation="Vertical" 
                          IsVisible="{Binding ActivityForm}"
                          Margin="10,0,10,0">
@@ -170,18 +182,7 @@
                     </Label.FormattedText>            
                     </Label>
                 </StackLayout>
-
-                    <!--<WebView HorizontalOptions="FillAndExpand" 
-                         VerticalOptions="FillAndExpand"
-                         
-                         BackgroundColor="{Binding Source={x:Reference PreviewPageN}, Path=BackgroundColor}">
-                    <WebView.Source>
-                        <HtmlWebViewSource Html="{Binding _advert.DescriptionHTML}"/>
-                    </WebView.Source>
-                </WebView>-->
-                
             </StackLayout>
-            
         </StackLayout>
         </ScrollView>
     </ContentPage.Content>
