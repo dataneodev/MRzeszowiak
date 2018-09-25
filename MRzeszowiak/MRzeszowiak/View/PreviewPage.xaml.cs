@@ -33,8 +33,8 @@ namespace MRzeszowiak.View
             if(CarouselViewImageList?.ItemsSource?.GetCount() > 0)
             {
                 await Navigation.PushAsync(new PreviewImagePage(), false);
-                MessagingCenter.Send<View.PreviewPage, IEnumerable<string>>(this, "ShowImagePreview", 
-                    CarouselViewImageList?.ItemsSource?.Cast<string>());
+                MessagingCenter.Send<View.PreviewPage, Tuple<IEnumerable<string>, int>>(this, "ShowImagePreview", 
+                    new Tuple<IEnumerable<string>, int>(CarouselViewImageList?.ItemsSource?.Cast<string>(), CarouselViewImageList?.Position??0));
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using MRzeszowiak.Model;
+using Rg.Plugins.Popup.Services;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -76,6 +77,11 @@ namespace MRzeszowiak.View
                 case GestureStatus.Completed:
                     break;
             } 
+        }
+
+        private void CategorySelectButton_Clicked(object sender, EventArgs e)
+        {
+            PopupNavigation.Instance.PushAsync(new CategorySelectPopup());
         }
     }
 }

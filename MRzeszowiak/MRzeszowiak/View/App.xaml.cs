@@ -10,6 +10,8 @@ namespace MRzeszowiak
 	{
         public static Color highlightRow = Color.FromHex("#f4f4f4");
         public static Color normalRow = Color.FromHex("#FFFFFF0");
+        public static Color highlightPremiumRow = Color.FromHex("#fcd890");
+        public static Color normalPremiumRow = Color.FromHex("#ffedcc");
         public static double DisplayScreenWidth = 0f;
         public static double DisplayScreenHeight = 0f;
         public static double DisplayScaleFactor = 0f;

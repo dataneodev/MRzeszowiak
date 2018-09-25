@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Text;
 using Xamarin.Forms;
 
@@ -12,24 +13,38 @@ namespace MRzeszowiak.ViewModel
         public event PropertyChangedEventHandler PropertyChanged;
 
         public ObservableCollection<string> ImageURLsList { get; set; } = new ObservableCollection<string>();
+        private int position;
+        public int Position
+        {
+            get { return position; }
+            set
+            {
+                position = value;
+                OnPropertyChanged();
+            }
+        }
 
         public PreViewImageViewModel()
         {
-            MessagingCenter.Subscribe<View.PreviewPage, IEnumerable<string>>(this, "ShowImagePreview", (sender, imageList) => {
-                LoadImage(imageList);
+            MessagingCenter.Subscribe<View.PreviewPage, Tuple<IEnumerable<string>, int>>(this, "ShowImagePreview", (sender, imageList) => {
+                LoadImage(imageList.Item1, imageList.Item2);
             });  
         }
 
         ~PreViewImageViewModel()
         {
-            MessagingCenter.Unsubscribe<View.PreviewPage, IEnumerable<string>>(this, "ShowImagePreview");
+            MessagingCenter.Unsubscribe<View.PreviewPage, Tuple<IEnumerable<string>, int>>(this, "ShowImagePreview");
         }
 
-        void LoadImage(IEnumerable<string> imageList)
+        void LoadImage(IEnumerable<string> imageList, int position)
         {
             ImageURLsList.Clear();
             foreach (var item in imageList)
                 ImageURLsList.Add(item);
+
+            if (position >= 0 && position < ImageURLsList.Count)
+                Position = position;
+            else Position = 0;
         }
 
         private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string name = "")

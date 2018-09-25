@@ -121,15 +121,11 @@ namespace MRzeszowiak.ViewModel
             }
         }
 
-        private Image phoneImage;
-        public Image PhoneImage
+        private string session;
+        private RzeszowiakImageContainer imageContainer;
+        public ImageSource PhoneImage
         {
-            get { return phoneImage; }
-            set
-            {
-                phoneImage = value;
-                OnPropertyChanged();
-            }
+            get { return imageContainer?.ImageData; }
         }
 
         private bool isFavorite;
@@ -246,7 +242,20 @@ namespace MRzeszowiak.ViewModel
                 ImageURLsList.Add(item);
             IsFavorite = advert.IsFavorite;
 
+            imageContainer?.Dispose();
+            imageContainer = advert.PhoneImage;
+            if(imageContainer != null)
+            {
+                imageContainer.OnDownloadFinish += ImageDownloadFinish;
+                session = imageContainer.Session;
+                imageContainer.DownloadImage(); // no wait
+            }
             _lastAdvert = advert;
+        }
+
+        protected void ImageDownloadFinish(object sender, OnDownloadFinishEvenArgs e)
+        {
+            OnPropertyChanged("PhoneImage");
         }
 
         // Create the OnPropertyChanged method to raise the event

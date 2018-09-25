@@ -46,12 +46,12 @@
                         Style="{StaticResource backGroundColor}"
                         x:Name="MainMenuButton"
                         Clicked="MainMenuButton_Clicked"/>
-                <SearchBar Grid.Column="1"
-                           Grid.Row="0" 
-                           Placeholder="" 
-                           x:Name="searchBar" 
-                           Margin="-20,0,0,0" 
-                           WidthRequest="1000"/>
+                <Button Grid.Column="1"
+                        Grid.Row="0" 
+                        Text="Kategoria: Ostanio dodane" 
+                        x:Name="CategorySelectButton"
+                        Clicked="CategorySelectButton_Clicked"
+                        Style="{StaticResource backGroundColor}"/>
                 <Button  Grid.Column="2" 
                          Grid.Row="0"
                          Image="filter.png" 
@@ -60,6 +60,13 @@
                          Margin="0,0,0,0" 
                          Style="{StaticResource backGroundColor}"
                          x:Name="FilterButton"/>
+                <!--Second rows-->
+                <SearchBar Grid.Column="0"
+                           Grid.Row="1" 
+                           Placeholder="" 
+                           x:Name="searchBar" 
+                           Margin="0,0,0,0" 
+                           WidthRequest="100"/>
             </Grid>
             <!--Menu end-->
             
@@ -102,7 +109,7 @@
                                 </Frame.GestureRecognizers>-->
                                 <StackLayout VerticalOptions="FillAndExpand" 
                                      HorizontalOptions="FillAndExpand" 
-                                     BackgroundColor="{Binding RowEven, Converter={StaticResource boolToColor}}">
+                                     BackgroundColor="{Binding ., Converter={StaticResource boolToColor}}">
                                         <Grid Padding="0" RowSpacing="0" ColumnSpacing="4" Margin="0,4,5,4">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto"/>

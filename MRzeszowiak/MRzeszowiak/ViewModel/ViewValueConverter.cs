@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MRzeszowiak.Model;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
@@ -10,10 +11,23 @@ namespace MRzeszowiak.ViewModel
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if ((bool)value)
-            { return App.normalRow; }
+            var item = value as AdvertShort;
+            if(item == null )
+                return App.normalRow;
+            if (item.RowEven)
+            {
+                if (item.Highlighted)
+                    return App.normalPremiumRow;
+                else
+                    return App.normalRow;
+            }
             else
-            { return App.highlightRow; }
+            {
+                if (item.Highlighted)
+                    return App.highlightPremiumRow;
+                else
+                    return App.highlightRow;
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -45,7 +59,7 @@ namespace MRzeszowiak.ViewModel
             if ((bool)value)
             { return 220; }
             else
-            { return 44; }
+            { return 55; }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

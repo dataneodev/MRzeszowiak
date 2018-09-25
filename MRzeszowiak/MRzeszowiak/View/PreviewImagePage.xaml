@@ -12,7 +12,8 @@
                         Padding="0">
             <ScrollView AbsoluteLayout.LayoutFlags="SizeProportional" 
                         AbsoluteLayout.LayoutBounds="0,0,1,1">
-                <forms:CarouselViewControl ItemsSource="{Binding ImageURLsList}"    
+                <forms:CarouselViewControl ItemsSource="{Binding ImageURLsList}"  
+                                       Position="{Binding Position}"
                                        VerticalOptions="FillAndExpand"
                                        HorizontalOptions="FillAndExpand"
                                        ShowArrows="True"
@@ -32,7 +33,7 @@
             <Button Image="back.png"
                         x:Name="BackButton"
                         Text="" 
-                        AbsoluteLayout.LayoutBounds="10,10,44,32"
+                        AbsoluteLayout.LayoutBounds="10,10,50,40"
                         AbsoluteLayout.LayoutFlags="None"
                         BackgroundColor="#50e2e2e2"
                         Clicked="BackButton_Clicked"/>

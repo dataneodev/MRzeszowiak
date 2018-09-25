@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace MRzeszowiak.Model
@@ -13,7 +14,7 @@ namespace MRzeszowiak.Model
         public string ExpiredString { get; set; } = String.Empty;
         public int Views { get; set; }
         public string DescriptionHTML { get; set; } = String.Empty;
-        public Image PhoneImage { get; set; }
+        public Services.RzeszowiakImageContainer PhoneImage { get; set; }
         public Dictionary<string, string> AdditionalData { get; set; } = new Dictionary<string, string>();
         public List<string> ImageURLsList { get; set; } = new List<string>();
         public bool IsFavorite { get; set; }

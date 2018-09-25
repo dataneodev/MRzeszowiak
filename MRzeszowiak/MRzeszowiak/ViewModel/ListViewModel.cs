@@ -160,7 +160,8 @@ namespace MRzeszowiak.ViewModel
             }
 
             _lastAdvertSearch = advertSearch;
-            
+            ErrorMessage = String.Empty;
+
             if (addLoad)
             {
                 FotterActivity = true;

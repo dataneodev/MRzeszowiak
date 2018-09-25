@@ -5,6 +5,7 @@
              xmlns:forms="clr-namespace:CarouselView.FormsPlugin.Abstractions;assembly=CarouselView.FormsPlugin.Abstractions"
              xmlns:ViewModel="clr-namespace:MRzeszowiak.ViewModel"
              xmlns:Extends="clr-namespace:MRzeszowiak.Extends"
+             xmlns:local="clr-namespace:MRzeszowiak"
              Title="Podgląd ogłoszenia"
              BindingContext="{Binding PreviewViewModel, Source={StaticResource Locator}}"
              x:Name="PreviewPageN">
@@ -42,7 +43,7 @@
                                        x:Name="CarouselViewImageList">                    
                     <forms:CarouselViewControl.ItemTemplate>
                     <DataTemplate>
-                        <ScrollView Orientation="Horizontal" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                        <!--<ScrollView Orientation="Horizontal" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">-->
                             <Extends:ImageFit Source="{Binding .}" 
                                VerticalOptions="Center"
                                HorizontalOptions="FillAndExpand"              
@@ -52,7 +53,7 @@
                                     <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped" NumberOfTapsRequired="1" />
                                 </Extends:ImageFit.GestureRecognizers>
                             </Extends:ImageFit>
-                        </ScrollView>
+                        <!--</ScrollView>-->
                     </DataTemplate>
                     </forms:CarouselViewControl.ItemTemplate>
                 </forms:CarouselViewControl>
@@ -60,7 +61,7 @@
                         x:Name="BackButton"
                         Text="" 
                         IsVisible="{Binding ActivityForm}"
-                        AbsoluteLayout.LayoutBounds="10,10,44,32"
+                        AbsoluteLayout.LayoutBounds="10,10,55,40"
                         AbsoluteLayout.LayoutFlags="None"
                         BackgroundColor="#50e2e2e2"
                         Clicked="BackButton_Clicked"/>
@@ -72,22 +73,32 @@
                        FontSize="Large"
                        TextColor="Black"
                        LineBreakMode="WordWrap"/>
-                <Label>
-                    <Label.FormattedText>
-                        <FormattedString>
-                            <FormattedString.Spans>
-                                <Span Text="Cena: " FontSize="Medium"/>
-                                <Span Text="{Binding Price, Mode=OneWay}" 
-                                      FontAttributes="Bold"
-                                      FontSize="Large"
-                                      TextColor="Black"/>
-                                <Span Text=" zł" 
-                                      FontAttributes="Bold"
-                                      FontSize="Medium"/>
-                            </FormattedString.Spans>
-                        </FormattedString>
-                    </Label.FormattedText>
-                </Label>
+                <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+                    <Frame CornerRadius="10"  
+                               Margin="0"
+                               Padding="4" 
+                               IsVisible="{Binding Highlighted}"
+                               BackgroundColor="#fff268">
+                            <Image Source="menu_favadvert.png" HeightRequest="20"/>
+                    </Frame>
+                    <Label>
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <FormattedString.Spans>
+                                    <Span Text="Cena: " FontSize="Medium"/>
+                                    <Span Text="{Binding Price, Mode=OneWay}" 
+                                          FontAttributes="Bold"
+                                          FontSize="Large"
+                                          TextColor="Black"/>
+                                    <Span Text=" zł" 
+                                          FontAttributes="Bold"
+                                          FontSize="Medium"/>
+                                </FormattedString.Spans>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                        
+                </StackLayout>
                 <Frame CornerRadius="10" 
                        Margin="0" 
                        Padding="0">
@@ -96,6 +107,17 @@
                            FontSize="Small"
                            LineBreakMode="WordWrap"
                            Margin="8,5,8,5"/>
+                </Frame>
+                <Frame CornerRadius="10" 
+                       Margin="0" 
+                       Padding="0">
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="Telefon: "
+                           TextColor="Black"
+                           FontSize="Small"
+                           Margin="8,5,8,5"/>
+                        <Image Source="{Binding PhoneImage}"/>
+                        </StackLayout>
                 </Frame>
                 <Frame CornerRadius="10" 
                        Margin="0" 

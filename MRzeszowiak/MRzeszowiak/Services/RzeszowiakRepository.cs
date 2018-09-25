@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using MRzeszowiak.Extends;
 using MRzeszowiak.Model;
+using Xamarin.Forms;
+
 namespace MRzeszowiak.Services
 {
     class RzeszowiakRepository : IRzeszowiak
@@ -60,13 +62,28 @@ namespace MRzeszowiak.Services
                     ResponseHTMLBody.Remove(0, nextPos);
                     
                     //url
+                    if(ResponseHTMLBody.IndexOf("<a href=\"/",0, true) == -1)
+                    {
+                        Debug.Write("Task<AdvertSearchResult> GetAdvertListAsync => url not found");
+                        yield break;
+                    }
                     ResponseHTMLBody.CutFoward("<a href=\"/");
                     string aUrl = ResponseHTMLBody.ToString(0, ResponseHTMLBody.IndexOf("\">", 0, true)).Trim();
+                    if(aUrl.Length == 0)
+                    {
+                        Debug.Write("Task<AdvertSearchResult> aUrl.Length == 0");
+                        yield break;
+                    }
                     
                     //title
                     ResponseHTMLBody.CutFoward("\">");
                     string aTitle = ResponseHTMLBody.ToString(0, ResponseHTMLBody.IndexOf("</a>", 0, true)).CutFoward(".").Trim();
-                    
+                    if (aTitle.Length == 0)
+                    {
+                        Debug.Write("Task<AdvertSearchResult> aUrl.Length == 0");
+                        yield break;
+                    }
+
                     //price
                     ResponseHTMLBody.CutFoward("cena: <strong>");
                     string aPrice = ResponseHTMLBody.ToString(0, ResponseHTMLBody.IndexOf("zł</strong>", 0, true)).Trim();
@@ -229,6 +246,14 @@ namespace MRzeszowiak.Services
                 } while (true);
             }
 
+            // image sid
+            string aSsid = String.Empty;
+            if (BodyResult.IndexOf("rel=\"" + advertShort.AdverIDinRzeszowiak + "|", 0, true) != -1)
+            {
+                BodyResult.CutFoward("rel=\"" + advertShort.AdverIDinRzeszowiak + "|" );
+                aSsid = BodyResult.ToString(0, BodyResult.IndexOf("\"", 0, true)).Trim();
+            }
+
             return new Advert()
             {
                 AdverIDinRzeszowiak = advertShort.AdverIDinRzeszowiak,
@@ -243,6 +268,7 @@ namespace MRzeszowiak.Services
                 AdditionalData = additionalData,
                 ImageURLsList = pictureList,
                 URLPath = advertShort.URLPath,
+                PhoneImage = (aSsid?.Length > 0) ? new RzeszowiakImageContainer(aSsid, advertShort.AdverIDinRzeszowiak, advertShort.URLPath) : null,
             };
         }
 
@@ -266,6 +292,7 @@ namespace MRzeszowiak.Services
                             userNotify?.Invoke("Niepoprawna odpowiedź z serwera");
                             return BodyString;
                         }
+                        Debug.Write("Response: " + response.Headers.ToString);
                         using (HttpContent content = response.Content)
                         {
                             var byteArray = await content.ReadAsByteArrayAsync();
@@ -290,6 +317,132 @@ namespace MRzeszowiak.Services
                 }
             }
             return BodyString;
+        }
+    }
+
+    public class RzeszowiakImageContainer
+    {
+        public string Session { get; private set; }
+        public ImageSource ImageData { get; private set; }
+        public event EventHandler<OnDownloadFinishEvenArgs> OnDownloadFinish;
+
+        private string _ssid = String.Empty;
+        private string _advertURL = String.Empty;
+        private int _adrverID = 0;
+
+        public RzeszowiakImageContainer(string ssid, int advertID, string advertURL)
+        {
+            Session = new Guid().ToString();
+            if (ssid == null || advertID == 0)
+            {
+                Debug.Write("RzeszowiakImageContainer => ssid == null || advertID == 0");
+                return;
+            }
+
+            _ssid = ssid;
+            _adrverID = advertID;
+            _advertURL = advertURL;
+        }
+
+        public async Task<bool> DownloadImage()
+        {
+            if (_ssid == null || _adrverID == 0)
+            {
+                Debug.Write("RzeszowiakImageContainer => DownloadImage()");
+                return false;
+            }
+
+            var inputData = new Dictionary<string, string>()
+            {
+                { "oid", _adrverID.ToString() },
+                { "ssid", _ssid },
+            };
+
+            var BodyResult = await PostWebPage("http://www.rzeszowiak.pl/telefon/", inputData, _advertURL);
+            if (BodyResult.Length == 0)
+            {
+                Debug.Write("GetAdvertAsync => BodyResult.Length == 0");
+                return false;
+            }
+            Debug.Write("Image Data source: " + BodyResult.ToString());
+            ImageData = Base64ToImage(BodyResult.ToString());
+            BodyResult.Clear();
+            OnDownloadFinish?.Invoke(this, new OnDownloadFinishEvenArgs(_ssid));
+            return true;
+        }
+
+        public ImageSource Base64ToImage(string base64String)
+        {
+            byte[] imageBytes = Convert.FromBase64String(base64String);
+            using (var ms = new System.IO.MemoryStream(imageBytes, 0, imageBytes.Length))
+            {
+                ImageSource image = ImageSource.FromStream(() => ms);
+                return image;
+            }
+        }
+
+        public void Dispose()
+        {
+            OnDownloadFinish = null;
+        }
+
+        protected static async Task<StringBuilder> PostWebPage(string Url, Dictionary<string, string> postData, string RefererUrl,  Action<string> userNotify = null)
+        {
+            StringBuilder BodyString = new StringBuilder();
+            using (HttpClient client = new HttpClient() { Timeout = TimeSpan.FromSeconds(6) })
+            {
+                try
+                {
+                    var keyValues = new List<KeyValuePair<string, string>>();
+                    foreach (var item in postData)
+                    {
+                        Debug.Write($"key {item.Key} value {item.Value}");
+                        keyValues.Add(new KeyValuePair<string, string>(item.Key, item.Value));
+                    }
+                    
+
+                    var inputContent = new FormUrlEncodedContent(postData);
+                    inputContent.Headers.Add("Referer", RefererUrl);
+
+                    using (HttpResponseMessage response = await client.PostAsync(Url, inputContent).ConfigureAwait(false))
+                    {
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            Debug.Write("GetAdvertListAsync(AdvertSearch searchParams) => !response.IsSuccessStatusCode");
+                            userNotify?.Invoke("Niepoprawna odpowiedź z serwera");
+                            return BodyString;
+                        }
+                        using (HttpContent content = response.Content)
+                        {
+                            var byteArray = await content.ReadAsStringAsync();
+                            Debug.Write("PostWebPage => " + byteArray);
+                            BodyString.Append(byteArray);
+                        }
+                    }
+                }
+                catch (System.Threading.Tasks.TaskCanceledException)
+                {
+                    Debug.Write("PostWebPage => System.Threading.Tasks.TaskCanceledException");
+                    userNotify?.Invoke("Błąd połączenia. Przekroczono limit połączenia");
+                    return BodyString;
+                }
+                catch (Exception e)
+                {
+                    Debug.Write("PostWebPage => " + e.Message);
+                    userNotify?.Invoke("Błąd połączenia z serwerem.");
+                    return BodyString;
+                }
+            }
+            return BodyString;
+        }
+    }
+
+    public class OnDownloadFinishEvenArgs : EventArgs
+    {
+        public string Session { get; private set; }
+        public OnDownloadFinishEvenArgs(string sessionSet)
+        {
+            Session = sessionSet;
         }
     }
 }

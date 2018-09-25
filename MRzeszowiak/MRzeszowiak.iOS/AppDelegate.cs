@@ -26,6 +26,8 @@ namespace MRzeszowiak.iOS
             App.DisplayScreenHeight = (double)UIScreen.MainScreen.Bounds.Height;
             App.DisplayScaleFactor = (double)UIScreen.MainScreen.Scale;
 
+            Rg.Plugins.Popup.Popup.Init();
+
             global::Xamarin.Forms.Forms.Init();
             CarouselView.FormsPlugin.iOS.CarouselViewRenderer.Init();
             LoadApplication(new App());
