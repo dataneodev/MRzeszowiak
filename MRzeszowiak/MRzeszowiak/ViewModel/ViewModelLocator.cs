@@ -20,7 +20,7 @@ namespace MRzeszowiak.ViewModel
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
 
             SimpleIoc.Default.Register<ListViewModel>(() => new ListViewModel(new RzeszowiakRepository()));
-            SimpleIoc.Default.Register<PreviewViewModel>(() => new PreviewViewModel(new RzeszowiakRepository()));
+            SimpleIoc.Default.Register<PreviewViewModel>(() => new PreviewViewModel(new RzeszowiakRepository(), new RzeszowiakImageContainer()));
             SimpleIoc.Default.Register<SettingViewModel>();
             SimpleIoc.Default.Register<PreViewImageViewModel>();
         }          

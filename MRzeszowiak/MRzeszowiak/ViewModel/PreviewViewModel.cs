@@ -121,8 +121,7 @@ namespace MRzeszowiak.ViewModel
             }
         }
 
-        private string session;
-        private RzeszowiakImageContainer imageContainer;
+        private IRzeszowiakImageContainer imageContainer;
         public ImageSource PhoneImage
         {
             get { return imageContainer?.ImageData; }
@@ -138,7 +137,6 @@ namespace MRzeszowiak.ViewModel
                 OnPropertyChanged();
             }
         }
-
 
         private string errorMessage = String.Empty;
         public string ErrorMessage
@@ -165,9 +163,12 @@ namespace MRzeszowiak.ViewModel
         public ICommand MailAdvert { get; private set; }
         public ICommand FavoriteAdvert { get; private set; }
 
-        public PreviewViewModel(IRzeszowiak RzeszowiakRepository)
+        public PreviewViewModel(IRzeszowiak RzeszowiakRepository, IRzeszowiakImageContainer rzeszowiakImageContainer)
         {
             _rzeszowiakRepository = RzeszowiakRepository ?? throw new NullReferenceException("ListViewModel => IRzeszowiakRepository RzeszowiakRepository == null !");
+            imageContainer = rzeszowiakImageContainer ?? throw new NullReferenceException("ListViewModel => IRzeszowiakImageContainer rzeszowiakImageContainer == null !");
+            imageContainer.OnDownloadFinish += ImageDownloadFinish;
+
             ImageURLsList.CollectionChanged += (s, e) => { OnPropertyChanged("ImageVisible"); };
             AdditionalData.CollectionChanged += (s, e) => { OnPropertyChanged("AddDataVisible"); };
 
@@ -226,36 +227,34 @@ namespace MRzeszowiak.ViewModel
 
         void CopyAdverToViewModel(Advert advert)
         {
-            AdverIDinRzeszowiak = advert.AdverIDinRzeszowiak;
-            Title = advert.Title;
-            Price = advert.Price;
-            Views = advert.Views;
-            DescriptionHTML = advert.DescriptionHTML;
-            DateAdd = advert.DateAddString;
-            ExpiredDateAdd = advert.ExpiredString;
-            Highlighted = advert.Highlighted;
+            AdverIDinRzeszowiak = advert?.AdverIDinRzeszowiak??0;
+            Title = advert?.Title ?? String.Empty;
+            Price = advert?.Price ?? 0;
+            Views = advert?.Views ?? 0;
+            DescriptionHTML = advert?.DescriptionHTML ?? String.Empty;
+            DateAdd = advert?.DateAddString ?? String.Empty;
+            ExpiredDateAdd = advert?.ExpiredString ?? String.Empty;
+            Highlighted = advert?.Highlighted ?? false;
+
             AdditionalData.Clear();
             foreach (var item in advert.AdditionalData)
                 AdditionalData.Add(new KeyValue(item.Key, item.Value));
+
             ImageURLsList.Clear();
             foreach (var item in advert.ImageURLsList)
                 ImageURLsList.Add(item);
             IsFavorite = advert.IsFavorite;
 
-            imageContainer?.Dispose();
-            imageContainer = advert.PhoneImage;
-            if(imageContainer != null)
-            {
-                imageContainer.OnDownloadFinish += ImageDownloadFinish;
-                session = imageContainer.Session;
-                imageContainer.DownloadImage(); // no wait
-            }
+
+            if(advert.PhoneSsid.Length == 10 && advert.PhonePHPSSESION != null)
+                imageContainer.DownloadImage(advert.PhoneSsid, advert.AdverIDinRzeszowiak, advert.URLPath, advert.PhonePHPSSESION); // no wait
+
             _lastAdvert = advert;
         }
 
-        protected void ImageDownloadFinish(object sender, OnDownloadFinishEvenArgs e)
+        protected void ImageDownloadFinish(object sender, EventArgs e)
         {
-            OnPropertyChanged("PhoneImage");
+            OnPropertyChanged("PhoneImage");   
         }
 
         // Create the OnPropertyChanged method to raise the event

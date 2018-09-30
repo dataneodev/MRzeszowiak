@@ -14,6 +14,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Behaviors\InfiniteScrolling.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\CustomListview.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extends\WebPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\ImageFit.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\MultiLineLabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\StringBuilderExtension.cs" />
@@ -24,7 +25,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Model\AdvertShort.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Category.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\IRzeszowiak.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\IRzeszowiakImageContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\ISetting.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\RzeszowiakImageContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\RzeszowiakRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\SettingRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ListViewModel.cs" />

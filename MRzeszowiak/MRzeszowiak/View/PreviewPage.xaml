@@ -13,6 +13,7 @@
         <ResourceDictionary>
             <ViewModel:ImageFromFavorite x:Key="ImageFromFavorite" />
             <ViewModel:AbsHeight x:Key="AbsHeight" />
+            <ViewModel:PhoneImageVisible x:Key="PhoneImageVisible" />
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Content>
@@ -111,12 +112,17 @@
                 <Frame CornerRadius="10" 
                        Margin="0" 
                        Padding="0">
-                    <StackLayout Orientation="Horizontal">
-                        <Label Text="Telefon: "
-                           TextColor="Black"
-                           FontSize="Small"
-                           Margin="8,5,8,5"/>
-                        <Image Source="{Binding PhoneImage}"/>
+                        <StackLayout Orientation="Horizontal">
+                            <Label Text="Telefon: "
+                                TextColor="Black"
+                                FontSize="Small"
+                                Margin="8,5,0,5"/>
+                            <Image Source="{Binding PhoneImage}" 
+                                   IsVisible="{Binding PhoneImage, Converter={StaticResource PhoneImageVisible}}"
+                                   HeightRequest="28"
+                                   WidthRequest="224"
+                                   Margin="-5,1,0,0"
+                                   Aspect="AspectFit"/>
                         </StackLayout>
                 </Frame>
                 <Frame CornerRadius="10" 
