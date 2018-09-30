@@ -20,7 +20,8 @@ namespace MRzeszowiak.Services
         {
             if (ssid == null || advertID == 0 || advertURL.Length == 0 || PHPSESSIDPcookie == null)
             {
-                Debug.Write("RzeszowiakImageContainer => DownloadImage() => ssid == null || adrverID == 0 || advertURL.Length == 0");
+                Debug.Write(this.GetType().Name + "." + System.Reflection.MethodBase.GetCurrentMethod().Name +
+                            " => ssid == null || adrverID == 0 || advertURL.Length == 0");
                 return false;
             }
 
@@ -42,7 +43,6 @@ namespace MRzeszowiak.Services
                 Debug.Write("RzeszowiakImageContainer => DownloadImage => BodyResult.Length == 0");
                 return false;
             }
-            Debug.Write("Image Data source: " + BodyResult.ToString());
             ImageData = Base64ToImage(BodyResult.ToString().Replace("data:image/jpeg;base64,",""));
             BodyResult.Clear();
 

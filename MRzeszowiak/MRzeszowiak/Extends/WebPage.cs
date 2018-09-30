@@ -12,6 +12,13 @@ namespace MRzeszowiak.Extends
         public static async Task<GetWebPageResponse> GetWebPage(string Url)
         {
             var webPageResponse = new GetWebPageResponse();
+            bool urlCorrect = Uri.TryCreate(Url, UriKind.Absolute, out Uri uriResult)
+                                        && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+            if (!urlCorrect)
+            {
+                Debug.Write("GetWeb." + System.Reflection.MethodBase.GetCurrentMethod().Name + " => URL not correct");
+                return webPageResponse;
+            }
             using (var handler = new HttpClientHandler())
             {
                 var cookies = new CookieContainer();
@@ -77,7 +84,14 @@ namespace MRzeszowiak.Extends
                             string RefererUrl, CookieCollection cookieCollection, Action<string> userNotify = null)
         {
             StringBuilder BodyString = new StringBuilder();
-            var URI = new Uri(Url);
+            bool urlCorrect = Uri.TryCreate(Url, UriKind.Absolute, out Uri URI)
+                              && (URI.Scheme == Uri.UriSchemeHttp || URI.Scheme == Uri.UriSchemeHttps);
+            if (!urlCorrect)
+            {
+                Debug.Write("GetWeb." + System.Reflection.MethodBase.GetCurrentMethod().Name + " => URL not correct");
+                return BodyString;
+            }
+
             var BaseURI = new Uri(URI.GetLeftPart(UriPartial.Authority));
             var PathURI = new Uri(URI.PathAndQuery);
             using (var handler = new HttpClientHandler())
@@ -94,10 +108,7 @@ namespace MRzeszowiak.Extends
                         client.BaseAddress = BaseURI;
                         var keyValues = new List<KeyValuePair<string, string>>();
                         foreach (var item in postData)
-                        {
-                            Debug.Write($"key {item.Key} value {item.Value}");
                             keyValues.Add(new KeyValuePair<string, string>(item.Key, item.Value));
-                        }
 
                         var inputContent = new FormUrlEncodedContent(postData);
 
