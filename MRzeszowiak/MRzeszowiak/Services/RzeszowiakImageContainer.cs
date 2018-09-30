@@ -25,9 +25,6 @@ namespace MRzeszowiak.Services
                 return false;
             }
 
-            ImageData = null;
-            OnDownloadFinish?.Invoke(this, new EventArgs());
-
             _session = new Guid().ToString();
             var localSession = _session;
 
@@ -54,11 +51,17 @@ namespace MRzeszowiak.Services
             return true;
         }
 
-        public ImageSource Base64ToImage(string base64String)
+        protected ImageSource Base64ToImage(string base64String)
         {
             byte[] imageBytes = Convert.FromBase64String(base64String);
             ImageSource image = ImageSource.FromStream(() => new MemoryStream(imageBytes));
             return image;
+        }
+
+        public void HideImage()
+        {
+            ImageData = null;
+            OnDownloadFinish?.Invoke(this, new EventArgs());
         }
     }
 

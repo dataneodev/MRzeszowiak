@@ -111,7 +111,8 @@
                 </Frame>
                 <Frame CornerRadius="10" 
                        Margin="0" 
-                       Padding="0">
+                       Padding="0"
+                       IsVisible="{Binding HasPhoneImage}">
                         <StackLayout Orientation="Horizontal">
                             <Label Text="Telefon: "
                                 TextColor="Black"

@@ -138,6 +138,17 @@ namespace MRzeszowiak.ViewModel
             }
         }
 
+        private bool hasPhoneImage;
+        public bool HasPhoneImage
+        {
+            get { return hasPhoneImage; }
+            set
+            {
+                hasPhoneImage = value;
+                OnPropertyChanged();
+            }
+        }
+
         private string errorMessage = String.Empty;
         public string ErrorMessage
         {
@@ -245,10 +256,16 @@ namespace MRzeszowiak.ViewModel
                 ImageURLsList.Add(item);
             IsFavorite = advert.IsFavorite;
 
-
-            if(advert.PhoneSsid.Length == 10 && advert.PhonePHPSSESION != null)
+            
+            if (advert.PhoneSsid.Length == 10 && advert.PhonePHPSSESION != null)
+            {
+                HasPhoneImage = true;
+                imageContainer.HideImage();
                 imageContainer.DownloadImage(advert.PhoneSsid, advert.AdverIDinRzeszowiak, advert.URLPath, advert.PhonePHPSSESION); // no wait
-
+            }
+            else
+                HasPhoneImage = false;       
+                
             _lastAdvert = advert;
         }
 

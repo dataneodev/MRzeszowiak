@@ -15,16 +15,55 @@ namespace MRzeszowiak.Services
     class RzeszowiakRepository : IRzeszowiak
     {
         protected const string RZESZOWIAK_BASE_URL = "http://www.rzeszowiak.pl/";
-        protected IList<Category> _lastCategoryList = new List<Category>();
+        protected IList<Category> _lastCategoryList = new List<Category>(); // cache
         // from inteface
-        public Task<IList<Category>> GetCategoryListAsync(bool ForceReload = false, Action<string> userNotify = null)
+        public async Task<IList<Category>> GetCategoryListAsync(bool ForceReload = false, Action<string> userNotify = null)
         {
-            return new Task<IList<Category>>(() => new List<Category>() { new Category() });
+            if (_lastCategoryList.Count == 0 || ForceReload == true)
+            {
+                var HttpResult = await GetWeb.GetWebPage("http://www.rzeszowiak.pl/kontakt/");
+                if (!HttpResult.Success)
+                {
+                    Debug.Write("GetCategoryListAsync => !HttpResult.Success");
+                    return _lastCategoryList;
+                }
+
+                if (HttpResult.BodyString.Length == 0)
+                {
+                    Debug.Write("GetCategoryListAsync => responseString.Length == 0");
+                    return _lastCategoryList;
+                }
+
+                await UpdateCategoryList(HttpResult.BodyString);
+                HttpResult.BodyString.Clear();
+            }
+
+            return _lastCategoryList;
         }
+
+        protected async Task<bool> UpdateCategoryList(StringBuilder htmlBody)
+        {
+            if ((htmlBody?.Length ?? 0) == 0)
+            {
+                Debug.Write("UpdateCategoryList => (htmlBody?.Length??0) == 0");
+                return false;
+            }
+
+            if (htmlBody.IndexOf("<div class=\"menu-left-category\">", 0, true) == -1)
+            {
+                Debug.Write("UpdateCategoryList => no menu found");
+                return false;
+            }
+
+
+
+            return true;
+        }
+
         public async Task<AdvertSearchResult> GetAdvertListAsync(AdvertSearch searchParams, Action<string> userNotify = null)
         {
             Debug.Write("GetAdvertListAsync(AdvertSearch searchParams)");
-            if (searchParams == null) 
+            if (searchParams == null)
                 throw new NullReferenceException("AdvertSearch is null");
 
             var resultList = new AdvertSearchResult()
@@ -61,21 +100,21 @@ namespace MRzeszowiak.Services
                     if (nextPos == -1) yield break;
                     bool highlighted = (nextPos == promoPos) ? true : false;
                     ResponseHTMLBody.Remove(0, nextPos);
-                    
+
                     //url
-                    if(ResponseHTMLBody.IndexOf("<a href=\"/",0, true) == -1)
+                    if (ResponseHTMLBody.IndexOf("<a href=\"/", 0, true) == -1)
                     {
                         Debug.Write("Task<AdvertSearchResult> GetAdvertListAsync => url not found");
                         yield break;
                     }
                     ResponseHTMLBody.CutFoward("<a href=\"/");
                     string aUrl = ResponseHTMLBody.ToString(0, ResponseHTMLBody.IndexOf("\">", 0, true)).Trim();
-                    if(aUrl.Length == 0)
+                    if (aUrl.Length == 0)
                     {
                         Debug.Write("Task<AdvertSearchResult> aUrl.Length == 0");
                         yield break;
                     }
-                    
+
                     //title
                     ResponseHTMLBody.CutFoward("\">");
                     string aTitle = ResponseHTMLBody.ToString(0, ResponseHTMLBody.IndexOf("</a>", 0, true)).CutFoward(".").Trim();
@@ -145,6 +184,9 @@ namespace MRzeszowiak.Services
                 responseString.Clear();
                 return resultList;
             }
+
+            await UpdateCategoryList(responseString); // update category
+
             foreach (var item in ProcessResponse(responseString))
                 resultList.AdvertShortsList.Add(item);
 
@@ -186,7 +228,7 @@ namespace MRzeszowiak.Services
                 throw new NullReferenceException("advertShort == null");
 
             var HttpResult = await GetWeb.GetWebPage(advertShort.URL);
-            if(!HttpResult.Success)
+            if (!HttpResult.Success)
             {
                 Debug.Write("GetAdvertAsync => !HttpResult.Success");
                 return null;
@@ -198,19 +240,21 @@ namespace MRzeszowiak.Services
                 return null;
             }
 
+            await UpdateCategoryList(BodyResult); // update category
+
             BodyResult.CutFoward("ogloszeniebox-top");
-            
+
             string GetValue(StringBuilder bodyResult, string category)
             {
                 BodyResult.CutFoward(category + "</div>");
                 BodyResult.CutFoward("<div class=\"value\">");
                 return BodyResult.ToString(0, BodyResult.IndexOf("</div>", 0, true)).Trim();
             }
-            
+
             string aCategory = GetValue(BodyResult, "kategoria :");
             string aTitle = GetValue(BodyResult, "tytuł :").Trim();
             string aDateAdd = GetValue(BodyResult, "data dodania :");
-            string aViews = GetValue(BodyResult, "wyświetleń :").Replace(" razy","");
+            string aViews = GetValue(BodyResult, "wyświetleń :").Replace(" razy", "");
             if (!Int32.TryParse(aViews, out int aViewsInt))
             {
                 Debug.Write("GetAdvert(AdvertShort advertShort, Action<string> userNotify = null) => !Int32.TryParse(aViews, out int aViewsInt)");
@@ -224,7 +268,7 @@ namespace MRzeszowiak.Services
             }
             BodyResult.CutFoward("Treść ogłoszenia");
             BodyResult.CutFoward("<div class=\"content\">");
-            string aDesc = BodyResult.ToString(0, BodyResult.IndexOf("</div>", 0, true)).Replace("<br />","\n\n").StripHTML();
+            string aDesc = BodyResult.ToString(0, BodyResult.IndexOf("</div>", 0, true)).Replace("<br />", "\n\n").StripHTML();
             aDesc = aDesc.Replace("\n\n\n", "\n").Trim();
 
             var additionalData = new Dictionary<string, string>();
@@ -264,11 +308,11 @@ namespace MRzeszowiak.Services
             string aSsid = String.Empty;
             if (BodyResult.IndexOf("rel=\"" + advertShort.AdverIDinRzeszowiak + "|", 0, true) != -1)
             {
-                BodyResult.CutFoward("rel=\"" + advertShort.AdverIDinRzeszowiak + "|" );
+                BodyResult.CutFoward("rel=\"" + advertShort.AdverIDinRzeszowiak + "|");
                 aSsid = BodyResult.ToString(0, BodyResult.IndexOf("\"", 0, true)).Trim();
             }
             Cookie aCookie = null;
-            foreach(var item in HttpResult.CookieList)
+            foreach (var item in HttpResult.CookieList)
                 if (item.Name == "PHPSESSID") aCookie = item;
 
             return new Advert()
@@ -289,8 +333,5 @@ namespace MRzeszowiak.Services
                 PhonePHPSSESION = aCookie,
             };
         }
-       
     }
-
-    
 }

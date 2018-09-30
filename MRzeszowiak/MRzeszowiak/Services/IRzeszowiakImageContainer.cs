@@ -12,5 +12,6 @@ namespace MRzeszowiak.Services
         ImageSource ImageData { get; }
         event EventHandler OnDownloadFinish;
         Task<bool> DownloadImage(string ssid, int advertID, string advertURL, Cookie PHPSESSIDPcookie);
+        void HideImage();
     }
 }
