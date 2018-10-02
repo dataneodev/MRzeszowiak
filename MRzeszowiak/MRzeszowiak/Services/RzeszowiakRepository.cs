@@ -34,14 +34,14 @@ namespace MRzeszowiak.Services
                     return _lastCategoryList;
                 }
 
-                await UpdateCategoryList(HttpResult.BodyString);
+                UpdateCategoryList(HttpResult.BodyString);
                 HttpResult.BodyString.Clear();
             }
 
             return _lastCategoryList;
         }
 
-        protected async Task<bool> UpdateCategoryList(StringBuilder htmlBody)
+        protected bool UpdateCategoryList(StringBuilder htmlBody)
         {
             if ((htmlBody?.Length ?? 0) == 0)
             {
@@ -55,8 +55,60 @@ namespace MRzeszowiak.Services
                 return false;
             }
 
+            _lastCategoryList.Clear();
+            // main category
+            _lastCategoryList.Add(new Category { Id = 12, Title = "Dla domu" });
+            _lastCategoryList.Add(new Category {Id = 26, Title = "Dla dzieci"});
+            _lastCategoryList.Add(new Category {Id = 16, Title = "Komputery"});
+            _lastCategoryList.Add(new Category { Id = 1, Title = "Motoryzacja"});
+            _lastCategoryList.Add(new Category { Id = 28, Title = "Nauka"});
+            _lastCategoryList.Add(new Category { Id = 2, Title = "Nieruchomości"});
+            _lastCategoryList.Add(new Category { Id = 25, Title = "Poznajmy się"});
+            _lastCategoryList.Add(new Category { Id = 3, Title = "Praca"});
+            _lastCategoryList.Add(new Category { Id = 34, Title = "Przemysł"});
+            _lastCategoryList.Add(new Category { Id = 13, Title = "Różne"});
+            _lastCategoryList.Add(new Category { Id = 30, Title = "Sport / Wypoczynek"});
+            _lastCategoryList.Add(new Category { Id = 18, Title = "Ślub"});
+            _lastCategoryList.Add(new Category { Id = 14, Title = "Telefony GSM"});
+            _lastCategoryList.Add(new Category { Id = 10, Title = "Usługi"});
+            _lastCategoryList.Add(new Category { Id = 35, Title = "Zapraszam na"});
+            _lastCategoryList.Add(new Category { Id = 31, Title = "Zdrowie, uroda"});
+            _lastCategoryList.Add(new Category { Id = 33, Title = "Zwierzęta"});
 
+            foreach(var cat in _lastCategoryList)
+                processMainCategory(htmlBody, cat);
+ 
+            void processMainCategory(StringBuilder html, Category mainCategory)
+            {
+                var search = $"<div class=\"menu-left-category\">{mainCategory.Title}</div>";
+                var pos = html.IndexOf(search, 0, true);
+                if (pos == -1)
+                {
+                    Debug.Write($"UpdateCategoryList => no menu {mainCategory.Title} found");
+                    return;
+                }
+                html.Remove(0, pos);
+                html.CutFoward("<ul class=\"menu-left-subcategories\">");
+                search = "</ul>";
+                var subcat = html.ToString(0, html.IndexOf(search, 0, true));
+                var submenu = subcat.Split(new string[] { "</li>" }, StringSplitOptions.None);
 
+                foreach(var item in submenu)
+                    processSubCategory(item, mainCategory);
+            }
+
+            void processSubCategory(string submenu, Category mainCategory)
+            {
+                var search = $"href=\"/";
+                var pos = submenu.IndexOf(search);
+                if (pos == -1)
+                {
+                    Debug.Write($"UpdateCategoryList => no submenu found");
+                    return;
+                }
+                submenu.CutFoward("href=\"/");
+                Debug.Write(submenu);
+            }
             return true;
         }
 
@@ -185,7 +237,7 @@ namespace MRzeszowiak.Services
                 return resultList;
             }
 
-            await UpdateCategoryList(responseString); // update category
+            UpdateCategoryList(responseString); // update category
 
             foreach (var item in ProcessResponse(responseString))
                 resultList.AdvertShortsList.Add(item);
@@ -240,7 +292,7 @@ namespace MRzeszowiak.Services
                 return null;
             }
 
-            await UpdateCategoryList(BodyResult); // update category
+            UpdateCategoryList(BodyResult); // update category
 
             BodyResult.CutFoward("ogloszeniebox-top");
 
