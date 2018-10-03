@@ -15,34 +15,55 @@ namespace MRzeszowiak.Services
     class RzeszowiakRepository : IRzeszowiak
     {
         protected const string RZESZOWIAK_BASE_URL = "http://www.rzeszowiak.pl/";
-        protected IList<Category> _lastCategoryList = new List<Category>(); // cache
-        // from inteface
+
+        protected List<MasterCategory> masterCategoryList = new List<MasterCategory>{
+            new MasterCategory { Id = 12, Title = "Dla domu" },
+            new MasterCategory { Id = 26, Title = "Dla dzieci" },
+            new MasterCategory { Id = 16, Title = "Komputery" },
+            new MasterCategory { Id = 1, Title = "Motoryzacja" },
+            new MasterCategory { Id = 28, Title = "Nauka" },
+            new MasterCategory { Id = 2, Title = "Nieruchomości" },
+            new MasterCategory { Id = 25, Title = "Poznajmy się" },
+            new MasterCategory { Id = 3, Title = "Praca" },
+            new MasterCategory { Id = 34, Title = "Przemysł" },
+            new MasterCategory { Id = 13, Title = "Różne" },
+            new MasterCategory { Id = 30, Title = "Sport / Wypoczynek" },
+            new MasterCategory { Id = 18, Title = "Ślub" },
+            new MasterCategory { Id = 14, Title = "Telefony GSM" },
+            new MasterCategory { Id = 10, Title = "Usługi" },
+            new MasterCategory { Id = 35, Title = "Zapraszam na" },
+            new MasterCategory { Id = 31, Title = "Zdrowie, uroda" },
+            new MasterCategory { Id = 33, Title = "Zwierzęta" }
+        };
+
+        protected List<Category> categoryList = new List<Category>(); 
+
         public async Task<IList<Category>> GetCategoryListAsync(bool ForceReload = false, Action<string> userNotify = null)
         {
-            if (_lastCategoryList.Count == 0 || ForceReload == true)
+            if (ForceReload == true)
             {
                 var HttpResult = await GetWeb.GetWebPage("http://www.rzeszowiak.pl/kontakt/");
                 if (!HttpResult.Success)
                 {
                     Debug.Write("GetCategoryListAsync => !HttpResult.Success");
-                    return _lastCategoryList;
+                    return categoryList;
                 }
 
                 if (HttpResult.BodyString.Length == 0)
                 {
                     Debug.Write("GetCategoryListAsync => responseString.Length == 0");
-                    return _lastCategoryList;
+                    return categoryList;
                 }
 
                 UpdateCategoryList(HttpResult.BodyString);
                 HttpResult.BodyString.Clear();
             }
-
-            return _lastCategoryList;
+            return categoryList;
         }
 
         protected bool UpdateCategoryList(StringBuilder htmlBody)
         {
+            Debug.Write("UpdateCategoryList");
             if ((htmlBody?.Length ?? 0) == 0)
             {
                 Debug.Write("UpdateCategoryList => (htmlBody?.Length??0) == 0");
@@ -55,30 +76,10 @@ namespace MRzeszowiak.Services
                 return false;
             }
 
-            _lastCategoryList.Clear();
-            // main category
-            _lastCategoryList.Add(new Category { Id = 12, Title = "Dla domu" });
-            _lastCategoryList.Add(new Category {Id = 26, Title = "Dla dzieci"});
-            _lastCategoryList.Add(new Category {Id = 16, Title = "Komputery"});
-            _lastCategoryList.Add(new Category { Id = 1, Title = "Motoryzacja"});
-            _lastCategoryList.Add(new Category { Id = 28, Title = "Nauka"});
-            _lastCategoryList.Add(new Category { Id = 2, Title = "Nieruchomości"});
-            _lastCategoryList.Add(new Category { Id = 25, Title = "Poznajmy się"});
-            _lastCategoryList.Add(new Category { Id = 3, Title = "Praca"});
-            _lastCategoryList.Add(new Category { Id = 34, Title = "Przemysł"});
-            _lastCategoryList.Add(new Category { Id = 13, Title = "Różne"});
-            _lastCategoryList.Add(new Category { Id = 30, Title = "Sport / Wypoczynek"});
-            _lastCategoryList.Add(new Category { Id = 18, Title = "Ślub"});
-            _lastCategoryList.Add(new Category { Id = 14, Title = "Telefony GSM"});
-            _lastCategoryList.Add(new Category { Id = 10, Title = "Usługi"});
-            _lastCategoryList.Add(new Category { Id = 35, Title = "Zapraszam na"});
-            _lastCategoryList.Add(new Category { Id = 31, Title = "Zdrowie, uroda"});
-            _lastCategoryList.Add(new Category { Id = 33, Title = "Zwierzęta"});
-
-            foreach(var cat in _lastCategoryList)
+            foreach(var cat in masterCategoryList)
                 processMainCategory(htmlBody, cat);
  
-            void processMainCategory(StringBuilder html, Category mainCategory)
+            void processMainCategory(StringBuilder html, MasterCategory mainCategory)
             {
                 var search = $"<div class=\"menu-left-category\">{mainCategory.Title}</div>";
                 var pos = html.IndexOf(search, 0, true);
@@ -89,25 +90,46 @@ namespace MRzeszowiak.Services
                 }
                 html.Remove(0, pos);
                 html.CutFoward("<ul class=\"menu-left-subcategories\">");
-                search = "</ul>";
+                search = "<br/>";
                 var subcat = html.ToString(0, html.IndexOf(search, 0, true));
+                Debug.Write("subcat: " + subcat);
                 var submenu = subcat.Split(new string[] { "</li>" }, StringSplitOptions.None);
 
-                foreach(var item in submenu)
-                    processSubCategory(item, mainCategory);
+                if(submenu.Length > 0)
+                    for(int i = 0; i < submenu.Length; i++)
+                        if((i + 1 < submenu.Length) && (submenu[i+1].IndexOf("<ul class=\"subsubcategories\">") != -1))
+                        {
+                            processSubCategory(submenu[i], submenu[i + 1], mainCategory);
+                            i++;
+                        }   
+                        else
+                            processSubCategory(submenu[i], String.Empty, mainCategory);             
             }
 
-            void processSubCategory(string submenu, Category mainCategory)
+            void processSubCategory(string html, string submenu, MasterCategory mainCategory)
             {
                 var search = $"href=\"/";
-                var pos = submenu.IndexOf(search);
+                var pos = html.IndexOf(search);
                 if (pos == -1)
                 {
-                    Debug.Write($"UpdateCategoryList => no submenu found");
+                    Debug.Write("processSubCategory => no submenu found");
                     return;
                 }
-                submenu.CutFoward("href=\"/");
-                Debug.Write(submenu);
+                
+                var path = html.GetItem("href=\"/", "\"");
+                html.CutFoward("href=\"/");
+
+                if(! Int32.TryParse(path.CutFoward("-"), out int id))
+                {
+                    Debug.Write("processSubCategory => id convert fail");
+                    return;
+                }
+
+                var name = html.GetItem("</span", "<span");
+                html.CutFoward("<span");
+
+                var count = html.GetItem("class=\"ilosc\">", "</span>");
+                Debug.Write($"process : name={name} id={id} count={count}");
             }
             return true;
         }

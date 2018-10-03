@@ -11,6 +11,7 @@ namespace MRzeszowiak.Model
         protected const sbyte RECORD_ON_PAGE = 25;
         public int AdvertID { get; set; } // if set
         public string SearchPattern { get; set; } = String.Empty; // not empty
+        public MasterCategory MasterCategory { get; set; }
         public Category Category { get; set; } // null for all
         public AddType DateAdd { get; set; } = AddType.all;
         public SortType Sort { get; set; } = SortType.dateaddDesc;
@@ -29,7 +30,7 @@ namespace MRzeszowiak.Model
                     return $"0{Page}{sortType}{RECORD_ON_PAGE}{addType}";
                 };
                 //select category without search
-                if (SearchPattern.Length == 0 && AdvertID == 0 && Category != null && Category.MasterId != 0)
+                if (SearchPattern.Length == 0 && AdvertID == 0 && Category != null)
                 {
                     urlRequest = $"{RZESZOWIAK_BASE_URL}{Category.GETPath}{GetUrlParams(RequestPage ?? 1, DateAdd, Sort)}";
                     urlRequest += (Category.SelectedChildCategory != null) ? $"&r={Category.SelectedChildCategory}" : String.Empty;
@@ -37,7 +38,7 @@ namespace MRzeszowiak.Model
                 // search string
                 if (SearchPattern.Length > 0)
                 {
-                    if (Category == null || Category.MasterId == 0)
+                    if (Category == null || MasterCategory == null)
                     {
                         urlRequest = $"{RZESZOWIAK_BASE_URL}szukaj/?kat={Category?.Id ?? 0}&pkat=0&dodane={Sort}&z={SearchPattern}";
                         urlRequest += (RequestPage ?? 0) > 0 ? $"&strona={RequestPage}" : String.Empty;
