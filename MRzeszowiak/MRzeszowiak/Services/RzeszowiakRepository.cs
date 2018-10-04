@@ -78,7 +78,8 @@ namespace MRzeszowiak.Services
 
             foreach(var cat in masterCategoryList)
                 processMainCategory(htmlBody, cat);
- 
+            // end of main method
+            // submethod sections
             void processMainCategory(StringBuilder html, MasterCategory mainCategory)
             {
                 var search = $"<div class=\"menu-left-category\">{mainCategory.Title}</div>";
@@ -90,46 +91,114 @@ namespace MRzeszowiak.Services
                 }
                 html.Remove(0, pos);
                 html.CutFoward("<ul class=\"menu-left-subcategories\">");
+
                 search = "<br/>";
                 var subcat = html.ToString(0, html.IndexOf(search, 0, true));
-                Debug.Write("subcat: " + subcat);
-                var submenu = subcat.Split(new string[] { "</li>" }, StringSplitOptions.None);
+                Debug.Write("MainCategory: " + subcat);
+                var submenu = subcat.Split(new string[] { "</li>" }, StringSplitOptions.RemoveEmptyEntries);
 
-                if(submenu.Length > 0)
-                    for(int i = 0; i < submenu.Length; i++)
-                        if((i + 1 < submenu.Length) && (submenu[i+1].IndexOf("<ul class=\"subsubcategories\">") != -1))
+                if (submenu.Length > 0)
+                    for (int i = 0; i < submenu.Length; i++)
+                        if ((i + 1 < submenu.Length) && (submenu[i + 1].IndexOf("<ul class=\"subsubcategories\">") != -1))
                         {
-                            processSubCategory(submenu[i], submenu[i + 1], mainCategory);
-                            i++;
-                        }   
+                            var subMenu = String.Empty;
+                            int b;
+                            for(b = i + 1; b < submenu.Length; b++ )
+                            {
+                                if (submenu[b].IndexOf("</ul>") != -1) break;
+                                subMenu += submenu[b];
+                            }
+                            processSubCategory(submenu[i], subMenu, mainCategory);
+                            i = ++b;
+                        }
                         else
-                            processSubCategory(submenu[i], String.Empty, mainCategory);             
+                            processSubCategory(submenu[i], String.Empty, mainCategory);
             }
 
             void processSubCategory(string html, string submenu, MasterCategory mainCategory)
             {
-                var search = $"href=\"/";
+                Debug.Write("Main html : " + html.Trim());
+                if(submenu.Length > 0)
+                    Debug.Write("Submenu : " + submenu);
+
+                // path
+                var search = "<a href=\"/";
                 var pos = html.IndexOf(search);
                 if (pos == -1)
                 {
-                    Debug.Write("processSubCategory => no submenu found");
+                    Debug.Write("processSubCategory => no path found");
                     return;
                 }
                 
-                var path = html.GetItem("href=\"/", "\"");
-                html.CutFoward("href=\"/");
-
-                if(! Int32.TryParse(path.CutFoward("-"), out int id))
+                var path = html.GetItem(search, "\">").Trim();
+                if(path.Length == 0)
                 {
-                    Debug.Write("processSubCategory => id convert fail");
+                    Debug.Write("processSubCategory => path length == 0");
+                    return;
+                }
+                html = html.CutFoward(search);
+                // id
+                var idsearch = path.LastIndexOf("-") + 1;
+                if(idsearch == 0 || !short.TryParse(path.Substring(idsearch, path.Length - idsearch), out short id))
+                {
+                    Debug.Write("processSubCategory => id not found or convert fail");
+                    return;
+                }
+                //name
+                var name = html.GetItem("</span>", "<span class=\"ilosc\"").Trim();
+                if(name.Length == 0)
+                {
+                    Debug.Write("processSubCategory => name not found");
+                    return;
+                }
+                //count
+                html = html.CutFoward("<span class=\"ilosc\"");
+                if (!short.TryParse(html.GetItem(">", "</span>"), out short count))
+                {
+                    Debug.Write("processSubCategory => count not found or convert fail");
                     return;
                 }
 
-                var name = html.GetItem("</span", "<span");
-                html.CutFoward("<span");
+                var newCategory = new Category
+                {
+                    Id = id,
+                    Title = name,
+                    Views = count,
+                    GETPath = path,
+                    Master = mainCategory,
+                };
 
-                var count = html.GetItem("class=\"ilosc\">", "</span>");
-                Debug.Write($"process : name={name} id={id} count={count}");
+                newCategory.ChildCategory = processChildcategory(submenu, newCategory);
+                categoryList.Add(newCategory);
+
+                Debug.Write($"process : name={name} path={path} id={id} count={count}");
+            }
+
+            List<ChildCategory> processChildcategory(string subhtml, Category category)
+            {
+                var resultList = new List<ChildCategory>();
+                if ((subhtml?.Length ?? 0) == 0) return resultList;
+
+                var submenu = subhtml.Split(new string[] { "<li>" }, StringSplitOptions.RemoveEmptyEntries);
+                if (submenu.Length > 0)
+                    foreach (var single in submenu)
+                    {
+                        var search = "<a href=\"/";
+                        if (single.IndexOf(search) == -1) continue;
+                        var id = single.GetItem("?r=", "\">");
+                        var title = single.GetItem("</span>", "<span").Trim();
+                        var countS = single.CutFoward("</span>");
+                        countS = countS.GetItem("\"ilosc\">", "</span>");
+                        if (!short.TryParse(countS, out short count))
+                        {
+                            Debug.Write("processChildcategory => count not found or convert fail");
+                            return resultList;
+                        }
+
+                        Debug.Write($"processChildcategory : id={id} title={title} count={count}");
+                    }
+                        
+                return resultList;
             }
             return true;
         }
@@ -227,6 +296,11 @@ namespace MRzeszowiak.Services
                     //add
                     ResponseHTMLBody.CutFoward("Dodane : <b>");
                     string aAdd = ResponseHTMLBody.ToString(0, ResponseHTMLBody.IndexOf("</b>", 0, true)).Trim();
+                    if(aAdd.Length == 0)
+                    {
+                        Debug.Write("Task<AdvertSearchResult> aAdd.Length == 0");
+                        yield break;
+                    }
 
                     yield return new AdvertShort()
                     {

@@ -33,8 +33,10 @@ namespace MRzeszowiak.Model
 
     public class ChildCategory
     {
+        public string ID { get; set; }
         public string Title { get; set; }
         public short Views { get; set; }
+        public Category ParentCategory { get; set; }
     }
 
 
