@@ -12,7 +12,7 @@ using Xamarin.Forms;
 
 namespace MRzeszowiak.Services
 {
-    class RzeszowiakRepository : IRzeszowiak
+    public class RzeszowiakRepository : IRzeszowiak
     {
         protected const string RZESZOWIAK_BASE_URL = "http://www.rzeszowiak.pl/";
 
@@ -59,7 +59,16 @@ namespace MRzeszowiak.Services
             r.Add(nCat(277, "Inne", "Dla-dzieci-Inne-277", masterCategory, null));
             //Komputery
             masterCategory = masterCategoryList[2];
-            var cat = nCat(248, "Sprzedam", "Komputery-Sprzedam-248", masterCategory, null);
+            r.Add(nCat(248, "Sprzedam", "Komputery-Sprzedam-248", masterCategory, null));
+            r.Add(nCat(249, "Kupię", "Komputery-Kupie-249", masterCategory, null));
+            r.Add(nCat(286, "Akcesoria", "Komputery-Akcesoria-286", masterCategory, null));
+            r.Add(nCat(152, "Tablety", "Komputery-Tablety-152", masterCategory, null));
+            r.Add(nCat(153, "Konsole gier", "Komputery-Konsole-gier-153", masterCategory, null));
+            r.Add(nCat(285, "Oprogramowanie", "Komputery-Oprogramowanie-285", masterCategory, null));
+            r.Add(nCat(291, "Usługi", "Komputery-Uslugi-291", masterCategory, null));
+            //Motoryzacja
+            masterCategory = masterCategoryList[3];
+            var cat = nCat(301, "Sprzedam", "Motoryzacja-Sprzedam-301", masterCategory, null);
             var child = new List<ChildCategory>
             {
                 new ChildCategory(){ID = "samochody", Title = "Samochody", ParentCategory = cat },
@@ -73,15 +82,6 @@ namespace MRzeszowiak.Services
             };
             cat.ChildCategory = child;
             r.Add(cat);
-            r.Add(nCat(249, "Kupię", "Komputery-Kupie-249", masterCategory, null));
-            r.Add(nCat(286, "Akcesoria", "Komputery-Akcesoria-286", masterCategory, null));
-            r.Add(nCat(152, "Tablety", "Komputery-Tablety-152", masterCategory, null));
-            r.Add(nCat(153, "Konsole gier", "Komputery-Konsole-gier-153", masterCategory, null));
-            r.Add(nCat(285, "Oprogramowanie", "Komputery-Oprogramowanie-285", masterCategory, null));
-            r.Add(nCat(291, "Usługi", "Komputery-Uslugi-291", masterCategory, null));
-            //Motoryzacja
-            masterCategory = masterCategoryList[3];
-            r.Add(nCat(301, "Sprzedam", "Motoryzacja-Sprzedam-301", masterCategory, null));
             r.Add(nCat(236, "Zamienię", "Motoryzacja-Zamienie-236", masterCategory, null));
             r.Add(nCat(269, "Części, Akcesoria", "Motoryzacja-Czesci--Akcesoria-269", masterCategory, null));
             r.Add(nCat(299, "Opony,felgi,koła", "Motoryzacja-Opony-felgi-kola-299", masterCategory, null));
@@ -105,8 +105,7 @@ namespace MRzeszowiak.Services
             };
             cat.ChildCategory = child;
             r.Add(cat);
-
-            cat = nCat(258, "Sprzedam (A-agencje)", "Nieruchomosci-Sprzedam-agencje-258", masterCategory, null));
+            cat = nCat(258, "Sprzedam (A-agencje)", "Nieruchomosci-Sprzedam-agencje-258", masterCategory, null);
             child = new List<ChildCategory>
             {
                 new ChildCategory(){ID = "mieszkania", Title = "Mieszkania", ParentCategory = cat },
@@ -116,10 +115,9 @@ namespace MRzeszowiak.Services
             };
             cat.ChildCategory = child;
             r.Add(cat);
-
             r.Add(nCat(308, "Kupię", "Nieruchomosci-Kupie-308", masterCategory, null));
-            r.Add(nCat(259, "Kupię (A-agencje)", "Nieruchomosci-Kupie-agencje-259", masterCategory, null));
-            cat = nCat(210, "Mam do wynajęcia", "Nieruchomosci-Mam-do-wynajecia-210", masterCategory, null));
+            r.Add(nCat(259, "Kupię (agencje)", "Nieruchomosci-Kupie-agencje-259", masterCategory, null));
+            cat = nCat(210, "Mam do wynajęcia", "Nieruchomosci-Mam-do-wynajecia-210", masterCategory, null);
             child = new List<ChildCategory>
             {
                 new ChildCategory(){ID = "pokoj", Title = "Pokój", ParentCategory = cat },
@@ -134,7 +132,6 @@ namespace MRzeszowiak.Services
             r.Add(nCat(123, "Szukam do wynajęcia (A)", "Nieruchomosci-Szukam-do-wynajecia-agencje--123", masterCategory, null));
             r.Add(nCat(125, "Szukam współlokatora(ki)", "Nieruchomosci-Szukam-wspollokatoraki-125", masterCategory, null));
             r.Add(nCat(217, "Zamienię", "Nieruchomosci-Zamienie-217", masterCategory, null));
-
             //Poznajmy się
             masterCategory = masterCategoryList[6];
             r.Add(nCat(267, "Pani pozna ...", "Poznajmy-sie-Pani-pozna--267", masterCategory, null));
@@ -248,6 +245,7 @@ namespace MRzeszowiak.Services
         {
             if (ForceReload == true)
             {
+                Debug.Write("GetCategoryListAsync => ForceReload");
                 var HttpResult = await GetWeb.GetWebPage("http://www.rzeszowiak.pl/kontakt/");
                 if (!HttpResult.Success)
                 {
@@ -282,130 +280,45 @@ namespace MRzeszowiak.Services
                 return false;
             }
 
-            foreach(var cat in masterCategoryList)
-                processMainCategory(htmlBody, cat);
-            // end of main method
-            // submethod sections
-            void processMainCategory(StringBuilder html, MasterCategory mainCategory)
+            foreach(var cat in categoryList)
             {
-                var search = $"<div class=\"menu-left-category\">{mainCategory.Title}</div>";
-                var pos = html.IndexOf(search, 0, true);
-                if (pos == -1)
-                {
-                    Debug.Write($"UpdateCategoryList => no menu {mainCategory.Title} found");
-                    return;
-                }
-                html.Remove(0, pos);
-                html.CutFoward("<ul class=\"menu-left-subcategories\">");
+                short views;
+                if (!processMainCategory(htmlBody, cat.GETPath, out views)) return false;
+                cat.Views = views;
 
-                search = "<br/>";
-                var subcat = html.ToString(0, html.IndexOf(search, 0, true));
-                //Debug.Write("MainCategory: " + subcat);
-                var submenu = subcat.Split(new string[] { "</li>" }, StringSplitOptions.RemoveEmptyEntries);
-
-                if (submenu.Length > 0)
-                    for (int i = 0; i < submenu.Length; i++)
-                        if ((i + 1 < submenu.Length) && (submenu[i + 1].IndexOf("<ul class=\"subsubcategories\">") != -1))
-                        {
-                            var subMenu = String.Empty;
-                            int b;
-                            for(b = i + 1; b < submenu.Length; b++ )
-                            {
-                                if (submenu[b].IndexOf("</ul>") != -1) break;
-                                subMenu += submenu[b];
-                            }
-                            processSubCategory(submenu[i], subMenu, mainCategory);
-                            i = ++b;
-                        }
-                        else
-                            processSubCategory(submenu[i], String.Empty, mainCategory);
+                if ((cat.ChildCategory?.Count??0) > 0)
+                    foreach (var child in cat.ChildCategory)
+                    {
+                        if (!processMainCategory(htmlBody, $"{cat.GETPath}?r={child.ID}", out views)) return false;
+                        child.Views = views;
+                    } 
             }
 
-            void processSubCategory(string html, string submenu, MasterCategory mainCategory)
+            bool processMainCategory(StringBuilder html, string categoryPath, out short views)
             {
-                //Debug.Write("Main html : " + html.Trim());
-                if(submenu.Length > 0)
-                    Debug.Write("Submenu : " + submenu);
-
-                // path
-                var search = "<a href=\"/";
-                var pos = html.IndexOf(search);
-                if (pos == -1)
+                views = 0;
+                bool cutSB(string cutPatter, string debugMsg)
                 {
-                    Debug.Write("processSubCategory => no path found");
-                    return;
-                }
-                
-                var path = html.GetItem(search, "\">").Trim();
-                if(path.Length == 0)
-                {
-                    Debug.Write("processSubCategory => path length == 0");
-                    return;
-                }
-                html = html.CutFoward(search);
-                // id
-                var idsearch = path.LastIndexOf("-") + 1;
-                if(idsearch == 0 || !short.TryParse(path.Substring(idsearch, path.Length - idsearch), out short id))
-                {
-                    Debug.Write("processSubCategory => id not found or convert fail");
-                    return;
-                }
-                //name
-                var name = html.GetItem("</span>", "<span class=\"ilosc\"").Trim();
-                if(name.Length == 0)
-                {
-                    Debug.Write("processSubCategory => name not found");
-                    return;
-                }
-                //count
-                html = html.CutFoward("<span class=\"ilosc\"");
-                if (!short.TryParse(html.GetItem(">", "</span>"), out short count))
-                {
-                    Debug.Write("processSubCategory => count not found or convert fail");
-                    return;
-                }
-
-                var newCategory = new Category
-                {
-                    Id = id,
-                    Title = name,
-                    Views = count,
-                    GETPath = path,
-                    Master = mainCategory,
+                    var pos = html.IndexOf(cutPatter, 0, true);
+                    if (pos == -1)
+                    {
+                        Debug.Write(debugMsg);
+                        return false;
+                    }
+                    pos += cutPatter.Length;
+                    html.Remove(0, pos);
+                    return true;
                 };
 
-                newCategory.ChildCategory = processChildcategory(submenu, newCategory);
-                categoryList.Add(newCategory);
+                if (!cutSB($"href=\"/{categoryPath}\">", $"UpdateCategoryList => no menu {categoryPath} found")) return false;
+                if (!cutSB("class=\"ilosc\">", "UpdateCategoryList => no count found")) return false;
 
-                //Debug.Write($"process : name={name} path={path} id={id} count={count}");
-                Debug.Write($"r.Add(nCat({id}, \"{name}\", \"{path}\", masterCategory, new List<ChildCategory>()));");
-            }
-
-            List<ChildCategory> processChildcategory(string subhtml, Category category)
-            {
-                var resultList = new List<ChildCategory>();
-                if ((subhtml?.Length ?? 0) == 0) return resultList;
-
-                var submenu = subhtml.Split(new string[] { "<li>" }, StringSplitOptions.RemoveEmptyEntries);
-                if (submenu.Length > 0)
-                    foreach (var single in submenu)
-                    {
-                        var search = "<a href=\"/";
-                        if (single.IndexOf(search) == -1) continue;
-                        var id = single.GetItem("?r=", "\">");
-                        var title = single.GetItem("</span>", "<span").Trim();
-                        var countS = single.CutFoward("</span>");
-                        countS = countS.GetItem("\"ilosc\">", "</span>");
-                        if (!short.TryParse(countS, out short count))
-                        {
-                            Debug.Write("processChildcategory => count not found or convert fail");
-                            return resultList;
-                        }
-
-                        Debug.Write($"processChildcategory : id={id} title={title} count={count}");
-                    }
-                        
-                return resultList;
+                if(! short.TryParse(html.ToString(0, html.IndexOf("</span>", 0, true)), out views))
+                {
+                    Debug.Write("UpdateCategoryList => count convert fail");
+                    return false;
+                }
+                return true;
             }
             return true;
         }
