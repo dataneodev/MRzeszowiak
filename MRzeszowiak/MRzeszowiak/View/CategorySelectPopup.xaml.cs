@@ -23,5 +23,10 @@ namespace MRzeszowiak.View
         {
             PopupNavigation.Instance.PopAsync(true);
         }
+
+        private void categoryListView_ItemTapped(object sender, ItemTappedEventArgs e)
+        {
+            ((ListView)sender).SelectedItem = null;
+        }
     }
 }

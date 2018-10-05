@@ -36,7 +36,7 @@ namespace MRzeszowiak.Services
             new MasterCategory { Id = 33, Title = "Zwierzęta" }
         };
 
-        protected List<Category> categoryList = getCategoryList();
+        protected static List<Category> categoryList = getCategoryList();
 
         protected static List<Category> getCategoryList()
         {
@@ -241,6 +241,7 @@ namespace MRzeszowiak.Services
                 };
             }
         }
+
         public async Task<IList<Category>> GetCategoryListAsync(bool ForceReload = false, Action<string> userNotify = null)
         {
             if (ForceReload == true)
@@ -282,19 +283,18 @@ namespace MRzeszowiak.Services
 
             foreach(var cat in categoryList)
             {
-                short views;
-                if (!processMainCategory(htmlBody, cat.GETPath, out views)) return false;
+                if (!processPath(htmlBody, cat.GETPath, out short views)) return false;
                 cat.Views = views;
 
                 if ((cat.ChildCategory?.Count??0) > 0)
                     foreach (var child in cat.ChildCategory)
                     {
-                        if (!processMainCategory(htmlBody, $"{cat.GETPath}?r={child.ID}", out views)) return false;
+                        if (!processPath(htmlBody, $"{cat.GETPath}?r={child.ID}", out views)) return false;
                         child.Views = views;
                     } 
             }
 
-            bool processMainCategory(StringBuilder html, string categoryPath, out short views)
+            bool processPath(StringBuilder html, string categoryPath, out short views)
             {
                 views = 0;
                 bool cutSB(string cutPatter, string debugMsg)

@@ -14,6 +14,7 @@ namespace MRzeszowiak.ViewModel
         public PreviewViewModel PreviewViewModel => ServiceLocator.Current.GetInstance<PreviewViewModel>();
         public SettingViewModel SettingViewModel => ServiceLocator.Current.GetInstance<SettingViewModel>();
         public PreViewImageViewModel PreViewImageViewModel => ServiceLocator.Current.GetInstance<PreViewImageViewModel>();
+        public CategorySelectViewModel CategorySelectViewModel => ServiceLocator.Current.GetInstance<CategorySelectViewModel>();
 
         static ViewModelLocator()
         {
@@ -23,6 +24,7 @@ namespace MRzeszowiak.ViewModel
             SimpleIoc.Default.Register<PreviewViewModel>(() => new PreviewViewModel(new RzeszowiakRepository(), new RzeszowiakImageContainer()));
             SimpleIoc.Default.Register<SettingViewModel>();
             SimpleIoc.Default.Register<PreViewImageViewModel>();
+            SimpleIoc.Default.Register<CategorySelectViewModel>(() => new CategorySelectViewModel(new RzeszowiakRepository()));
         }          
     }
 }

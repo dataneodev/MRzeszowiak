@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MRzeszowiak.Services
 {
-    interface IRzeszowiak
+    public interface IRzeszowiak
     {
         Task<IList<Category>> GetCategoryListAsync(bool ForceReload = false, Action<string> userNotify = null);
         Task<AdvertSearchResult> GetAdvertListAsync(AdvertSearch searchParams, Action<string> userNotify = null);
