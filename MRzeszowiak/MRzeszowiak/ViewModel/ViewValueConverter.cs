@@ -83,4 +83,45 @@ namespace MRzeszowiak.ViewModel
             return true;
         }
     }
+
+    public class IsTextNull : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if(value == null || (value as string).Length == 0)
+            { return false; }
+            else
+            { return true; }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return true;
+        }
+    }
+
+    public class CatSelectImageToString : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            CatSelectImage image = value == null ? CatSelectImage.none : (CatSelectImage)value ;
+            switch (image)
+            {
+                case CatSelectImage.arrowDeeper:
+                    return "inside_category.png";
+                case CatSelectImage.selected:
+                    return "selected_category.png";
+                case CatSelectImage.arrowUp:
+                    return "up_category.png";
+                case CatSelectImage.none:
+                    return null;
+            }
+            return null;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return true;
+        }
+    }
 }

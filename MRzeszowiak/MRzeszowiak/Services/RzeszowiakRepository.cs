@@ -242,28 +242,38 @@ namespace MRzeszowiak.Services
             }
         }
 
-        public async Task<IList<Category>> GetCategoryListAsync(bool ForceReload = false, Action<string> userNotify = null)
+        public async Task<IList<MasterCategory>> GetMasterCategoryListAsync(bool ForceReload = false)
         {
             if (ForceReload == true)
-            {
-                Debug.Write("GetCategoryListAsync => ForceReload");
-                var HttpResult = await GetWeb.GetWebPage("http://www.rzeszowiak.pl/kontakt/");
-                if (!HttpResult.Success)
-                {
-                    Debug.Write("GetCategoryListAsync => !HttpResult.Success");
-                    return categoryList;
-                }
+                await ForceUpdate();
+            return masterCategoryList;
+        }
 
-                if (HttpResult.BodyString.Length == 0)
-                {
-                    Debug.Write("GetCategoryListAsync => responseString.Length == 0");
-                    return categoryList;
-                }
-
-                UpdateCategoryList(HttpResult.BodyString);
-                HttpResult.BodyString.Clear();
-            }
+        public async Task<IList<Category>> GetCategoryListAsync(bool ForceReload = false)
+        {
+            if (ForceReload == true)
+                await ForceUpdate();
             return categoryList;
+        }
+
+        protected async Task ForceUpdate()
+        {
+            Debug.Write("ForeceUpdate");
+            var HttpResult = await GetWeb.GetWebPage("http://www.rzeszowiak.pl/kontakt/");
+            if (!HttpResult.Success)
+            {
+                Debug.Write("GetCategoryListAsync => !HttpResult.Success");
+                return;
+            }
+
+            if (HttpResult.BodyString.Length == 0)
+            {
+                Debug.Write("GetCategoryListAsync => responseString.Length == 0");
+                return;
+            }
+
+            UpdateCategoryList(HttpResult.BodyString);
+            HttpResult.BodyString.Clear();
         }
 
         protected bool UpdateCategoryList(StringBuilder htmlBody)
@@ -293,7 +303,17 @@ namespace MRzeszowiak.Services
                         child.Views = views;
                     } 
             }
-
+            
+            // update main category views
+            foreach(var mcar in masterCategoryList)
+            {
+                var listCat = categoryList.FindAll((cat) => { if (cat.Master.Id == mcar.Id){ return true; } else { return false; } });
+                short sumViews = 0;
+                foreach (var item in listCat)
+                    sumViews += item.Views;
+                mcar.Views = sumViews;
+            }       
+                    
             bool processPath(StringBuilder html, string categoryPath, out short views)
             {
                 views = 0;

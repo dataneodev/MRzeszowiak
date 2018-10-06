@@ -9,9 +9,11 @@
     <Import_RootNamespace>MRzeszowiak</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)View\App.xaml" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\App.xaml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Behaviors\BehaviorBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Behaviors\EventToCommandBehavior.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Behaviors\InfiniteScrolling.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\CustomListview.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\WebPage.cs" />
@@ -37,96 +39,96 @@
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\SettingViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ViewModelLocator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ViewValueConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)View\AboutPage.xaml.cs">
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\AboutPage.xaml.cs">
       <DependentUpon>AboutPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)View\App.xaml.cs">
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)View\CategorySelectPopup.xaml.cs">
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\CategorySelectPopup.xaml.cs">
       <DependentUpon>CategorySelectPopup.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)View\EmailPage.xaml.cs">
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\EmailPage.xaml.cs">
       <DependentUpon>EmailPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)View\ListPage.xaml.cs">
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\ListPage.xaml.cs">
       <DependentUpon>ListPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)View\MenuPage.xaml.cs">
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\MenuPage.xaml.cs">
       <DependentUpon>MenuPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)View\PreviewImagePage.xaml.cs">
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\PreviewImagePage.xaml.cs">
       <DependentUpon>PreviewImagePage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)View\PreviewPage.xaml.cs">
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\PreviewPage.xaml.cs">
       <DependentUpon>PreviewPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)View\SearchMenuPage.xaml.cs">
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\SearchMenuPage.xaml.cs">
       <DependentUpon>SearchMenuPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)View\SettingPage.xaml.cs">
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\SettingPage.xaml.cs">
       <DependentUpon>SettingPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)View\MenuPage.xaml">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\MenuPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)View\SettingPage.xaml">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\SettingPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)View\ListPage.xaml">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\ListPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)View\PreviewPage.xaml">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\PreviewPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)View\PreviewImagePage.xaml">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\PreviewImagePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)View\AboutPage.xaml">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\AboutPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)View\EmailPage.xaml">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\EmailPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)View\SearchMenuPage.xaml">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\SearchMenuPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)View\CategorySelectPopup.xaml">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\CategorySelectPopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>

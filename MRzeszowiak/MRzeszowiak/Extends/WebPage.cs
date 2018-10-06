@@ -123,7 +123,6 @@ namespace MRzeszowiak.Extends
                             using (HttpContent content = response.Content)
                             {
                                 var byteArray = await content.ReadAsStringAsync();
-                                Debug.Write("PostWebPage => " + byteArray);
                                 BodyString.Append(byteArray);
                             }
                         }

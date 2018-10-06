@@ -8,12 +8,12 @@ namespace MRzeszowiak.Model
     {
         public short Id { get; set; }
         public string Title { get; set; }
+        public short Views { get; set; }
     }
 
     public class Category : MasterCategory
     {
         public MasterCategory Master { get; set; } 
-        public short Views { get; set; }
         public string GETPath { get; set; } //ex. Dla-domu-Meble-281 or 
         public List<ChildCategory> ChildCategory { get; set; }
 
