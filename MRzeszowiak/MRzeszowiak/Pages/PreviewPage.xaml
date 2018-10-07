@@ -13,7 +13,7 @@
         <ResourceDictionary>
             <ViewModel:ImageFromFavorite x:Key="ImageFromFavorite" />
             <ViewModel:AbsHeight x:Key="AbsHeight" />
-            <ViewModel:PhoneImageVisible x:Key="PhoneImageVisible" />
+            <ViewModel:IsValueNotNull x:Key="PhoneImageVisible" />
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Content>

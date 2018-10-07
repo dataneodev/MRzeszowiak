@@ -7,11 +7,14 @@
         xmlns:local="clr-namespace:MRzeszowiak"
         xmlns:ViewModel="clr-namespace:MRzeszowiak.ViewModel"
         xmlns:Behaviors="clr-namespace:MRzeszowiak.Behaviors"
+        xmlns:Converters="clr-namespace:MRzeszowiak.Converters"
         BindingContext="{Binding CategorySelectViewModel, Source={StaticResource Locator}}">
     <pages:PopupPage.Resources>
         <ResourceDictionary>
-            <ViewModel:IsTextNull x:Key="IsTextNull"/>
+            <ViewModel:IsTextNotNull x:Key="IsTextNull"/>
+            <ViewModel:CatSelectImageToBool x:Key="CatSelectImageToBool"/>
             <ViewModel:CatSelectImageToString x:Key="CatSelectImageToString"/>
+            <Converters:SelectedItemEventArgsToSelectedItemConverter x:Key="SelectedItemConverter"/>
         </ResourceDictionary>
     </pages:PopupPage.Resources>
     <Grid Margin="20" 
@@ -55,11 +58,12 @@
                    HeightRequest="20"
                    Margin="10"/>
         <!--second header-->
-            <BoxView Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" 
+        <BoxView Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" 
                      BindingContext="{Binding SecondCatButton}"
                      IsVisible="{Binding IsVisible}" 
                      BackgroundColor="{x:Static local:App.highlightRow}"/>
-            <Label Grid.Column="0" Grid.Row="1"
+
+        <Label Grid.Column="0" Grid.Row="1"
                        BindingContext="{Binding SecondCatButton}"
                        IsVisible="{Binding IsVisible}"
                        Text="{Binding Title}" 
@@ -67,7 +71,9 @@
                        TextColor="Black"
                        FontAttributes="Bold"  
                        Margin="14"  
-                       VerticalOptions="FillAndExpand"/>
+                       VerticalOptions="FillAndExpand" 
+                       HorizontalOptions="FillAndExpand"
+                       />
             <Image Grid.Column="1" Grid.Row="1"
                    BindingContext="{Binding SecondCatButton}"
                    Source="{Binding Image, Converter={StaticResource CatSelectImageToString}}"
@@ -108,7 +114,9 @@
                       ItemTapped="categoryListView_ItemTapped"
                       BackgroundColor="White">
             <ListView.Behaviors>
-                <Behaviors:EventToCommandBehavior EventName="ItemTapped" Command="{Binding ListViewItemTapped}" CommandParameter="." />
+                <Behaviors:EventToCommandBehavior EventName="ItemTapped" 
+                                                  Command="{Binding CategoryTappet}"
+                                                  Converter="{StaticResource SelectedItemConverter}" />
             </ListView.Behaviors>
             <ListView.ItemTemplate>
                 <DataTemplate>
@@ -131,6 +139,7 @@
                                    Margin="0,-6,0,0"/>
                             <Image Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
                                    Source="{Binding Image, Converter={StaticResource CatSelectImageToString}}"
+                                   IsVisible="{Binding Image, Converter={StaticResource CatSelectImageToBool}}"
                                    HorizontalOptions="End"
                                    VerticalOptions="Center"
                                    HeightRequest="24"/>

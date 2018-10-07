@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Behaviors\BehaviorBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Behaviors\EventToCommandBehavior.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Behaviors\InfiniteScrolling.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\SelectedItemEventArgsToSelectedItemConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\CustomListview.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\WebPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\ImageFit.cs" />

@@ -68,7 +68,7 @@ namespace MRzeszowiak.ViewModel
         }
     }
 
-    public class PhoneImageVisible : IValueConverter
+    public class IsValueNotNull : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -84,11 +84,11 @@ namespace MRzeszowiak.ViewModel
         }
     }
 
-    public class IsTextNull : IValueConverter
+    public class IsTextNotNull : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if(value == null || (value as string).Length == 0)
+            if(value == null || ((value as string)?.Length??0) == 0)
             { return false; }
             else
             { return true; }
@@ -117,6 +117,21 @@ namespace MRzeszowiak.ViewModel
                     return null;
             }
             return null;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return true;
+        }
+    }
+
+    public class CatSelectImageToBool : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            CatSelectImage image = value == null ? CatSelectImage.none : (CatSelectImage)value;
+            if (image == CatSelectImage.none) return false;
+            return true;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
