@@ -1,6 +1,7 @@
 ﻿using GalaSoft.MvvmLight.Command;
 using MRzeszowiak.Model;
 using MRzeszowiak.Services;
+using Rg.Plugins.Popup.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -70,9 +71,24 @@ namespace MRzeszowiak.ViewModel
                 }
             }
         }
+
+        private string buttonCategoryTitle;
+
+        public string ButtonCategoryTitle
+        {
+            get { return buttonCategoryTitle; }
+            set
+            {
+                buttonCategoryTitle = value;
+                OnPropertyChanged();
+            }
+        }
+
         public bool ErrorPanelVisible => (errorMessage?.Length ?? 0) > 0 ? true : false;
         public ICommand LoadNextAdvert { get; private set; }
         public ICommand ListViewItemTapped { get; private set; }
+        public ICommand CategorySelectButtonTaped { get; private set; }
+
         protected AdvertSearchResult _lastAdvertSearchResult;
         protected AdvertSearch _lastAdvertSearch;
 
@@ -99,10 +115,35 @@ namespace MRzeszowiak.ViewModel
 
             LoadNextAdvert = new RelayCommand(async ()=> await LoadNextItem());
             ListViewItemTapped = new RelayCommand<AdvertShort>((item) => ListViewTapped(item));
-            Activity = true;
+            CategorySelectButtonTaped = new RelayCommand(async () => 
+            {
+                await PopupNavigation.Instance.PushAsync(App.CatalogPopUp, true);
+                MessagingCenter.Send<string, Action<Category>>("MRzeszowiak", "SelectCategory", CategoryUserSelectCallbackAsync);
+            });
         }
 
-        protected async void ListViewTapped(AdvertShort advertShort)
+        public async void CategoryUserSelectCallbackAsync(Category selCategory)
+        {
+            Debug.Write("CategoryUserSelectCallbackAsync");
+            if (_lastAdvertSearch == null)
+            {
+                _lastAdvertSearch = new AdvertSearch() ;
+            }
+            _lastAdvertSearch.Category = selCategory;
+            _lastAdvertSearch.MasterCategory = selCategory?.Master;
+
+            if(selCategory == null)
+                ButtonCategoryTitle = "Wszystkie kategorie";
+            else
+            {
+                ButtonCategoryTitle = selCategory.Master.Title + " - " + selCategory.Title;
+                if (selCategory.SelectedChildCategory != null) ButtonCategoryTitle += " - " + selCategory.SelectedChildCategory.Title;
+            }
+
+            await SearchExecute(_lastAdvertSearch, false);
+        }
+
+        protected void ListViewTapped(AdvertShort advertShort)
         {
 
         }
@@ -122,6 +163,11 @@ namespace MRzeszowiak.ViewModel
             }
         }
 
+        protected  void categoryChange(Category category)
+        {
+
+        }
+
         // refreshing list
         protected async void RefreshList()
         {
@@ -133,6 +179,7 @@ namespace MRzeszowiak.ViewModel
         protected async void LoadLastOnStartup()
         {
             //Debug.Write("LoadLastOnStartup");
+            ButtonCategoryTitle = "Wszystkie kategorie";
             await SearchExecute(new AdvertSearch(), false);
         }
 
@@ -153,6 +200,7 @@ namespace MRzeszowiak.ViewModel
         protected async Task<bool> SearchExecute(AdvertSearch advertSearch, bool addLoad = false)
         {
             Debug.Write("SearchExecute");
+            Activity = true;
             if (advertSearch == null)
             {
                 Debug.Write("SearchExecute => advertSearch == null");
@@ -167,6 +215,7 @@ namespace MRzeszowiak.ViewModel
                 FotterActivity = true;
                 Activity = false;
             }
+
             else
             {
                 Activity = true;

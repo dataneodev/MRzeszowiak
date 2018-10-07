@@ -1,6 +1,7 @@
 ﻿using GalaSoft.MvvmLight.Command;
 using MRzeszowiak.Model;
 using MRzeszowiak.Services;
+using Rg.Plugins.Popup.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -19,55 +20,78 @@ namespace MRzeszowiak.ViewModel
 
         public event PropertyChangedEventHandler PropertyChanged;
         public ObservableCollection<CatDisplay> CategoryAction { get; private set; } = new ObservableCollection<CatDisplay>();
-
-        protected CatButtonDisplay firstCatButton;
-        public CatButtonDisplay FirstCatButton
-        {
-            get { return firstCatButton;  }
-            set
-            {
-                firstCatButton = value;
-                OnPropertyChanged();
-            }
-        }
-
-        protected CatButtonDisplay secondCatButton;
-        public CatButtonDisplay SecondCatButton
-        {
-            get { return secondCatButton; }
-            set
-            {
-                secondCatButton = value;
-                OnPropertyChanged();
-            }
-        }
-
-        protected CatButtonDisplay thirdCatButton;
-        public CatButtonDisplay ThirdCatButton
-        {
-            get { return thirdCatButton; }
-            set
-            {
-                thirdCatButton = value;
-                OnPropertyChanged();
-            }
-        }
+        public ObservableCollection<CatButtonDisplay> ButtonList { get; private set; } = new ObservableCollection<CatButtonDisplay>();
 
         public ICommand CategoryTappet { get; private set; }
-        public ICommand FirstButtontapped { get; private set; }
-        public ICommand SecondButtontapped { get; private set; }
+        public ICommand ButtonTappped { get; private set; }
+        private Action<Category> callbackCategoryResult;
 
         protected Category LastSelectedCategory { get; set; }
-        
+
+        public short buttonListViewHeight 
+        {
+           get
+            {
+                short rowHeight = 50;
+                short result = 0;
+                foreach(var item in ButtonList)
+                    if (item.IsVisible) { result += (short)(rowHeight + 0); }
+                return result;
+            } 
+        }
+
         public CategorySelectViewModel(IRzeszowiak RzeszowiakRepository)
         {
             rzeszowiakRepository = RzeszowiakRepository;
-            FirstCatButton = new CatButtonDisplay { Title = "", IsVisible = false, Image = CatSelectImage.none };
-            SecondCatButton = new CatButtonDisplay { Title = "", IsVisible = false, Image = CatSelectImage.none };
-            ThirdCatButton = new CatButtonDisplay { Title = "", IsVisible = false, Image = CatSelectImage.none };
-
+            ButtonList.Add(new CatButtonDisplay(1) { Title = "", IsVisible = false, Image = CatSelectImage.none });
+            ButtonList.Add(new CatButtonDisplay(2) { Title = "", IsVisible = false, Image = CatSelectImage.none });
+            ButtonList.Add(new CatButtonDisplay(3) { Title = "", IsVisible = false, Image = CatSelectImage.none });
             CategoryTappet = new Command<CatDisplay>(ItemTapedAsync);
-            FillCategoryActionAsync();
+            ButtonTappped = new Command<CatButtonDisplay>(ButtonTappedAsync);
+
+            MessagingCenter.Subscribe<string, Action<Category>>("MRzeszowiak", "SelectCategory", (sender, action) => {
+                StartCategorySelect(action);
+            });
+            DisplayCategoryAsync(null);
+        }
+
+        public void StartCategorySelect(Action<Category> callBack)
+        {
+            callbackCategoryResult = callBack;
+        }
+
+        protected async void ButtonTappedAsync(CatButtonDisplay button)
+        {
+            Debug.Write("ButtonTapped");
+            if (button == null) return;
+            switch (button.ButtonNo)
+            {
+                case 1:
+                    if (button.Image == CatSelectImage.arrowUp)
+                        await DisplayCategoryAsync(null);
+                    break;
+                case 2:
+                    if (button.Image == CatSelectImage.arrowUp)
+                        await DisplayCategoryAsync(button.Category as MasterCategory);
+                    break;
+                case 3:
+                    if (button.Image == CatSelectImage.arrowUp)
+                        await DisplayCategoryAsync(button.Category as Category);
+                    break;
+            }
+
+        }
+
+        protected void SetButton(byte buttonNo, string title, bool isVisible, 
+                        CatSelectImage image = CatSelectImage.none, object category = null)
+        {
+            if (buttonNo < 1 && buttonNo > 3) return;
+            var button = ButtonList[buttonNo - 1];
+            button.Title = title;
+            button.IsVisible = isVisible;
+            button.Image = image;
+            button.Category = category;
+            OnPropertyChanged("buttonListViewHeight");
         }
 
         protected async void ItemTapedAsync(CatDisplay catTapped)
@@ -83,12 +107,7 @@ namespace MRzeszowiak.ViewModel
             if (catTapped.CategoryObj == null)
             {
                 Debug.Write("Tapped all category");
-                LastSelectedCategory = null;
-                if(SecondCatButton.masterCategory != null)
-                {
-                   // LastSelectedCategory = SecondCatButton.masterCategory;
-                }
-                //close
+                Select(catTapped, null);
                 return;
             }
 
@@ -104,16 +123,14 @@ namespace MRzeszowiak.ViewModel
                 Debug.Write("Tapped CategoryObj is Category");
                 var category = catTapped.CategoryObj as Category;
 
-                if ((category.ChildCategory?.Count ?? 0) > 0)
+                if (((category.ChildCategory?.Count ?? 0) > 0) && (catTapped.Title.IndexOf($"Wszystkie w {category.Title}") == -1))
                 {
-                    // displaing more
-                    await DisplayCategoryAsync(category);
+                    await DisplayCategoryAsync(category); // displaing more
                 }
                 else
                 {
                     category.SelectedChildCategory = null;
-                    LastSelectedCategory = category;
-                    catTapped.Image = CatSelectImage.selected;
+                    Select(catTapped, category);
                 }
             }
 
@@ -121,29 +138,42 @@ namespace MRzeszowiak.ViewModel
             {
                 Debug.Write("Tapped CategoryObj is ChildCategory");
                 var child = catTapped.CategoryObj as ChildCategory;
-                LastSelectedCategory = child?.ParentCategory;
-                LastSelectedCategory.SelectedChildCategory = child;
-                catTapped.Image = CatSelectImage.selected;
+                Select(catTapped, child?.ParentCategory, child);
             }
+        }
+
+        protected CatDisplay lastSelect;
+        protected CatSelectImage lastImageState;
+        protected void Select(CatDisplay catDisplay, Category selCategory, ChildCategory childCategory = null)
+        {
+            Debug.Write("Select " + catDisplay?.Title ?? "null");
+
+            if (lastSelect != null)
+                lastSelect.Image = lastImageState;
+            lastSelect = catDisplay;
+
+            lastImageState = catDisplay?.Image ?? CatSelectImage.none;
+
+            LastSelectedCategory = selCategory;
+            if(selCategory != null)
+                LastSelectedCategory.SelectedChildCategory = childCategory;
+            catDisplay.Image = CatSelectImage.selected;
+
+            PopupNavigation.Instance.PopAsync(true);
+            callbackCategoryResult?.Invoke(selCategory);            
         }
 
         protected async Task DisplayCategoryAsync(object categoryToShow)
         {
-            FirstCatButton.IsVisible = true;
-            FirstCatButton.Title = "Wszystkie kategorie";
-
             CategoryAction.Clear();
             // displaying main category
             if (categoryToShow == null)
             {
                 Debug.Write("Displaing categoryToShow is null");
                 int AllViews = 0;
-                FirstCatButton.Image = CatSelectImage.none;
-                FirstCatButton.masterCategory = null;
-                SecondCatButton.masterCategory = null;
-                ThirdCatButton.masterCategory = null;
-                SecondCatButton.IsVisible = false;
-                ThirdCatButton.IsVisible = false;
+                SetButton(1, "Wszystkie kategorie", true);
+                SetButton(2, String.Empty, false);
+                SetButton(3, String.Empty, false);
 
                 var categoryList = await rzeszowiakRepository.GetMasterCategoryListAsync();
                 foreach(var item in categoryList)
@@ -169,79 +199,85 @@ namespace MRzeszowiak.ViewModel
             }
 
             // display category
-            if (categoryToShow.GetType() == typeof(MasterCategory))
+            if (categoryToShow != null &&  categoryToShow?.GetType() == typeof(MasterCategory))
             {
                 Debug.Write("Displaing categoryToShow is MasterCategory");
                 var master = categoryToShow as MasterCategory;
 
-                FirstCatButton.Image = CatSelectImage.arrowUp;
-                FirstCatButton.masterCategory = master;
-                SecondCatButton.IsVisible = true;
-                SecondCatButton.Title = master.Title;
-                SecondCatButton.Image = CatSelectImage.none;
-                SecondCatButton.masterCategory = master;
-                ThirdCatButton.IsVisible = false;
-                ThirdCatButton.masterCategory = null;
+                SetButton(1, "Wszystkie kategorie", true, CatSelectImage.arrowUp, master);
+                SetButton(2, master.Title, true, CatSelectImage.none, master);
+                SetButton(3, String.Empty, false);
 
                 var categoryList = await rzeszowiakRepository.GetCategoryListAsync();
                 foreach (var category in categoryList)
                     if (master.Id == category.Master.Id)
-                        CategoryAction.Add(
-                            new CatDisplay
+                    {
+                        var catDisplay = new CatDisplay
                             {
                                 Title = category.Title,
                                 Views = category.Views,
-                                Image = (LastSelectedCategory?.Id ?? 0) == category.Id ? CatSelectImage.selected :
+                                Image = ((LastSelectedCategory?.Id ?? 0) == category.Id) && (category.SelectedChildCategory == null)
+                                        && ((category.ChildCategory?.Count ?? 0) == 0) ? CatSelectImage.selected :
                                         ((category.ChildCategory?.Count ?? 0) > 0 ? CatSelectImage.arrowDeeper : CatSelectImage.none),
                                 CategoryObj = category,
-                            });
+                            };
+
+                        CategoryAction.Add(catDisplay);
+                        if (catDisplay.Image == CatSelectImage.selected)
+                        {
+                            lastSelect = catDisplay;
+                            lastImageState = (category.ChildCategory?.Count ?? 0) > 0 ? CatSelectImage.arrowDeeper : CatSelectImage.none;
+                        }    
+                    }
             }
 
             //display childCategory
-            if (categoryToShow.GetType() == typeof(Category))
+            if (categoryToShow != null && categoryToShow?.GetType() == typeof(Category))
             {
                 Debug.Write("Displaing categoryToShow is Category");
                 var category = categoryToShow as Category;
 
-                FirstCatButton.Image = CatSelectImage.arrowUp;
-                FirstCatButton.masterCategory = category.Master;
-                SecondCatButton.IsVisible = true;
-                SecondCatButton.Title = category.Master.Title;
-                SecondCatButton.Image = CatSelectImage.arrowUp;
-                SecondCatButton.masterCategory = category.Master;
-                ThirdCatButton.IsVisible = true;
-                ThirdCatButton.Title = category.Title;
-                ThirdCatButton.Image = CatSelectImage.none;
-                ThirdCatButton.masterCategory = category;
+                SetButton(1, "Wszystkie kategorie", true, CatSelectImage.arrowUp, category.Master);
+                SetButton(2, category.Master.Title, true, CatSelectImage.arrowUp, category.Master);
+                SetButton(3, category.Title, true, CatSelectImage.none, category);
 
-                CategoryAction.Add(new CatDisplay
+                var catDisplay = new CatDisplay
                 {
                     Title = $"Wszystkie w {category.Title}",
                     Views = category.Views,
-                    Image = (LastSelectedCategory?.Id ?? 0) == category.Id ? CatSelectImage.selected : CatSelectImage.none,
-                    CategoryObj = null,
-                });
+                    Image = ((LastSelectedCategory?.Id ?? 0) == category.Id) && (LastSelectedCategory?.SelectedChildCategory == null) ?
+                            CatSelectImage.selected : CatSelectImage.none,
+                    CategoryObj = category,
+                };
+
+                CategoryAction.Add(catDisplay);
+                if (catDisplay.Image == CatSelectImage.selected)
+                {
+                    lastSelect = catDisplay;
+                    lastImageState = CatSelectImage.none;
+                }
 
                 foreach (var child in category.ChildCategory)
                 {
-                    CategoryAction.Add(
-                        new CatDisplay
+                    catDisplay = new CatDisplay
                         {
                             Title = child.Title,
-                            Views = child.Views,
-                            Image = CatSelectImage.none,
-                            //Image = ((LastSelectedCategory?.Id ?? 0) == category.Id &&
-                            //        (LastSelectedCategory?.SelectedChildCategory?.ID ?? String.Empty) == child.ID) ? CatSelectImage.selected : CatSelectImage.none,
+                            Views = child.Views,           
+                            Image = ((LastSelectedCategory?.Id ?? 0) == category.Id &&
+                                    (LastSelectedCategory?.SelectedChildCategory?.ID ?? String.Empty) == child.ID) ? CatSelectImage.selected : CatSelectImage.none,
                             CategoryObj = child, 
-                        });
-                }
-            }        
-        }
+                        };
 
-        protected async Task FillCategoryActionAsync()
-        {
-            
-            await DisplayCategoryAsync(null);
+                    CategoryAction.Add(catDisplay);
+                    if (catDisplay.Image == CatSelectImage.selected)
+                    {
+                        lastSelect = catDisplay;
+                        lastImageState = CatSelectImage.none;
+                    }
+                }
+            }
+
+            MessagingCenter.Send<string>("MRzeszowiak", "MoveToTop");
         }
 
         // Create the OnPropertyChanged method to raise the event
@@ -276,6 +312,7 @@ namespace MRzeszowiak.ViewModel
     public class CatButtonDisplay : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
+        public byte ButtonNo { get; private set; }
 
         private string title;
         public string Title
@@ -310,7 +347,13 @@ namespace MRzeszowiak.ViewModel
             }
         }
 
-        public MasterCategory masterCategory { get; set; }
+        public object Category { get; set; }
+
+        public CatButtonDisplay(byte buttonNo)
+        {
+            ButtonNo = buttonNo;
+        }
+
         private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string name = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));

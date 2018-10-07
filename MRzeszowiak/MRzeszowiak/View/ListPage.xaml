@@ -26,7 +26,7 @@
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
+                    <!--<RowDefinition Height="Auto"/>-->
                 </Grid.RowDefinitions>
                 <!--Orientation="Horizontal"
                     HorizontalOptions="FillAndExpand"
@@ -35,7 +35,7 @@
                 <Grid.Padding>
                     <OnPlatform x:TypeArguments="Thickness"
                             iOS="10, 10, 10, 10"
-                            Android="5, 5, 5, 0"/>
+                            Android="5, 0, 0, 0"/>
                 </Grid.Padding>
                 <Button Grid.Column="0" 
                         Grid.Row="0"
@@ -48,9 +48,9 @@
                         Clicked="MainMenuButton_Clicked"/>
                 <Button Grid.Column="1"
                         Grid.Row="0" 
-                        Text="Kategoria: Ostanio dodane" 
+                        Text="{Binding ButtonCategoryTitle}" 
                         x:Name="CategorySelectButton"
-                        Clicked="CategorySelectButton_Clicked"
+                        Command="{Binding CategorySelectButtonTaped}"
                         Style="{StaticResource backGroundColor}"/>
                 <Button  Grid.Column="2" 
                          Grid.Row="0"
@@ -61,13 +61,13 @@
                          Style="{StaticResource backGroundColor}"
                          x:Name="FilterButton"/>
                 <!--Second rows-->
-                <SearchBar Grid.Column="0"
+                <!--<SearchBar Grid.Column="0"
                            Grid.Row="1" 
                            Placeholder="" 
                            x:Name="searchBar" 
                            Margin="0,0,0,0" 
                            WidthRequest="100"
-                           IsVisible="False"/>
+                           IsVisible="False"/>-->
             </Grid>
             <!--Menu end-->
             

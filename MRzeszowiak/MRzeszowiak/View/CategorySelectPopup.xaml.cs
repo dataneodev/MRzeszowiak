@@ -17,7 +17,18 @@ namespace MRzeszowiak.View
 		public CategorySelectPopup ()
 		{
 			InitializeComponent ();
-		}
+
+            MessagingCenter.Subscribe<string>("MRzeszowiak", "MoveToTop", (sender) => {
+                var list = categoryListView;
+                if (list == null) return;
+                foreach (var item in list.ItemsSource)
+                {
+                    list.ScrollTo(item, ScrollToPosition.Start, false);
+                    break;
+                }
+            });
+
+        }
 
         private void PopupOKButton_Clicked(object sender, EventArgs e)
         {

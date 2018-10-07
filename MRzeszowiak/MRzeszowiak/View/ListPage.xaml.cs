@@ -15,11 +15,11 @@ namespace MRzeszowiak.View
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class ListPage : ContentPage
 	{
-		public ListPage ()
+        public ListPage ()
 		{
 			InitializeComponent ();
             NavigationPage.SetHasNavigationBar(this, false);
-            MessagingCenter.Send<View.ListPage>(this, "LoadLastOnStartup");
+            MessagingCenter.Send<View.ListPage>(this, "LoadLastOnStartup");            
         }
 
         private async void AdvertListView_ItemTapped(object sender, ItemTappedEventArgs e)
@@ -77,11 +77,6 @@ namespace MRzeszowiak.View
                 case GestureStatus.Completed:
                     break;
             } 
-        }
-
-        private void CategorySelectButton_Clicked(object sender, EventArgs e)
-        {
-            PopupNavigation.Instance.PushAsync(new CategorySelectPopup());
         }
     }
 }

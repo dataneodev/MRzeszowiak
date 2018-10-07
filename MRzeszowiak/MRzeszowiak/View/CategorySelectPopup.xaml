@@ -29,84 +29,49 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <!--first header-->
-            <BoxView Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" 
-                     BindingContext="{Binding FirstCatButton}"
-                     IsVisible="{Binding IsVisible}"
-                     
-                     BackgroundColor="{x:Static local:App.highlightRow}"/>
-            <Label Grid.Column="0" Grid.Row="0"
-                       BindingContext="{Binding FirstCatButton}"
-                       IsVisible="{Binding IsVisible}"
-                       Text="{Binding Title}" 
-                       FontSize="16"
-                       TextColor="Black"
-                       FontAttributes="Bold"  
-                       Margin="14"  
-                       VerticalOptions="FillAndExpand"/>
-            <Image Grid.Column="1" Grid.Row="0"
-                   BindingContext="{Binding FirstCatButton}"
-                   Source="{Binding Image, Converter={StaticResource CatSelectImageToString}}"
-                   IsVisible="{Binding IsVisible}"
-                   HorizontalOptions="End"
-                   VerticalOptions="Center"
-                   HeightRequest="20"
-                   Margin="10"/>
-        <!--second header-->
-        <BoxView Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" 
-                     BindingContext="{Binding SecondCatButton}"
-                     IsVisible="{Binding IsVisible}" 
-                     BackgroundColor="{x:Static local:App.highlightRow}"/>
-
-        <Label Grid.Column="0" Grid.Row="1"
-                       BindingContext="{Binding SecondCatButton}"
-                       IsVisible="{Binding IsVisible}"
-                       Text="{Binding Title}" 
-                       FontSize="16"
-                       TextColor="Black"
-                       FontAttributes="Bold"  
-                       Margin="14"  
-                       VerticalOptions="FillAndExpand" 
-                       HorizontalOptions="FillAndExpand"
-                       />
-            <Image Grid.Column="1" Grid.Row="1"
-                   BindingContext="{Binding SecondCatButton}"
-                   Source="{Binding Image, Converter={StaticResource CatSelectImageToString}}"
-                   IsVisible="{Binding IsVisible}"
-                   HorizontalOptions="End"
-                   VerticalOptions="Center"
-                   HeightRequest="20"
-                   Margin="10"/>
-        <!--third header-->
-        <BoxView Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" 
-                     BindingContext="{Binding ThirdCatButton}"
-                     IsVisible="{Binding IsVisible}" 
-                     BackgroundColor="{x:Static local:App.highlightRow}"/>
-        <Label Grid.Column="0" Grid.Row="2"
-                       BindingContext="{Binding ThirdCatButton}"
-                       IsVisible="{Binding IsVisible}"
-                       Text="{Binding Title}" 
-                       FontSize="16"
-                       TextColor="Black"
-                       FontAttributes="Bold"  
-                       Margin="14"  
-                       VerticalOptions="FillAndExpand"/>
-        <Image Grid.Column="1" Grid.Row="2"
-                   BindingContext="{Binding ThirdCatButton}"
-                   Source="{Binding Image, Converter={StaticResource CatSelectImageToString}}"
-                   IsVisible="{Binding IsVisible}"
-                   HorizontalOptions="End"
-                   VerticalOptions="Center"
-                   HeightRequest="20"
-                   Margin="10"/>
-        <!--list-->
-        <ListView x:Name="categoryListView" 
-                      Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3"
+            <ListView x:Name="buttonListView" 
+                          Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0"
+                          ItemsSource="{Binding ButtonList}" 
+                          RowHeight="50" 
+                          HeightRequest="{Binding buttonListViewHeight}"
+                          HorizontalOptions="FillAndExpand"
+                          VerticalOptions="FillAndExpand"
+                          ItemTapped="categoryListView_ItemTapped"
+                          BackgroundColor="{x:Static local:App.highlightRow}">
+                <ListView.Behaviors>
+                    <Behaviors:EventToCommandBehavior EventName="ItemTapped" 
+                                                      Command="{Binding ButtonTappped}"
+                                                      Converter="{StaticResource SelectedItemConverter}" />
+                </ListView.Behaviors>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout Orientation="Horizontal" IsVisible="{Binding IsVisible}" HorizontalOptions="FillAndExpand">
+                                <Label 
+                                   IsVisible="{Binding IsVisible}"
+                                   Text="{Binding Title}" 
+                                   FontSize="16"
+                                   TextColor="Black"
+                                   FontAttributes="Bold"  
+                                   Margin="14"  
+                                   VerticalOptions="FillAndExpand"/>
+                                <Image
+                                   Source="{Binding Image, Converter={StaticResource CatSelectImageToString}}"
+                                   IsVisible="{Binding Image, Converter={StaticResource CatSelectImageToBool}}"
+                                   HorizontalOptions="EndAndExpand"
+                                   VerticalOptions="Center"
+                                   HeightRequest="20"
+                                   Margin="10"/>
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <ListView x:Name="categoryListView" 
+                      Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1"
                       ItemsSource="{Binding CategoryAction}" 
                       HasUnevenRows="True"
                       HorizontalOptions="FillAndExpand"
@@ -134,7 +99,7 @@
                                    Text="{Binding Title}"
                                    TextColor="Black"/>
                             <Label Grid.Column="0" Grid.Row="1" 
-                                   Text="{Binding Views, StringFormat=' {0} ogłoszeń'}" 
+                                   Text="{Binding Views, StringFormat='{0} ogłoszeń'}" 
                                    FontSize="10"
                                    Margin="0,-6,0,0"/>
                             <Image Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
@@ -148,8 +113,8 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <BoxView Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" BackgroundColor="White"/>
-        <Button  Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" 
+        <BoxView Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" BackgroundColor="White"/>
+        <Button  Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" 
                  x:Name="PopupOKButton" 
                  Text="Anuluj" 
                  Clicked="PopupOKButton_Clicked" 

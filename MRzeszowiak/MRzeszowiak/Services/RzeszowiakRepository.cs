@@ -82,6 +82,7 @@ namespace MRzeszowiak.Services
             };
             cat.ChildCategory = child;
             r.Add(cat);
+            r.Add(nCat(305, "Kupię", "Motoryzacja-Kupie-305", masterCategory, null));
             r.Add(nCat(236, "Zamienię", "Motoryzacja-Zamienie-236", masterCategory, null));
             r.Add(nCat(269, "Części, Akcesoria", "Motoryzacja-Czesci--Akcesoria-269", masterCategory, null));
             r.Add(nCat(299, "Opony,felgi,koła", "Motoryzacja-Opony-felgi-kola-299", masterCategory, null));

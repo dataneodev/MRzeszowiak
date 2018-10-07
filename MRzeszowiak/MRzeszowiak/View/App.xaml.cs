@@ -1,5 +1,8 @@
+using MRzeszowiak.Model;
 using MRzeszowiak.View;
+using Rg.Plugins.Popup.Services;
 using System;
+using System.Diagnostics;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -15,6 +18,8 @@ namespace MRzeszowiak
         public static double DisplayScreenWidth = 0f;
         public static double DisplayScreenHeight = 0f;
         public static double DisplayScaleFactor = 0f;
+
+        public static CategorySelectPopup CatalogPopUp { get { return new CategorySelectPopup(); } }
 
         public App ()
 		{

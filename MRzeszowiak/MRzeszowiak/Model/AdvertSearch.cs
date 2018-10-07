@@ -14,7 +14,7 @@ namespace MRzeszowiak.Model
         public MasterCategory MasterCategory { get; set; }
         public Category Category { get; set; } // null for all
         public AddType DateAdd { get; set; } = AddType.all;
-        public SortType Sort { get; set; } = SortType.dateaddDesc;
+        public SortType Sort { get; set; } = SortType.dateadd;
         public int? PriceMin { get; set; }
         public int? PriceMax { get; set; }
         public int? RequestPage { get; set; }
@@ -24,16 +24,16 @@ namespace MRzeszowiak.Model
             {
                 // preparing URL request
                 string urlRequest = String.Empty;
-                Func<int, AddType, SortType, string> GetUrlParams = (PageType, addType, sortType) => 
+                string GetUrlParams(int PageType, AddType addType, SortType sortType)
                 {
-                    string Page = String.Format("{0:D2}", PageType);
-                    return $"0{Page}{sortType}{RECORD_ON_PAGE}{addType}";
-                };
+                    string Page = String.Format("{0:D2}", (int)PageType);
+                    return $"0{Page}{(int)sortType}{RECORD_ON_PAGE}{(int)addType}";
+                }
                 //select category without search
                 if (SearchPattern.Length == 0 && AdvertID == 0 && Category != null)
                 {
                     urlRequest = $"{RZESZOWIAK_BASE_URL}{Category.GETPath}{GetUrlParams(RequestPage ?? 1, DateAdd, Sort)}";
-                    urlRequest += (Category.SelectedChildCategory != null) ? $"&r={Category.SelectedChildCategory}" : String.Empty;
+                    urlRequest += (Category.SelectedChildCategory != null) ? $"?r={Category.SelectedChildCategory.ID}" : String.Empty;
                 }
                 // search string
                 if (SearchPattern.Length > 0)
@@ -64,20 +64,22 @@ namespace MRzeszowiak.Model
                 return urlRequest;
             }
         }
+        
     }
 
     public enum AddType
     {
-        last24h,
-        last3days,
-        last7days,
-        all
+        last24h = 1,
+        last3days = 2,
+        last7days = 3,
+        last14days = 4,
+        all = 5
     }
 
     public enum SortType
     {
-        dateadd = 1,
-        dateaddDesc = 2, // najnowsze
+        dateadd = 1, // najnowsze
+        dateaddDesc = 2, 
         price = 4, // rosnąco
         priceDesc = 3
     }
