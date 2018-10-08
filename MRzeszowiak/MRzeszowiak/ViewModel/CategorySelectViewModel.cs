@@ -79,7 +79,6 @@ namespace MRzeszowiak.ViewModel
                         await DisplayCategoryAsync(button.Category as Category);
                     break;
             }
-
         }
 
         protected void SetButton(byte buttonNo, string title, bool isVisible, 
@@ -171,7 +170,7 @@ namespace MRzeszowiak.ViewModel
             {
                 Debug.Write("Displaing categoryToShow is null");
                 int AllViews = 0;
-                SetButton(1, "Wszystkie kategorie", true);
+                SetButton(1, Category.TitleForNull, true);
                 SetButton(2, String.Empty, false);
                 SetButton(3, String.Empty, false);
 
@@ -181,7 +180,7 @@ namespace MRzeszowiak.ViewModel
 
                 CategoryAction.Add(new CatDisplay
                 {
-                    Title = "Wszystkie kategorie",
+                    Title = Category.TitleForNull,
                     Views = AllViews,
                     Image = LastSelectedCategory == null ? CatSelectImage.selected : CatSelectImage.none,
                     CategoryObj = null,
@@ -204,7 +203,7 @@ namespace MRzeszowiak.ViewModel
                 Debug.Write("Displaing categoryToShow is MasterCategory");
                 var master = categoryToShow as MasterCategory;
 
-                SetButton(1, "Wszystkie kategorie", true, CatSelectImage.arrowUp, master);
+                SetButton(1, Category.TitleForNull, true, CatSelectImage.arrowUp, master);
                 SetButton(2, master.Title, true, CatSelectImage.none, master);
                 SetButton(3, String.Empty, false);
 
@@ -237,7 +236,7 @@ namespace MRzeszowiak.ViewModel
                 Debug.Write("Displaing categoryToShow is Category");
                 var category = categoryToShow as Category;
 
-                SetButton(1, "Wszystkie kategorie", true, CatSelectImage.arrowUp, category.Master);
+                SetButton(1, Category.TitleForNull, true, CatSelectImage.arrowUp, category.Master);
                 SetButton(2, category.Master.Title, true, CatSelectImage.arrowUp, category.Master);
                 SetButton(3, category.Title, true, CatSelectImage.none, category);
 
@@ -277,7 +276,7 @@ namespace MRzeszowiak.ViewModel
                 }
             }
 
-            MessagingCenter.Send<string>("MRzeszowiak", "MoveToTop");
+            //MessagingCenter.Send<string>("MRzeszowiak", "MoveToTop");
         }
 
         // Create the OnPropertyChanged method to raise the event

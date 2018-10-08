@@ -14,7 +14,7 @@ using Xamarin.Forms;
 
 namespace MRzeszowiak.ViewModel
 {
-    class ListViewModel :  INotifyPropertyChanged
+    public class ListViewModel :  INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public ObservableCollection<AdvertShort> AdvertShortList { get; private set; } = new ObservableCollection<AdvertShort>();
@@ -179,8 +179,19 @@ namespace MRzeszowiak.ViewModel
         protected async void LoadLastOnStartup()
         {
             //Debug.Write("LoadLastOnStartup");
-            ButtonCategoryTitle = "Wszystkie kategorie";
-            await SearchExecute(new AdvertSearch(), false);
+            
+            if (_lastAdvertSearch != null)
+            {
+                await SearchExecute(_lastAdvertSearch, false);
+                ButtonCategoryTitle = _lastAdvertSearch.Category.getFullTitle;
+            }
+                
+            else
+            {
+                await SearchExecute(new AdvertSearch(), false);
+                ButtonCategoryTitle = Category.TitleForNull;
+            }
+                
         }
 
         protected async Task<bool> LoadNextItem()

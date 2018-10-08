@@ -8,7 +8,7 @@ using System.Text;
 
 namespace MRzeszowiak.ViewModel
 {
-    class ViewModelLocator
+    public class ViewModelLocator
     {
         public ListViewModel ListViewModel => ServiceLocator.Current.GetInstance<ListViewModel>();
         public PreviewViewModel PreviewViewModel => ServiceLocator.Current.GetInstance<PreviewViewModel>();
@@ -16,7 +16,7 @@ namespace MRzeszowiak.ViewModel
         public PreViewImageViewModel PreViewImageViewModel => ServiceLocator.Current.GetInstance<PreViewImageViewModel>();
         public CategorySelectViewModel CategorySelectViewModel => ServiceLocator.Current.GetInstance<CategorySelectViewModel>();
 
-        static ViewModelLocator()
+        public ViewModelLocator()
         {
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
 

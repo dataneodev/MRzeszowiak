@@ -29,6 +29,17 @@ namespace MRzeszowiak.Model
                     selectedChildCategory = null;
             }
         }
+
+        public string getFullTitle
+        { get
+            { return (Master != null) ? Master.Title + " - " + Title : Title; }
+        }
+
+        public static string TitleForNull
+        {
+            get { return "Wszystkie kategorie"; }
+        }
+
     }
 
     public class ChildCategory

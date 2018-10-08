@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MRzeszowiak.ViewModel
 {
-    class SettingViewModel
+    public class SettingViewModel
     {
     }
 }

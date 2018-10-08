@@ -18,15 +18,15 @@ namespace MRzeszowiak.View
 		{
 			InitializeComponent ();
 
-            MessagingCenter.Subscribe<string>("MRzeszowiak", "MoveToTop", (sender) => {
-                var list = categoryListView;
-                if (list == null) return;
-                foreach (var item in list.ItemsSource)
-                {
-                    list.ScrollTo(item, ScrollToPosition.Start, false);
-                    break;
-                }
-            });
+            //MessagingCenter.Subscribe<string>("MRzeszowiak", "MoveToTop", (sender) => {
+            //    var list = categoryListView;
+            //    if (list == null) return;
+            //    foreach (var item in list.ItemsSource)
+            //    {
+            //        list.ScrollTo(item, ScrollToPosition.Start, false);
+            //        break;
+            //    }
+            //});
 
         }
 

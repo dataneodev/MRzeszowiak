@@ -14,7 +14,7 @@ using Xamarin.Forms;
 
 namespace MRzeszowiak.ViewModel
 {
-    class PreviewViewModel : INotifyPropertyChanged
+    public class PreviewViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         protected IRzeszowiak _rzeszowiakRepository;

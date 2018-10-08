@@ -1,5 +1,6 @@
 using MRzeszowiak.Model;
 using MRzeszowiak.View;
+using MRzeszowiak.ViewModel;
 using Rg.Plugins.Popup.Services;
 using System;
 using System.Diagnostics;
@@ -11,6 +12,12 @@ namespace MRzeszowiak
 {
 	public partial class App : Application
 	{
+        private static ViewModelLocator locator;
+        public static ViewModelLocator Locator
+        {
+            get { return locator ?? (locator = new ViewModelLocator()) ; }
+        }
+
         public static Color highlightRow = Color.FromHex("#f4f4f4");
         public static Color normalRow = Color.FromHex("#FFFFFF0");
         public static Color highlightPremiumRow = Color.FromHex("#fcd890");
@@ -18,6 +25,8 @@ namespace MRzeszowiak
         public static double DisplayScreenWidth = 0f;
         public static double DisplayScreenHeight = 0f;
         public static double DisplayScaleFactor = 0f;
+
+
 
         public static CategorySelectPopup CatalogPopUp { get { return new CategorySelectPopup(); } }
 
