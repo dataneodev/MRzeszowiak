@@ -12,10 +12,7 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)View\App.xaml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Behaviors\BehaviorBase.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Behaviors\EventToCommandBehavior.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Behaviors\InfiniteScrolling.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Converters\SelectedItemEventArgsToSelectedItemConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\CustomListview.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\WebPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\ImageFit.cs" />
@@ -133,5 +130,8 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Converters\" />
   </ItemGroup>
 </Project>

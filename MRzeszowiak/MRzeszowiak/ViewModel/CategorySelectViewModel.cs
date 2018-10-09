@@ -1,5 +1,4 @@
-﻿using GalaSoft.MvvmLight.Command;
-using MRzeszowiak.Model;
+﻿using MRzeszowiak.Model;
 using MRzeszowiak.Services;
 using Rg.Plugins.Popup.Services;
 using System;

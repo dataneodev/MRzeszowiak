@@ -1,10 +1,13 @@
-﻿using CommonServiceLocator;
-using GalaSoft.MvvmLight.Ioc;
-using GalaSoft.MvvmLight.Messaging;
-using MRzeszowiak.Services;
+﻿using MRzeszowiak.Services;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using CommonServiceLocator;
+using Unity;
+using Unity.Lifetime;
+using Unity.ServiceLocation;
+using Unity.Injection;
+using Prism.Navigation;
 
 namespace MRzeszowiak.ViewModel
 {
@@ -15,16 +18,28 @@ namespace MRzeszowiak.ViewModel
         public SettingViewModel SettingViewModel => ServiceLocator.Current.GetInstance<SettingViewModel>();
         public PreViewImageViewModel PreViewImageViewModel => ServiceLocator.Current.GetInstance<PreViewImageViewModel>();
         public CategorySelectViewModel CategorySelectViewModel => ServiceLocator.Current.GetInstance<CategorySelectViewModel>();
+        public Prism.Navigation.INavigationService NavigationService => ServiceLocator.Current.GetInstance<INavigationService>();
 
         public ViewModelLocator()
         {
-            ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
+            var unityContainer = new UnityContainer();
 
-            SimpleIoc.Default.Register<ListViewModel>(() => new ListViewModel(new RzeszowiakRepository()));
-            SimpleIoc.Default.Register<PreviewViewModel>(() => new PreviewViewModel(new RzeszowiakRepository(), new RzeszowiakImageContainer()));
-            SimpleIoc.Default.Register<SettingViewModel>();
-            SimpleIoc.Default.Register<PreViewImageViewModel>();
-            SimpleIoc.Default.Register<CategorySelectViewModel>(() => new CategorySelectViewModel(new RzeszowiakRepository()));
+            unityContainer.RegisterType<INavigationService, PageNavigationService>();
+
+            unityContainer.RegisterType<ListViewModel>(new ContainerControlledLifetimeManager(), 
+                new InjectionConstructor(new RzeszowiakRepository()));
+
+            unityContainer.RegisterType<PreviewViewModel>(new ContainerControlledLifetimeManager(), 
+                new InjectionConstructor(new RzeszowiakRepository(), new RzeszowiakImageContainer()));
+
+            unityContainer.RegisterType<PreViewImageViewModel>(new ContainerControlledLifetimeManager());
+
+            unityContainer.RegisterType<CategorySelectViewModel>(new ContainerControlledLifetimeManager(), 
+                new InjectionConstructor(new RzeszowiakRepository()));
+
+            unityContainer.RegisterType<SettingViewModel>(new ContainerControlledLifetimeManager());
+
+            ServiceLocator.SetLocatorProvider(() => new UnityServiceLocator(unityContainer));
         }          
     }
 }

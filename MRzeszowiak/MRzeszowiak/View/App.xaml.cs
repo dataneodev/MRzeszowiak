@@ -1,9 +1,6 @@
-using MRzeszowiak.Model;
 using MRzeszowiak.View;
 using MRzeszowiak.ViewModel;
-using Rg.Plugins.Popup.Services;
 using System;
-using System.Diagnostics;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -34,8 +31,10 @@ namespace MRzeszowiak
 		{
             #if DEBUG
                 LiveReload.Init();
-            #endif
+#endif
+            App.Locator.ListViewModel.Activity = false; ;
 			InitializeComponent();
+
             MainPage = new MenuPage();
         }
 

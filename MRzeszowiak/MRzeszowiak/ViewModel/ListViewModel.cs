@@ -1,6 +1,6 @@
-﻿using GalaSoft.MvvmLight.Command;
-using MRzeszowiak.Model;
+﻿using MRzeszowiak.Model;
 using MRzeszowiak.Services;
+using Prism.Navigation;
 using Rg.Plugins.Popup.Services;
 using System;
 using System.Collections.Generic;
@@ -92,7 +92,7 @@ namespace MRzeszowiak.ViewModel
         protected AdvertSearchResult _lastAdvertSearchResult;
         protected AdvertSearch _lastAdvertSearch;
 
-        public ListViewModel(IRzeszowiak RzeszowiakRepository)
+        public ListViewModel(IRzeszowiak RzeszowiakRepository, INavigationService navigationService)
         {
             _rzeszowiakRepository = RzeszowiakRepository ?? throw new NullReferenceException("ListViewModel => IRzeszowiakRepository RzeszowiakRepository == null !");
             MessagingCenter.Subscribe<View.ListPage>(this, "LoadLastOnStartup", (sender) => {
@@ -113,9 +113,9 @@ namespace MRzeszowiak.ViewModel
 
             });
 
-            LoadNextAdvert = new RelayCommand(async ()=> await LoadNextItem());
-            ListViewItemTapped = new RelayCommand<AdvertShort>((item) => ListViewTapped(item));
-            CategorySelectButtonTaped = new RelayCommand(async () => 
+            LoadNextAdvert = new Command(async ()=> await LoadNextItem());
+            ListViewItemTapped = new Command<AdvertShort>((item) => ListViewTapped(item));
+            CategorySelectButtonTaped = new Command(async () => 
             {
                 await PopupNavigation.Instance.PushAsync(App.CatalogPopUp, true);
                 MessagingCenter.Send<string, Action<Category>>("MRzeszowiak", "SelectCategory", CategoryUserSelectCallbackAsync);

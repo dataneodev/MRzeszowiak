@@ -30,7 +30,6 @@ namespace MRzeszowiak.View
                 await Navigation.PushAsync(new PreviewPage(advertShort), false);
         }
 
-        private int _lasttopindex = 0;
         private void AdvertListView_ScrollStateChanged(object sender, Extends.ScrollStateChangedEventArgs e)
         {
             //var height = (int)ToolBarMenu.Height;

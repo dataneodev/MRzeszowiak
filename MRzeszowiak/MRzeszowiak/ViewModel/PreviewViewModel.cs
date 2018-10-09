@@ -1,5 +1,4 @@
 ﻿using CarouselView.FormsPlugin.Abstractions;
-using GalaSoft.MvvmLight.Command;
 using MRzeszowiak.Model;
 using MRzeszowiak.Services;
 using Newtonsoft.Json;
@@ -187,24 +186,24 @@ namespace MRzeszowiak.ViewModel
                 LoadAdvertMessage(advertShort);
             });
 
-            OpenAdvertPage = new RelayCommand(()=> 
+            OpenAdvertPage = new Command(()=> 
             {
                 if(_lastAdvert?.URL?.Length > 0)
                     Device.OpenUri(new Uri(_lastAdvert?.URL));
             });
 
-            RefreshAdvert = new RelayCommand(() =>
+            RefreshAdvert = new Command(() =>
             {
                 if (_lastAdvert != null)             
                     LoadAdvertMessage(_lastAdvert);
             });
 
-            MailAdvert = new RelayCommand(() =>
+            MailAdvert = new Command(() =>
             {
                 
             });
 
-            FavoriteAdvert = new RelayCommand(() =>
+            FavoriteAdvert = new Command(() =>
             {
                 IsFavorite = ! IsFavorite;
                 if (_lastAdvert != null) _lastAdvert.IsFavorite = IsFavorite;
@@ -256,7 +255,6 @@ namespace MRzeszowiak.ViewModel
                 ImageURLsList.Add(item);
             IsFavorite = advert.IsFavorite;
 
-            
             if (advert.PhoneSsid.Length == 10 && advert.PhonePHPSSESION != null)
             {
                 HasPhoneImage = true;

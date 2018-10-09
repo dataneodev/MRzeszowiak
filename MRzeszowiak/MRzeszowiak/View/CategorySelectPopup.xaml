@@ -6,7 +6,7 @@
         x:Class="MRzeszowiak.View.CategorySelectPopup"
         xmlns:local="clr-namespace:MRzeszowiak"
         xmlns:ViewModel="clr-namespace:MRzeszowiak.ViewModel"
-        xmlns:Behaviors="clr-namespace:MRzeszowiak.Behaviors"
+        xmlns:b="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"
         xmlns:Converters="clr-namespace:MRzeszowiak.Converters"
         BindingContext="{Binding CategorySelectViewModel, Source={StaticResource Locator}}">
     <pages:PopupPage.Resources>
@@ -14,7 +14,6 @@
             <ViewModel:IsTextNotNull x:Key="IsTextNull"/>
             <ViewModel:CatSelectImageToBool x:Key="CatSelectImageToBool"/>
             <ViewModel:CatSelectImageToString x:Key="CatSelectImageToString"/>
-            <Converters:SelectedItemEventArgsToSelectedItemConverter x:Key="SelectedItemConverter"/>
         </ResourceDictionary>
     </pages:PopupPage.Resources>
     <Grid Margin="20" 
@@ -42,9 +41,9 @@
                           ItemTapped="categoryListView_ItemTapped"
                           BackgroundColor="{x:Static local:App.highlightRow}">
                 <ListView.Behaviors>
-                    <Behaviors:EventToCommandBehavior EventName="ItemTapped" 
-                                                      Command="{Binding ButtonTappped}"
-                                                      Converter="{StaticResource SelectedItemConverter}" />
+                    <b:EventToCommandBehavior EventName="ItemTapped" 
+                                              Command="{Binding ButtonTappped}"
+                                              EventArgsParameterPath="Item"/>
                 </ListView.Behaviors>
                 <ListView.ItemTemplate>
                     <DataTemplate>
@@ -79,9 +78,9 @@
                       ItemTapped="categoryListView_ItemTapped"
                       BackgroundColor="White">
             <ListView.Behaviors>
-                <Behaviors:EventToCommandBehavior EventName="ItemTapped" 
-                                                  Command="{Binding CategoryTappet}"
-                                                  Converter="{StaticResource SelectedItemConverter}" />
+                <b:EventToCommandBehavior EventName="ItemTapped" 
+                                          Command="{Binding CategoryTappet}"
+                                          EventArgsParameterPath="Item" />
             </ListView.Behaviors>
             <ListView.ItemTemplate>
                 <DataTemplate>
