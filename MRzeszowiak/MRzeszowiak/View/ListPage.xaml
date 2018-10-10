@@ -4,7 +4,8 @@
              x:Class="MRzeszowiak.View.ListPage"
              xmlns:ViewModel="clr-namespace:MRzeszowiak.ViewModel"
              xmlns:Behaviors="clr-namespace:MRzeszowiak.Behaviors"
-             xmlns:Extends="clr-namespace:MRzeszowiak.Extends"  
+             xmlns:Extends="clr-namespace:MRzeszowiak.Extends" 
+             xmlns:b="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"
              Title="Lista ogłoszeń"
              x:Name="ListPageXaml"
              BindingContext="{Binding ListViewModel, Source={StaticResource Locator}}">
@@ -97,7 +98,9 @@
                 </x:Arguments>
                 <Extends:CustomListview.Behaviors>
                     <Behaviors:InfiniteScroll LoadMoreCommand="{Binding LoadNextAdvert}" />
-                    <!--<x:EventToCommandBehavior EventName="ItemTapped" Command="{Binding ListViewItemTapped}" CommandParameter="." />-->
+                    <b:EventToCommandBehavior EventName="ItemTapped" 
+                                              Command="{Binding ListViewItemTapped}" 
+                                              EventArgsParameterPath="Item"/>
                 </Extends:CustomListview.Behaviors>
                 <Extends:CustomListview.ItemTemplate>
                         <DataTemplate>

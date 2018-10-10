@@ -1,13 +1,11 @@
 ﻿using MRzeszowiak.Services;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using CommonServiceLocator;
 using Unity;
 using Unity.Lifetime;
 using Unity.ServiceLocation;
 using Unity.Injection;
 using Prism.Navigation;
+using System.ComponentModel;
 
 namespace MRzeszowiak.ViewModel
 {

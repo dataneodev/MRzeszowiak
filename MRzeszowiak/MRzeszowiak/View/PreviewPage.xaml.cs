@@ -19,7 +19,6 @@ namespace MRzeszowiak.View
 		{
 			InitializeComponent ();
             NavigationPage.SetHasNavigationBar(this, false);
-            MessagingCenter.Send<View.PreviewPage, AdvertShort>(this, "LoadAdvertShort", advertShort);
         }
 
         private void AddDataList_ItemTapped(object sender, ItemTappedEventArgs e)

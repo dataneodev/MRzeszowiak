@@ -19,6 +19,7 @@ namespace MRzeszowiak.ViewModel
         public event PropertyChangedEventHandler PropertyChanged;
         public ObservableCollection<AdvertShort> AdvertShortList { get; private set; } = new ObservableCollection<AdvertShort>();
         protected IRzeszowiak _rzeszowiakRepository;
+        protected INavigationService _navigationService;
 
         public bool ActivityListView => !Activity && !ErrorPanelVisible ? true : false;
 
@@ -92,9 +93,10 @@ namespace MRzeszowiak.ViewModel
         protected AdvertSearchResult _lastAdvertSearchResult;
         protected AdvertSearch _lastAdvertSearch;
 
-        public ListViewModel(IRzeszowiak RzeszowiakRepository, INavigationService navigationService)
+        public ListViewModel(INavigationService navigationService, IRzeszowiak RzeszowiakRepository)
         {
             _rzeszowiakRepository = RzeszowiakRepository ?? throw new NullReferenceException("ListViewModel => IRzeszowiakRepository RzeszowiakRepository == null !");
+
             MessagingCenter.Subscribe<View.ListPage>(this, "LoadLastOnStartup", (sender) => {
                 LoadLastOnStartup();
             });
@@ -113,8 +115,8 @@ namespace MRzeszowiak.ViewModel
 
             });
 
-            LoadNextAdvert = new Command(async ()=> await LoadNextItem());
-            ListViewItemTapped = new Command<AdvertShort>((item) => ListViewTapped(item));
+            LoadNextAdvert = new Command(LoadNextItem);
+            ListViewItemTapped = new Command<AdvertShort>(ListViewTapped);
             CategorySelectButtonTaped = new Command(async () => 
             {
                 await PopupNavigation.Instance.PushAsync(App.CatalogPopUp, true);
@@ -145,7 +147,8 @@ namespace MRzeszowiak.ViewModel
 
         protected void ListViewTapped(AdvertShort advertShort)
         {
-
+            if (advertShort == null) return;
+            MessagingCenter.Send<string, AdvertShort>("ListViewModel", "LoadAdvertShort", advertShort);
         }
 
         protected void LoadPreviewFoward(AdvertShort advertShort)
@@ -194,7 +197,7 @@ namespace MRzeszowiak.ViewModel
                 
         }
 
-        protected async Task<bool> LoadNextItem()
+        protected async void LoadNextItem()
         {
             Debug.Write("LoadNextItem");
             int setting = 100;
@@ -203,9 +206,10 @@ namespace MRzeszowiak.ViewModel
                 !Activity && !FotterActivity )
             {
                 _lastAdvertSearch.RequestPage = ++_lastAdvertSearchResult.Page;
-                return await SearchExecute(_lastAdvertSearch, true).ConfigureAwait(false);
+                await SearchExecute(_lastAdvertSearch, true).ConfigureAwait(false);
+                return;
             }
-            return false;
+            return;
         }
 
         protected async Task<bool> SearchExecute(AdvertSearch advertSearch, bool addLoad = false)

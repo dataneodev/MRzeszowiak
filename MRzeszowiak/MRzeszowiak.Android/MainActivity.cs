@@ -7,6 +7,9 @@ using Android.Views;
 using Android.Widget;
 using Android.OS;
 using Xamarin.Forms;
+using Unity;
+using Prism;
+using Prism.Ioc;
 
 namespace MRzeszowiak.Droid
 {
@@ -33,7 +36,15 @@ namespace MRzeszowiak.Droid
 
             global::Xamarin.Forms.Forms.Init(this, bundle);
             CarouselView.FormsPlugin.Android.CarouselViewRenderer.Init();
-            LoadApplication(new App());
+            LoadApplication(new App(new AndroidInitializer()));
+        }
+
+        public class AndroidInitializer : IPlatformInitializer
+        {
+            public void RegisterTypes(IContainerRegistry container)
+            {
+
+            }
         }
     }
 }

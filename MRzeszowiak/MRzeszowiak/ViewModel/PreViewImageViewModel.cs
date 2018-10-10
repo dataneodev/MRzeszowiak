@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Prism.Navigation;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -24,7 +25,7 @@ namespace MRzeszowiak.ViewModel
             }
         }
 
-        public PreViewImageViewModel()
+        public PreViewImageViewModel(INavigationService navigationService)
         {
             MessagingCenter.Subscribe<View.PreviewPage, Tuple<IEnumerable<string>, int>>(this, "ShowImagePreview", (sender, imageList) => {
                 LoadImage(imageList.Item1, imageList.Item2);

@@ -1,5 +1,8 @@
 using MRzeszowiak.View;
 using MRzeszowiak.ViewModel;
+using Prism;
+using Prism.Ioc;
+using Prism.Unity;
 using System;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -7,8 +10,8 @@ using Xamarin.Forms.Xaml;
 [assembly: XamlCompilation (XamlCompilationOptions.Compile)]
 namespace MRzeszowiak
 {
-	public partial class App : Application
-	{
+	public partial class App : PrismApplication
+    {
         private static ViewModelLocator locator;
         public static ViewModelLocator Locator
         {
@@ -27,14 +30,17 @@ namespace MRzeszowiak
 
         public static CategorySelectPopup CatalogPopUp { get { return new CategorySelectPopup(); } }
 
-        public App ()
+        public App(IPlatformInitializer initializer = null) : base(initializer)
 		{
-            #if DEBUG
-                LiveReload.Init();
-#endif
-            App.Locator.ListViewModel.Activity = false; ;
-			InitializeComponent();
+        }
 
+        protected override void OnInitialized()
+        {
+            #if DEBUG
+            LiveReload.Init();
+            #endif
+
+            InitializeComponent();
             MainPage = new MenuPage();
         }
 
@@ -56,6 +62,15 @@ namespace MRzeszowiak
         private void TapGestureRecognizer_Tapped(object sender, EventArgs e)
         {
 
+        }
+
+        protected override void RegisterTypes(IContainerRegistry containerRegistry)
+        {
+            containerRegistry.RegisterForNavigation<ListPage>();
+            containerRegistry.RegisterForNavigation<PreviewPage>();
+            containerRegistry.RegisterForNavigation<PreviewImagePage>();
+            containerRegistry.RegisterForNavigation<CategorySelectPopup>();
+            containerRegistry.RegisterForNavigation<SettingPage>();
         }
     }
 }

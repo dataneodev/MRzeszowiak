@@ -182,7 +182,7 @@ namespace MRzeszowiak.ViewModel
             ImageURLsList.CollectionChanged += (s, e) => { OnPropertyChanged("ImageVisible"); };
             AdditionalData.CollectionChanged += (s, e) => { OnPropertyChanged("AddDataVisible"); };
 
-            MessagingCenter.Subscribe<View.PreviewPage, AdvertShort>(this, "LoadAdvertShort", (sender, advertShort) => {
+            MessagingCenter.Subscribe<string, AdvertShort>("ListViewModel", "LoadAdvertShort", (sender, advertShort) => {
                 LoadAdvertMessage(advertShort);
             });
 

@@ -7,7 +7,6 @@
         xmlns:local="clr-namespace:MRzeszowiak"
         xmlns:ViewModel="clr-namespace:MRzeszowiak.ViewModel"
         xmlns:b="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"
-        xmlns:Converters="clr-namespace:MRzeszowiak.Converters"
         BindingContext="{Binding CategorySelectViewModel, Source={StaticResource Locator}}">
     <pages:PopupPage.Resources>
         <ResourceDictionary>
