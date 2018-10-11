@@ -22,9 +22,9 @@ namespace MRzeszowiak.View
             MessagingCenter.Send<View.ListPage>(this, "LoadLastOnStartup");            
         }
 
-        private async void AdvertListView_ItemTapped(object sender, ItemTappedEventArgs e)
+        private void AdvertListView_ItemTapped(object sender, ItemTappedEventArgs e)
         {
-            //((ListView)sender).SelectedItem = null;
+            ((ListView)sender).SelectedItem = null;
             //var advertShort = e.Item as AdvertShort;
             //if(advertShort != null)
             //    await Navigation.PushAsync(new PreviewPage(advertShort), false);

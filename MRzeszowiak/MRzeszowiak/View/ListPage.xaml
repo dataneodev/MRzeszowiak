@@ -6,9 +6,10 @@
              xmlns:Behaviors="clr-namespace:MRzeszowiak.Behaviors"
              xmlns:Extends="clr-namespace:MRzeszowiak.Extends" 
              xmlns:b="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"
+             xmlns:pmvvm="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+             pmvvm:ViewModelLocator.AutowireViewModel="True"
              Title="Lista ogłoszeń"
-             x:Name="ListPageXaml"
-             BindingContext="{Binding ListViewModel, Source={StaticResource Locator}}">
+             x:Name="ListPageXaml">
     <ContentPage.Resources>
         <ResourceDictionary>
             <ViewModel:RowColorFromBool x:Key="boolToColor" />

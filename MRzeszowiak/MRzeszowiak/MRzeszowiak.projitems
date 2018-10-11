@@ -35,7 +35,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\PreViewImageViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\PreviewViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\SettingViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ViewModelLocator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ViewValueConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)View\AboutPage.xaml.cs">
       <DependentUpon>AboutPage.xaml</DependentUpon>

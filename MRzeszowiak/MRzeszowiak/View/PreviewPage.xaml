@@ -5,9 +5,9 @@
              xmlns:forms="clr-namespace:CarouselView.FormsPlugin.Abstractions;assembly=CarouselView.FormsPlugin.Abstractions"
              xmlns:ViewModel="clr-namespace:MRzeszowiak.ViewModel"
              xmlns:Extends="clr-namespace:MRzeszowiak.Extends"
-             xmlns:local="clr-namespace:MRzeszowiak"
+             xmlns:pmvvm="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+             pmvvm:ViewModelLocator.AutowireViewModel="True"
              Title="Podgląd ogłoszenia"
-             BindingContext="{Binding PreviewViewModel, Source={StaticResource Locator}}"
              x:Name="PreviewPageN">
     <ContentPage.Resources>
         <ResourceDictionary>

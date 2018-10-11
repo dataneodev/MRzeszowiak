@@ -7,7 +7,8 @@
         xmlns:local="clr-namespace:MRzeszowiak"
         xmlns:ViewModel="clr-namespace:MRzeszowiak.ViewModel"
         xmlns:b="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"
-        BindingContext="{Binding CategorySelectViewModel, Source={StaticResource Locator}}">
+        xmlns:pmvvm="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+        pmvvm:ViewModelLocator.AutowireViewModel="True">
     <pages:PopupPage.Resources>
         <ResourceDictionary>
             <ViewModel:IsTextNotNull x:Key="IsTextNull"/>

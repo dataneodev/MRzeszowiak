@@ -11,7 +11,7 @@ namespace MRzeszowiak.ViewModel
 {
     public class ViewModelLocator
     {
-        public ListViewModel ListViewModel => ServiceLocator.Current.GetInstance<ListViewModel>();
+        //public ListViewModel ListViewModel => ServiceLocator.Current.GetInstance<ListViewModel>();
         public PreviewViewModel PreviewViewModel => ServiceLocator.Current.GetInstance<PreviewViewModel>();
         public SettingViewModel SettingViewModel => ServiceLocator.Current.GetInstance<SettingViewModel>();
         public PreViewImageViewModel PreViewImageViewModel => ServiceLocator.Current.GetInstance<PreViewImageViewModel>();
@@ -23,9 +23,10 @@ namespace MRzeszowiak.ViewModel
             var unityContainer = new UnityContainer();
 
             unityContainer.RegisterType<INavigationService, PageNavigationService>();
+            unityContainer.RegisterType<IRzeszowiak, RzeszowiakRepository>();
 
-            unityContainer.RegisterType<ListViewModel>(new ContainerControlledLifetimeManager(), 
-                new InjectionConstructor(new RzeszowiakRepository()));
+            //unityContainer.RegisterType<ListViewModel>(new ContainerControlledLifetimeManager(), 
+            //    new InjectionConstructor(PageNavigationService, new RzeszowiakRepository()));
 
             unityContainer.RegisterType<PreviewViewModel>(new ContainerControlledLifetimeManager(), 
                 new InjectionConstructor(new RzeszowiakRepository(), new RzeszowiakImageContainer()));

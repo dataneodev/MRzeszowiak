@@ -1,3 +1,4 @@
+using MRzeszowiak.Services;
 using MRzeszowiak.View;
 using MRzeszowiak.ViewModel;
 using Prism;
@@ -12,12 +13,6 @@ namespace MRzeszowiak
 {
 	public partial class App : PrismApplication
     {
-        private static ViewModelLocator locator;
-        public static ViewModelLocator Locator
-        {
-            get { return locator ?? (locator = new ViewModelLocator()) ; }
-        }
-
         public static Color highlightRow = Color.FromHex("#f4f4f4");
         public static Color normalRow = Color.FromHex("#FFFFFF0");
         public static Color highlightPremiumRow = Color.FromHex("#fcd890");
@@ -25,8 +20,6 @@ namespace MRzeszowiak
         public static double DisplayScreenWidth = 0f;
         public static double DisplayScreenHeight = 0f;
         public static double DisplayScaleFactor = 0f;
-
-
 
         public static CategorySelectPopup CatalogPopUp { get { return new CategorySelectPopup(); } }
 
@@ -66,11 +59,13 @@ namespace MRzeszowiak
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
-            containerRegistry.RegisterForNavigation<ListPage>();
-            containerRegistry.RegisterForNavigation<PreviewPage>();
-            containerRegistry.RegisterForNavigation<PreviewImagePage>();
-            containerRegistry.RegisterForNavigation<CategorySelectPopup>();
-            containerRegistry.RegisterForNavigation<SettingPage>();
+            containerRegistry.Register<IRzeszowiak, RzeszowiakRepository>();
+
+            containerRegistry.RegisterForNavigation<ListPage, ListViewModel>();
+            containerRegistry.RegisterForNavigation<PreviewPage, PreviewViewModel>();
+            containerRegistry.RegisterForNavigation<PreviewImagePage, PreViewImageViewModel>();
+            containerRegistry.RegisterForNavigation<CategorySelectPopup, CategorySelectViewModel>();
+            containerRegistry.RegisterForNavigation<SettingPage, SettingViewModel>();
         }
     }
 }

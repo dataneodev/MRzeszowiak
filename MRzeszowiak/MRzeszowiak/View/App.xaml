@@ -20,7 +20,6 @@
                     </Setter.Value>
                 </Setter>
             </Style>
-            <x:Static Member="vm:App.Locator" x:Key="Locator" />
             <ControlTemplate x:Key="ListPageControlTemplate">
                 <Grid>
                     <Grid.RowDefinitions>
