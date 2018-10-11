@@ -25,9 +25,6 @@ namespace MRzeszowiak.View
         private void AdvertListView_ItemTapped(object sender, ItemTappedEventArgs e)
         {
             ((ListView)sender).SelectedItem = null;
-            //var advertShort = e.Item as AdvertShort;
-            //if(advertShort != null)
-            //    await Navigation.PushAsync(new PreviewPage(advertShort), false);
         }
 
         private void AdvertListView_ScrollStateChanged(object sender, Extends.ScrollStateChangedEventArgs e)

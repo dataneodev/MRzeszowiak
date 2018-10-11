@@ -116,7 +116,7 @@
         <Button  Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" 
                  x:Name="PopupOKButton" 
                  Text="Anuluj" 
-                 Clicked="PopupOKButton_Clicked" 
+                 Command="{Binding ButtonCloseTappped}"
                  HorizontalOptions="End"
                  BackgroundColor="White"
                  Margin="2"

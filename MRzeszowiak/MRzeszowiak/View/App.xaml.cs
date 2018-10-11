@@ -3,8 +3,10 @@ using MRzeszowiak.View;
 using MRzeszowiak.ViewModel;
 using Prism;
 using Prism.Ioc;
+using Prism.Plugin.Popups;
 using Prism.Unity;
 using System;
+using Unity.Lifetime;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -21,20 +23,20 @@ namespace MRzeszowiak
         public static double DisplayScreenHeight = 0f;
         public static double DisplayScaleFactor = 0f;
 
-        public static CategorySelectPopup CatalogPopUp { get { return new CategorySelectPopup(); } }
+        public App():this(null){ }
 
         public App(IPlatformInitializer initializer = null) : base(initializer)
 		{
         }
 
-        protected override void OnInitialized()
+        protected override async void OnInitialized()
         {
             #if DEBUG
             LiveReload.Init();
             #endif
 
             InitializeComponent();
-            MainPage = new MenuPage();
+            await NavigationService.NavigateAsync("MenuPage");
         }
 
         protected override void OnStart ()
@@ -59,8 +61,12 @@ namespace MRzeszowiak
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
-            containerRegistry.Register<IRzeszowiak, RzeszowiakRepository>();
+            containerRegistry.RegisterPopupNavigationService();
 
+            containerRegistry.Register<IRzeszowiak, RzeszowiakRepository>();
+            containerRegistry.Register<IRzeszowiakImageContainer, RzeszowiakImageContainer>();
+
+            containerRegistry.RegisterForNavigation<MenuPage>();
             containerRegistry.RegisterForNavigation<ListPage, ListViewModel>();
             containerRegistry.RegisterForNavigation<PreviewPage, PreviewViewModel>();
             containerRegistry.RegisterForNavigation<PreviewImagePage, PreViewImageViewModel>();

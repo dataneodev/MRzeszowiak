@@ -1,9 +1,8 @@
-﻿using CarouselView.FormsPlugin.Abstractions;
-using MRzeszowiak.Model;
+﻿using MRzeszowiak.Model;
 using MRzeszowiak.Services;
-using Newtonsoft.Json;
+using Prism.Navigation;
+using Prism.Services;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -13,13 +12,16 @@ using Xamarin.Forms;
 
 namespace MRzeszowiak.ViewModel
 {
-    public class PreviewViewModel : INotifyPropertyChanged
+    public class PreviewViewModel : INotifyPropertyChanged, INavigationAware
     {
         public event PropertyChangedEventHandler PropertyChanged;
         protected IRzeszowiak _rzeszowiakRepository;
+        protected IRzeszowiakImageContainer _imageContainer;
+        protected INavigationService _navigationService;
+        protected IPageDialogService _pageDialog;
 
         public bool ActivityForm => !Activity && !ErrorPanelVisible ? true : false;
-    
+
         private bool activity = true;
         public bool Activity
         {
@@ -120,10 +122,9 @@ namespace MRzeszowiak.ViewModel
             }
         }
 
-        private IRzeszowiakImageContainer imageContainer;
         public ImageSource PhoneImage
         {
-            get { return imageContainer?.ImageData; }
+            get { return _imageContainer?.ImageData; }
         }
 
         private bool isFavorite;
@@ -172,48 +173,58 @@ namespace MRzeszowiak.ViewModel
         public ICommand RefreshAdvert { get; private set; }
         public ICommand MailAdvert { get; private set; }
         public ICommand FavoriteAdvert { get; private set; }
+        public ICommand ImageTapped { get; private set; }
 
-        public PreviewViewModel(IRzeszowiak RzeszowiakRepository, IRzeszowiakImageContainer rzeszowiakImageContainer)
+        public PreviewViewModel(INavigationService navigationService, IRzeszowiak RzeszowiakRepository,
+                                IRzeszowiakImageContainer rzeszowiakImageContainer, IPageDialogService pageDialog)
         {
-            _rzeszowiakRepository = RzeszowiakRepository ?? throw new NullReferenceException("ListViewModel => IRzeszowiakRepository RzeszowiakRepository == null !");
-            imageContainer = rzeszowiakImageContainer ?? throw new NullReferenceException("ListViewModel => IRzeszowiakImageContainer rzeszowiakImageContainer == null !");
-            imageContainer.OnDownloadFinish += ImageDownloadFinish;
+            _rzeszowiakRepository = RzeszowiakRepository ?? throw new NullReferenceException("IRzeszowiakRepository RzeszowiakRepository == null !");
+            _navigationService = navigationService ?? throw new NullReferenceException("INavigationService navigationService == null !");
+            _pageDialog = pageDialog ?? throw new NullReferenceException("IPageDialogService pageDialog == null !");
+            _imageContainer = rzeszowiakImageContainer ?? throw new NullReferenceException("IRzeszowiakImageContainer rzeszowiakImageContainer == null !");
+            _imageContainer.OnDownloadFinish += ImageDownloadFinish;
 
             ImageURLsList.CollectionChanged += (s, e) => { OnPropertyChanged("ImageVisible"); };
             AdditionalData.CollectionChanged += (s, e) => { OnPropertyChanged("AddDataVisible"); };
 
-            MessagingCenter.Subscribe<string, AdvertShort>("ListViewModel", "LoadAdvertShort", (sender, advertShort) => {
-                LoadAdvertMessage(advertShort);
-            });
-
-            OpenAdvertPage = new Command(()=> 
+            OpenAdvertPage = new Command(() =>
             {
-                if(_lastAdvert?.URL?.Length > 0)
+                if (_lastAdvert?.URL?.Length > 0)
                     Device.OpenUri(new Uri(_lastAdvert?.URL));
             });
 
             RefreshAdvert = new Command(() =>
             {
-                if (_lastAdvert != null)             
+                if (_lastAdvert != null)
                     LoadAdvertMessage(_lastAdvert);
             });
 
             MailAdvert = new Command(() =>
             {
-                
+
             });
 
             FavoriteAdvert = new Command(() =>
             {
-                IsFavorite = ! IsFavorite;
+                IsFavorite = !IsFavorite;
                 if (_lastAdvert != null) _lastAdvert.IsFavorite = IsFavorite;
+            });
+
+            ImageTapped = new Command(() =>
+            {
+
             });
         }
 
-        ~PreviewViewModel()
+        public void OnNavigatedTo(INavigationParameters parameters)
         {
-            MessagingCenter.Unsubscribe<View.PreviewPage, AdvertShort>(this, "LoadAdvertShort");
+            if(parameters.ContainsKey("AdvertShort"))
+                if (parameters["AdvertShort"] is AdvertShort advertShort)
+                    LoadAdvertMessage(advertShort);
         }
+
+        public void OnNavigatingTo(INavigationParameters parameters) {  }
+        public void OnNavigatedFrom(INavigationParameters parameters) { }
 
         async void LoadAdvertMessage(AdvertShort advertShort)
         {
@@ -258,8 +269,8 @@ namespace MRzeszowiak.ViewModel
             if (advert.PhoneSsid.Length == 10 && advert.PhonePHPSSESION != null)
             {
                 HasPhoneImage = true;
-                imageContainer.HideImage();
-                imageContainer.DownloadImage(advert.PhoneSsid, advert.AdverIDinRzeszowiak, advert.URLPath, advert.PhonePHPSSESION); // no wait
+                _imageContainer.HideImage();
+                _imageContainer.DownloadImage(advert.PhoneSsid, advert.AdverIDinRzeszowiak, advert.URLPath, advert.PhonePHPSSESION); // no wait
             }
             else
                 HasPhoneImage = false;       

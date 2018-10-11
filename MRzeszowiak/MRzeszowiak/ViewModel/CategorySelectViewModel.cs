@@ -1,5 +1,6 @@
 ﻿using MRzeszowiak.Model;
 using MRzeszowiak.Services;
+using Prism.Navigation;
 using Rg.Plugins.Popup.Services;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,8 @@ namespace MRzeszowiak.ViewModel
 {
     public class CategorySelectViewModel : INotifyPropertyChanged
     {
-        protected IRzeszowiak rzeszowiakRepository;
+        protected IRzeszowiak _rzeszowiakRepository;
+        protected INavigationService _navigationService;
 
         public event PropertyChangedEventHandler PropertyChanged;
         public ObservableCollection<CatDisplay> CategoryAction { get; private set; } = new ObservableCollection<CatDisplay>();
@@ -23,7 +25,7 @@ namespace MRzeszowiak.ViewModel
 
         public ICommand CategoryTappet { get; private set; }
         public ICommand ButtonTappped { get; private set; }
-        private Action<Category> callbackCategoryResult;
+        public ICommand ButtonCloseTappped { get; private set; }
 
         protected Category LastSelectedCategory { get; set; }
 
@@ -39,24 +41,18 @@ namespace MRzeszowiak.ViewModel
             } 
         }
 
-        public CategorySelectViewModel(IRzeszowiak RzeszowiakRepository)
+        public CategorySelectViewModel(INavigationService navigationService, IRzeszowiak RzeszowiakRepository)
         {
-            rzeszowiakRepository = RzeszowiakRepository;
+            _rzeszowiakRepository = RzeszowiakRepository ?? throw new NullReferenceException("ListViewModel => IRzeszowiakRepository RzeszowiakRepository == null !");
+            _navigationService = navigationService ?? throw new NullReferenceException("INavigationService navigationService == null !");
+
             ButtonList.Add(new CatButtonDisplay(1) { Title = "", IsVisible = false, Image = CatSelectImage.none });
             ButtonList.Add(new CatButtonDisplay(2) { Title = "", IsVisible = false, Image = CatSelectImage.none });
             ButtonList.Add(new CatButtonDisplay(3) { Title = "", IsVisible = false, Image = CatSelectImage.none });
             CategoryTappet = new Command<CatDisplay>(ItemTapedAsync);
             ButtonTappped = new Command<CatButtonDisplay>(ButtonTappedAsync);
-
-            MessagingCenter.Subscribe<string, Action<Category>>("MRzeszowiak", "SelectCategory", (sender, action) => {
-                StartCategorySelect(action);
-            });
-            DisplayCategoryAsync(null);
-        }
-
-        public void StartCategorySelect(Action<Category> callBack)
-        {
-            callbackCategoryResult = callBack;
+            ButtonCloseTappped = new Command(async () => { await _navigationService.GoBackAsync(); });
+            DisplayCategoryAsync(null); 
         }
 
         protected async void ButtonTappedAsync(CatButtonDisplay button)
@@ -105,7 +101,7 @@ namespace MRzeszowiak.ViewModel
             if (catTapped.CategoryObj == null)
             {
                 Debug.Write("Tapped all category");
-                Select(catTapped, null);
+                await Select(catTapped, null);
                 return;
             }
 
@@ -128,7 +124,7 @@ namespace MRzeszowiak.ViewModel
                 else
                 {
                     category.SelectedChildCategory = null;
-                    Select(catTapped, category);
+                    await Select(catTapped, category); 
                 }
             }
 
@@ -136,16 +132,15 @@ namespace MRzeszowiak.ViewModel
             {
                 Debug.Write("Tapped CategoryObj is ChildCategory");
                 var child = catTapped.CategoryObj as ChildCategory;
-                Select(catTapped, child?.ParentCategory, child);
+                await Select(catTapped, child?.ParentCategory, child);
             }
         }
 
         protected CatDisplay lastSelect;
         protected CatSelectImage lastImageState;
-        protected void Select(CatDisplay catDisplay, Category selCategory, ChildCategory childCategory = null)
+        protected async Task Select(CatDisplay catDisplay, Category selCategory, ChildCategory childCategory = null)
         {
             Debug.Write("Select " + catDisplay?.Title ?? "null");
-
             if (lastSelect != null)
                 lastSelect.Image = lastImageState;
             lastSelect = catDisplay;
@@ -157,8 +152,9 @@ namespace MRzeszowiak.ViewModel
                 LastSelectedCategory.SelectedChildCategory = childCategory;
             catDisplay.Image = CatSelectImage.selected;
 
-            PopupNavigation.Instance.PopAsync(true);
-            callbackCategoryResult?.Invoke(selCategory);            
+            var navigationParams = new NavigationParameters();
+            navigationParams.Add("SelectedCategory", selCategory);
+            await _navigationService.GoBackAsync(navigationParams);            
         }
 
         protected async Task DisplayCategoryAsync(object categoryToShow)
@@ -173,7 +169,7 @@ namespace MRzeszowiak.ViewModel
                 SetButton(2, String.Empty, false);
                 SetButton(3, String.Empty, false);
 
-                var categoryList = await rzeszowiakRepository.GetMasterCategoryListAsync();
+                var categoryList = await _rzeszowiakRepository.GetMasterCategoryListAsync();
                 foreach(var item in categoryList)
                     AllViews += item.Views;
 
@@ -206,7 +202,7 @@ namespace MRzeszowiak.ViewModel
                 SetButton(2, master.Title, true, CatSelectImage.none, master);
                 SetButton(3, String.Empty, false);
 
-                var categoryList = await rzeszowiakRepository.GetCategoryListAsync();
+                var categoryList = await _rzeszowiakRepository.GetCategoryListAsync();
                 foreach (var category in categoryList)
                     if (master.Id == category.Master.Id)
                     {

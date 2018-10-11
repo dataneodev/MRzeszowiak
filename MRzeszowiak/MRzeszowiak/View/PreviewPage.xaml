@@ -33,7 +33,7 @@
                                 Padding="0">                    
                     <forms:CarouselViewControl ItemsSource="{Binding ImageURLsList}"
                                        IsVisible="{Binding ImageVisible}"
-                                       IsEnabled="{Binding ImageVisible}"              
+                                       IsEnabled="{Binding ImageVisible}"
                                        ShowArrows="True"
                                        ShowIndicators="True"
                                        IsSwipeEnabled="True"
@@ -51,7 +51,7 @@
                                Aspect="AspectFill"
                                x:Name="image">
                                 <Extends:ImageFit.GestureRecognizers>
-                                    <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped" NumberOfTapsRequired="1" />
+                                        <TapGestureRecognizer Command="ImageTapped" NumberOfTapsRequired="1" />
                                 </Extends:ImageFit.GestureRecognizers>
                             </Extends:ImageFit>
                         <!--</ScrollView>-->

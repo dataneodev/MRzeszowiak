@@ -1,6 +1,7 @@
 ﻿using MRzeszowiak.Model;
 using MRzeszowiak.Services;
 using Prism.Navigation;
+using Prism.Services;
 using Rg.Plugins.Popup.Services;
 using System;
 using System.Collections.Generic;
@@ -14,12 +15,13 @@ using Xamarin.Forms;
 
 namespace MRzeszowiak.ViewModel
 {
-    public class ListViewModel :  INotifyPropertyChanged
+    public class ListViewModel :  INotifyPropertyChanged, INavigationAware
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public ObservableCollection<AdvertShort> AdvertShortList { get; private set; } = new ObservableCollection<AdvertShort>();
         protected IRzeszowiak _rzeszowiakRepository;
         protected INavigationService _navigationService;
+        protected IPageDialogService _pageDialog;
 
         public bool ActivityListView => !Activity && !ErrorPanelVisible ? true : false;
 
@@ -93,38 +95,36 @@ namespace MRzeszowiak.ViewModel
         protected AdvertSearchResult _lastAdvertSearchResult;
         protected AdvertSearch _lastAdvertSearch;
 
-        public ListViewModel(INavigationService navigationService, IRzeszowiak RzeszowiakRepository)
+        public ListViewModel(INavigationService navigationService, IPageDialogService pageDialog, IRzeszowiak RzeszowiakRepository)
         {
+            Debug.Write("ListViewModel Contructor");
             _rzeszowiakRepository = RzeszowiakRepository ?? throw new NullReferenceException("ListViewModel => IRzeszowiakRepository RzeszowiakRepository == null !");
+            _navigationService = navigationService ?? throw new NullReferenceException("INavigationService navigationService == null !");
+            _pageDialog = pageDialog ?? throw new NullReferenceException("IPageDialogService pageDialog == null !");
 
             MessagingCenter.Subscribe<View.ListPage>(this, "LoadLastOnStartup", (sender) => {
                 LoadLastOnStartup();
             });
 
-            MessagingCenter.Subscribe<View.ListPage>(this, "RefreshList", (sender) => {
-                RefreshList();
-            });
-
-            MessagingCenter.Subscribe<View.PreviewPage>(this, "PreViewFowardRequest", (sender) =>
-            {
-
-            });
-
-            MessagingCenter.Subscribe<View.PreviewPage>(this, "PreViewBackRequest", (sender) =>
-            {
-
-            });
 
             LoadNextAdvert = new Command(LoadNextItem);
-            ListViewItemTapped = new Command<AdvertShort>(ListViewTapped);
+            ListViewItemTapped = new Command<AdvertShort>(ListViewTappedAsync);
             CategorySelectButtonTaped = new Command(async () => 
             {
-                await PopupNavigation.Instance.PushAsync(App.CatalogPopUp, true);
-                MessagingCenter.Send<string, Action<Category>>("MRzeszowiak", "SelectCategory", CategoryUserSelectCallbackAsync);
+                await _navigationService.NavigateAsync("CategorySelectPopup");
             });
         }
 
-        public async void CategoryUserSelectCallbackAsync(Category selCategory)
+        public void OnNavigatedFrom(INavigationParameters parameters) { }
+        public async void OnNavigatedTo(INavigationParameters parameters)
+        {
+            if (parameters.ContainsKey("SelectedCategory"))
+                if (parameters["SelectedCategory"] is Category category)
+                    await CategoryUserSelectCallbackAsync(category);
+        }
+        public void OnNavigatingTo(INavigationParameters parameters) { }
+
+        public async Task CategoryUserSelectCallbackAsync(Category selCategory)
         {
             Debug.Write("CategoryUserSelectCallbackAsync");
             if (_lastAdvertSearch == null)
@@ -134,21 +134,16 @@ namespace MRzeszowiak.ViewModel
             _lastAdvertSearch.Category = selCategory;
             _lastAdvertSearch.MasterCategory = selCategory?.Master;
 
-            if(selCategory == null)
-                ButtonCategoryTitle = "Wszystkie kategorie";
-            else
-            {
-                ButtonCategoryTitle = selCategory.Master.Title + " - " + selCategory.Title;
-                if (selCategory.SelectedChildCategory != null) ButtonCategoryTitle += " - " + selCategory.SelectedChildCategory.Title;
-            }
-
+            ButtonCategoryTitle = (selCategory != null) ? selCategory.getFullTitle : Category.TitleForNull;
             await SearchExecute(_lastAdvertSearch, false);
         }
 
-        protected void ListViewTapped(AdvertShort advertShort)
+        protected async void ListViewTappedAsync(AdvertShort advertShort)
         {
             if (advertShort == null) return;
-            MessagingCenter.Send<string, AdvertShort>("ListViewModel", "LoadAdvertShort", advertShort);
+            var navigationParams = new NavigationParameters();
+            navigationParams.Add("AdvertShort", advertShort);
+            await _navigationService.NavigateAsync("PreviewPage", navigationParams);
         }
 
         protected void LoadPreviewFoward(AdvertShort advertShort)
@@ -166,10 +161,10 @@ namespace MRzeszowiak.ViewModel
             }
         }
 
-        protected  void categoryChange(Category category)
-        {
+        //protected  void categoryChange(Category category)
+        //{
 
-        }
+        //}
 
         // refreshing list
         protected async void RefreshList()

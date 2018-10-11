@@ -15,7 +15,7 @@ namespace MRzeszowiak.View
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class PreviewPage : ContentPage
 	{
-		public PreviewPage (AdvertShort advertShort)
+		public PreviewPage ()
 		{
 			InitializeComponent ();
             NavigationPage.SetHasNavigationBar(this, false);
@@ -28,13 +28,13 @@ namespace MRzeszowiak.View
 
         private async void TapGestureRecognizer_Tapped(object sender, EventArgs e)
         {
-            Debug.Write("TapGestureRecognizer_Tapped");
-            if(CarouselViewImageList?.ItemsSource?.GetCount() > 0)
-            {
-                await Navigation.PushAsync(new PreviewImagePage(), false);
-                MessagingCenter.Send<View.PreviewPage, Tuple<IEnumerable<string>, int>>(this, "ShowImagePreview", 
-                    new Tuple<IEnumerable<string>, int>(CarouselViewImageList?.ItemsSource?.Cast<string>(), CarouselViewImageList?.Position??0));
-            }
+            //Debug.Write("TapGestureRecognizer_Tapped");
+            //if(CarouselViewImageList?.ItemsSource?.GetCount() > 0)
+            //{
+            //    await Navigation.PushAsync(new PreviewImagePage(), false);
+            //    MessagingCenter.Send<View.PreviewPage, Tuple<IEnumerable<string>, int>>(this, "ShowImagePreview", 
+            //        new Tuple<IEnumerable<string>, int>(CarouselViewImageList?.ItemsSource?.Cast<string>(), CarouselViewImageList?.Position??0));
+            //}
         }
 
         private void AddDataList_ItemAppearing(object sender, ItemVisibilityEventArgs e)
@@ -66,7 +66,7 @@ namespace MRzeszowiak.View
 
         private async void BackButton_Clicked(object sender, EventArgs e)
         {
-            await Navigation.PopAsync();
+            
         }
     }
 }
