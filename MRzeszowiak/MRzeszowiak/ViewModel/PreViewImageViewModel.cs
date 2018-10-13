@@ -5,15 +5,18 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
+using System.Windows.Input;
 using Xamarin.Forms;
 
 namespace MRzeszowiak.ViewModel
 {
-    public class PreViewImageViewModel : INotifyPropertyChanged
+    public class PreViewImageViewModel : INotifyPropertyChanged, INavigationAware
     {
         public event PropertyChangedEventHandler PropertyChanged;
+        protected INavigationService _navigationService;
 
         public ObservableCollection<string> ImageURLsList { get; set; } = new ObservableCollection<string>();
+
         private int position;
         public int Position
         {
@@ -25,17 +28,26 @@ namespace MRzeszowiak.ViewModel
             }
         }
 
+        public ICommand BackButtonTapped { get; private set; }
+
         public PreViewImageViewModel(INavigationService navigationService)
         {
-            MessagingCenter.Subscribe<View.PreviewPage, Tuple<IEnumerable<string>, int>>(this, "ShowImagePreview", (sender, imageList) => {
-                LoadImage(imageList.Item1, imageList.Item2);
-            });  
+            _navigationService = navigationService ?? throw new NullReferenceException("INavigationService navigationService == null !");
+            BackButtonTapped = new Command(()=>_navigationService.GoBackAsync());
         }
 
-        ~PreViewImageViewModel()
+        public void OnNavigatedTo(INavigationParameters parameters)
         {
-            MessagingCenter.Unsubscribe<View.PreviewPage, Tuple<IEnumerable<string>, int>>(this, "ShowImagePreview");
+            if (parameters.ContainsKey("ImageSelectedIndex") && parameters.ContainsKey("ImageList"))
+            {
+                if ((parameters["ImageSelectedIndex"] is int index) && 
+                   (parameters["ImageList"] is IEnumerable<string> ImageList))
+                        LoadImage(ImageList, index);    
+            }
         }
+
+        public void OnNavigatingTo(INavigationParameters parameters) { }
+        public void OnNavigatedFrom(INavigationParameters parameters) { }
 
         void LoadImage(IEnumerable<string> imageList, int position)
         {

@@ -2,7 +2,7 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MRzeszowiak.View.PreviewPage"
-             xmlns:forms="clr-namespace:CarouselView.FormsPlugin.Abstractions;assembly=CarouselView.FormsPlugin.Abstractions"
+             xmlns:CarouselView="clr-namespace:CarouselView.FormsPlugin.Abstractions;assembly=CarouselView.FormsPlugin.Abstractions"
              xmlns:ViewModel="clr-namespace:MRzeszowiak.ViewModel"
              xmlns:Extends="clr-namespace:MRzeszowiak.Extends"
              xmlns:pmvvm="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
@@ -30,8 +30,9 @@
                        HorizontalTextAlignment="Center"/>
                 <AbsoluteLayout HeightRequest="{Binding ImageVisible, Converter={StaticResource AbsHeight}}"
                                 HorizontalOptions="FillAndExpand"
-                                Padding="0">                    
-                    <forms:CarouselViewControl ItemsSource="{Binding ImageURLsList}"
+                                Padding="0">
+                    <CarouselView:CarouselViewControl 
+                                       ItemsSource="{Binding ImageURLsList}"
                                        IsVisible="{Binding ImageVisible}"
                                        IsEnabled="{Binding ImageVisible}"
                                        ShowArrows="True"
@@ -41,23 +42,23 @@
                                        HeightRequest="220"
                                        AbsoluteLayout.LayoutBounds="0,0,1,220"
                                        AbsoluteLayout.LayoutFlags="WidthProportional"       
-                                       x:Name="CarouselViewImageList">                    
-                    <forms:CarouselViewControl.ItemTemplate>
-                    <DataTemplate>
-                        <!--<ScrollView Orientation="Horizontal" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">-->
+                                       x:Name="CarouselViewImageList">
+                    <CarouselView:CarouselViewControl.ItemTemplate>
+                        <DataTemplate>
                             <Extends:ImageFit Source="{Binding .}" 
-                               VerticalOptions="Center"
-                               HorizontalOptions="FillAndExpand"              
-                               Aspect="AspectFill"
-                               x:Name="image">
+                                VerticalOptions="Center"
+                                HorizontalOptions="FillAndExpand"              
+                                Aspect="AspectFill"
+                                x:Name="image">
                                 <Extends:ImageFit.GestureRecognizers>
-                                        <TapGestureRecognizer Command="ImageTapped" NumberOfTapsRequired="1" />
+                                        <TapGestureRecognizer Command="{Binding Path=BindingContext.ImageTapped, Source={x:Reference Name=PreviewPageN}}" 
+                                                          CommandParameter="{Binding Path=Position, Source={x:Reference Name=CarouselViewImageList}"
+                                                          NumberOfTapsRequired="1" />
                                 </Extends:ImageFit.GestureRecognizers>
                             </Extends:ImageFit>
-                        <!--</ScrollView>-->
-                    </DataTemplate>
-                    </forms:CarouselViewControl.ItemTemplate>
-                </forms:CarouselViewControl>
+                        </DataTemplate>
+                    </CarouselView:CarouselViewControl.ItemTemplate>
+                </CarouselView:CarouselViewControl>
                 <Button Image="back.png"
                         x:Name="BackButton"
                         Text="" 
@@ -65,7 +66,7 @@
                         AbsoluteLayout.LayoutBounds="10,10,55,40"
                         AbsoluteLayout.LayoutFlags="None"
                         BackgroundColor="#50e2e2e2"
-                        Clicked="BackButton_Clicked"/>
+                        Command="{Binding BackButtonTapped}"/>
                 </AbsoluteLayout>
             <StackLayout Orientation="Vertical" 
                          IsVisible="{Binding ActivityForm}"

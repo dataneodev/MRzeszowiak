@@ -1,10 +1,11 @@
-﻿using System;
+﻿using MRzeszowiak.Model;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace MRzeszowiak.Services
 {
-    class SettingRepository
+    class SettingRepository : ISetting
     {
     }
 }

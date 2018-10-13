@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Prism.Navigation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,11 +11,16 @@ using Xamarin.Forms.Xaml;
 namespace MRzeszowiak.View
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class MenuPage : MasterDetailPage
-	{
-		public MenuPage ()
+	public partial class MenuMasterDetail : MasterDetailPage, IMasterDetailPageOptions
+    {
+		public MenuMasterDetail()
 		{
             InitializeComponent();
+        }
+
+        public bool IsPresentedAfterNavigation
+        {
+            get { return Device.Idiom != TargetIdiom.Phone; }
         }
 
         private async void listView_ItemTapped(object sender, ItemTappedEventArgs e)

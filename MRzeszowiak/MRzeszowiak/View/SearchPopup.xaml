@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<pages:PopupPage
+        xmlns:pages="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
+        xmlns="http://xamarin.com/schemas/2014/forms"
+        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+        x:Class="MRzeszowiak.View.SearchPopup"
+        xmlns:local="clr-namespace:MRzeszowiak"
+        xmlns:ViewModel="clr-namespace:MRzeszowiak.ViewModel"
+        xmlns:b="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"
+        xmlns:pmvvm="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+        pmvvm:ViewModelLocator.AutowireViewModel="True">
+    <pages:PopupPage.Resources>
+        <ResourceDictionary>
+
+        </ResourceDictionary>
+    </pages:PopupPage.Resources>
+    <Grid Margin="20" 
+          HorizontalOptions="Center"
+          VerticalOptions="Center"
+          Padding="0.5"
+          RowSpacing="0.5"
+          BackgroundColor="Gray">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+    </Grid>
+</pages:PopupPage>

@@ -76,7 +76,6 @@ namespace MRzeszowiak.ViewModel
         }
 
         private string buttonCategoryTitle;
-
         public string ButtonCategoryTitle
         {
             get { return buttonCategoryTitle; }
@@ -91,6 +90,8 @@ namespace MRzeszowiak.ViewModel
         public ICommand LoadNextAdvert { get; private set; }
         public ICommand ListViewItemTapped { get; private set; }
         public ICommand CategorySelectButtonTaped { get; private set; }
+        public ICommand SearchButtonTapped { get; private set; }
+        
 
         protected AdvertSearchResult _lastAdvertSearchResult;
         protected AdvertSearch _lastAdvertSearch;
@@ -102,16 +103,16 @@ namespace MRzeszowiak.ViewModel
             _navigationService = navigationService ?? throw new NullReferenceException("INavigationService navigationService == null !");
             _pageDialog = pageDialog ?? throw new NullReferenceException("IPageDialogService pageDialog == null !");
 
-            MessagingCenter.Subscribe<View.ListPage>(this, "LoadLastOnStartup", (sender) => {
-                LoadLastOnStartup();
-            });
-
-
             LoadNextAdvert = new Command(LoadNextItem);
             ListViewItemTapped = new Command<AdvertShort>(ListViewTappedAsync);
-            CategorySelectButtonTaped = new Command(async () => 
+            CategorySelectButtonTaped = new Command(() => 
             {
-                await _navigationService.NavigateAsync("CategorySelectPopup");
+                _navigationService.NavigateAsync("CategorySelectPopup");
+            });
+
+            SearchButtonTapped = new Command(() =>
+            {
+                _navigationService.NavigateAsync("SearchMenuPage");
             });
         }
 
@@ -121,6 +122,8 @@ namespace MRzeszowiak.ViewModel
             if (parameters.ContainsKey("SelectedCategory"))
                 if (parameters["SelectedCategory"] is Category category)
                     await CategoryUserSelectCallbackAsync(category);
+            if (parameters.ContainsKey("LoadAtStartup"))
+                    await LoadLastOnStartup();
         }
         public void OnNavigatingTo(INavigationParameters parameters) { }
 
@@ -167,29 +170,25 @@ namespace MRzeszowiak.ViewModel
         //}
 
         // refreshing list
-        protected async void RefreshList()
-        {
-            if(_lastAdvertSearch != null)
-                await SearchExecute(_lastAdvertSearch, false);
-        }
+        //protected async void RefreshList()
+        //{
+        //    if(_lastAdvertSearch != null)
+        //        await SearchExecute(_lastAdvertSearch, false);
+        //}
 
         // load last add on startup
-        protected async void LoadLastOnStartup()
+        protected async Task LoadLastOnStartup()
         {
-            //Debug.Write("LoadLastOnStartup");
-            
             if (_lastAdvertSearch != null)
             {
                 await SearchExecute(_lastAdvertSearch, false);
                 ButtonCategoryTitle = _lastAdvertSearch.Category.getFullTitle;
-            }
-                
+            }  
             else
             {
                 await SearchExecute(new AdvertSearch(), false);
                 ButtonCategoryTitle = Category.TitleForNull;
-            }
-                
+            }    
         }
 
         protected async void LoadNextItem()

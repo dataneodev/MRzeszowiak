@@ -1,8 +1,10 @@
+using MRzeszowiak.Model;
 using MRzeszowiak.Services;
 using MRzeszowiak.View;
 using MRzeszowiak.ViewModel;
 using Prism;
 using Prism.Ioc;
+using Prism.Navigation;
 using Prism.Plugin.Popups;
 using Prism.Unity;
 using System;
@@ -29,6 +31,12 @@ namespace MRzeszowiak
 		{
         }
 
+        public App(IPlatformInitializer initializer, bool setFormsDependencyResolver)
+            : base(initializer, setFormsDependencyResolver)
+        {
+
+        }
+
         protected override async void OnInitialized()
         {
             #if DEBUG
@@ -36,42 +44,50 @@ namespace MRzeszowiak
             #endif
 
             InitializeComponent();
-            await NavigationService.NavigateAsync("MenuPage");
+            var navigationParams = new NavigationParameters("LoadAtStartup=true");
+            await NavigationService.NavigateAsync("MenuMasterDetail/MainNavigation/ListPage", navigationParams);
         }
 
-        protected override void OnStart ()
-		{
-			// Handle when your app starts
-		}
-
-		protected override void OnSleep ()
-		{
-			// Handle when your app sleeps
-		}
-
-		protected override void OnResume ()
-		{
-			// Handle when your app resumes
-		}
-
-        private void TapGestureRecognizer_Tapped(object sender, EventArgs e)
+        protected override void OnStart()
         {
+            // Handle when your app starts
+        }
 
+        protected override void OnSleep()
+        {
+            // Support IApplicationLifecycleAware
+            base.OnSleep();
+
+            // Handle when your app sleeps
+        }
+
+        protected override void OnResume()
+        {
+            // Support IApplicationLifecycleAware
+            base.OnResume();
+
+            // Handle when your app resumes
         }
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
             containerRegistry.RegisterPopupNavigationService();
 
+            containerRegistry.RegisterSingleton<ISetting, SettingRepository>();
+
             containerRegistry.Register<IRzeszowiak, RzeszowiakRepository>();
             containerRegistry.Register<IRzeszowiakImageContainer, RzeszowiakImageContainer>();
 
-            containerRegistry.RegisterForNavigation<MenuPage>();
+            containerRegistry.RegisterSingleton<ListViewModel>();
+
+            containerRegistry.RegisterForNavigation<MainNavigation, MainNavigationViewModel>();
+            containerRegistry.RegisterForNavigation<MenuMasterDetail, MenuMasterDetailViewModel>();
             containerRegistry.RegisterForNavigation<ListPage, ListViewModel>();
             containerRegistry.RegisterForNavigation<PreviewPage, PreviewViewModel>();
             containerRegistry.RegisterForNavigation<PreviewImagePage, PreViewImageViewModel>();
             containerRegistry.RegisterForNavigation<CategorySelectPopup, CategorySelectViewModel>();
-            containerRegistry.RegisterForNavigation<SettingPage, SettingViewModel>();
+            containerRegistry.RegisterForNavigation<SearchPopup, SearchViewModel>();
+            containerRegistry.RegisterForNavigation<SettingPage, SettingViewModel>();            
         }
     }
 }

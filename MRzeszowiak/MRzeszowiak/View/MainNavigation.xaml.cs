@@ -1,5 +1,4 @@
-﻿using Rg.Plugins.Popup.Pages;
-using Rg.Plugins.Popup.Services;
+﻿using Prism.Navigation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,16 +11,21 @@ using Xamarin.Forms.Xaml;
 namespace MRzeszowiak.View
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class CategorySelectPopup : PopupPage
+	public partial class MainNavigation : NavigationPage, INavigationPageOptions, IDestructible
     {
-		public CategorySelectPopup ()
+		public MainNavigation ()
 		{
 			InitializeComponent ();
+		}
+
+        public bool ClearNavigationStackOnNavigation
+        {
+            get { return true; }
         }
 
-        private void categoryListView_ItemTapped(object sender, ItemTappedEventArgs e)
+        public void Destroy()
         {
-            ((ListView)sender).SelectedItem = null;
+
         }
     }
 }

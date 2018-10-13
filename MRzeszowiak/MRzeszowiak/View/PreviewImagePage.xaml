@@ -34,10 +34,11 @@
             <Button Image="back.png"
                         x:Name="BackButton"
                         Text="" 
+                        Command="{Binding BackButtonTapped}"
                         AbsoluteLayout.LayoutBounds="10,10,55,40"
                         AbsoluteLayout.LayoutFlags="None"
                         BackgroundColor="#50e2e2e2"
-                        Clicked="BackButton_Clicked"/>
+                        />
         </AbsoluteLayout>
     </ContentPage.Content>
 </ContentPage>

@@ -20,39 +20,6 @@
                     </Setter.Value>
                 </Setter>
             </Style>
-            <ControlTemplate x:Key="ListPageControlTemplate">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                
-                <StackLayout
-                    Orientation="Horizontal"
-                    HorizontalOptions="FillAndExpand"
-                    Spacing="0"
-                    Grid.Row="0">
-                        <StackLayout.Padding>
-                            <OnPlatform x:TypeArguments="Thickness"
-                            iOS="10, 10, 10, 10"
-                            Android="10, 10, 10, 10"/>
-                        </StackLayout.Padding>
-                        <StackLayout.BackgroundColor>
-                            <OnPlatform x:TypeArguments="Color" Android="#2196F3"/>
-                        </StackLayout.BackgroundColor>
-                    <!-- My header content to make my app the prettiest. -->
-                        <Image Source="Icon.png" WidthRequest="30" HeightRequest="30">
-                            <Image.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped" />
-                            </Image.GestureRecognizers>
-                        </Image>
-                    </StackLayout>
-                    <ScrollView >
-                        <ContentPresenter  VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" />
-                    </ScrollView>
-                </Grid>
-                <!-- End Header -->
-            </ControlTemplate>
         </ResourceDictionary>
     </prism:PrismApplication.Resources>
 </prism:PrismApplication>

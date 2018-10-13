@@ -18,8 +18,7 @@ namespace MRzeszowiak.View
         public ListPage ()
 		{
 			InitializeComponent ();
-            NavigationPage.SetHasNavigationBar(this, false);
-            MessagingCenter.Send<View.ListPage>(this, "LoadLastOnStartup");            
+            NavigationPage.SetHasNavigationBar(this, false);           
         }
 
         private void AdvertListView_ItemTapped(object sender, ItemTappedEventArgs e)

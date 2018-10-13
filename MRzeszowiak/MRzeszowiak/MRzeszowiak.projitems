@@ -32,8 +32,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Services\SettingRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\CategorySelectViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ListViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\MainNavigationViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\MenuMasterDetailViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\PreViewImageViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\PreviewViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\SearchViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\SettingViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ViewValueConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)View\AboutPage.xaml.cs">
@@ -55,8 +58,12 @@
       <DependentUpon>ListPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)View\MenuPage.xaml.cs">
-      <DependentUpon>MenuPage.xaml</DependentUpon>
+    <Compile Include="$(MSBuildThisFileDirectory)View\MainNavigation.xaml.cs">
+      <DependentUpon>MainNavigation.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)View\MenuMasterDetail.xaml.cs">
+      <DependentUpon>MenuMasterDetail.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)View\PreviewImagePage.xaml.cs">
@@ -67,8 +74,8 @@
       <DependentUpon>PreviewPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)View\SearchMenuPage.xaml.cs">
-      <DependentUpon>SearchMenuPage.xaml</DependentUpon>
+    <Compile Include="$(MSBuildThisFileDirectory)View\SearchPopup.xaml.cs">
+      <DependentUpon>SearchPopup.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)View\SettingPage.xaml.cs">
@@ -77,7 +84,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)View\MenuPage.xaml">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)View\MenuMasterDetail.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
@@ -119,7 +126,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)View\SearchMenuPage.xaml">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)View\SearchPopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
@@ -131,6 +138,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Converters\" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)View\MainNavigation.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

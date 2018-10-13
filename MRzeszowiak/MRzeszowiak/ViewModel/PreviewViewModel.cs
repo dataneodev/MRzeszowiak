@@ -174,6 +174,7 @@ namespace MRzeszowiak.ViewModel
         public ICommand MailAdvert { get; private set; }
         public ICommand FavoriteAdvert { get; private set; }
         public ICommand ImageTapped { get; private set; }
+        public ICommand BackButtonTapped { get; private set; }
 
         public PreviewViewModel(INavigationService navigationService, IRzeszowiak RzeszowiakRepository,
                                 IRzeszowiakImageContainer rzeszowiakImageContainer, IPageDialogService pageDialog)
@@ -210,9 +211,19 @@ namespace MRzeszowiak.ViewModel
                 if (_lastAdvert != null) _lastAdvert.IsFavorite = IsFavorite;
             });
 
-            ImageTapped = new Command(() =>
+            ImageTapped = new Command<int>((selecteIndex) =>
             {
+                if (ImageURLsList.Count == 0) return;
 
+                var navigationParams = new NavigationParameters();
+                navigationParams.Add("ImageSelectedIndex", selecteIndex);
+                navigationParams.Add("ImageList", ImageURLsList);
+                _navigationService.NavigateAsync("PreviewImagePage", navigationParams);
+            });
+
+            BackButtonTapped = new Command(() => 
+            {
+                _navigationService.GoBackAsync();
             });
         }
 
@@ -258,11 +269,11 @@ namespace MRzeszowiak.ViewModel
             Highlighted = advert?.Highlighted ?? false;
 
             AdditionalData.Clear();
-            foreach (var item in advert.AdditionalData)
+            foreach (var item in advert?.AdditionalData)
                 AdditionalData.Add(new KeyValue(item.Key, item.Value));
 
             ImageURLsList.Clear();
-            foreach (var item in advert.ImageURLsList)
+            foreach (var item in advert?.ImageURLsList)
                 ImageURLsList.Add(item);
             IsFavorite = advert.IsFavorite;
 
