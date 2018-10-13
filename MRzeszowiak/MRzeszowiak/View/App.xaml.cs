@@ -26,16 +26,9 @@ namespace MRzeszowiak
         public static double DisplayScaleFactor = 0f;
 
         public App():this(null){ }
-
-        public App(IPlatformInitializer initializer = null) : base(initializer)
-		{
-        }
-
+        public App(IPlatformInitializer initializer = null) : base(initializer){  }
         public App(IPlatformInitializer initializer, bool setFormsDependencyResolver)
-            : base(initializer, setFormsDependencyResolver)
-        {
-
-        }
+            : base(initializer, setFormsDependencyResolver){ }
 
         protected override async void OnInitialized()
         {
@@ -57,16 +50,12 @@ namespace MRzeszowiak
         {
             // Support IApplicationLifecycleAware
             base.OnSleep();
-
-            // Handle when your app sleeps
         }
 
         protected override void OnResume()
         {
             // Support IApplicationLifecycleAware
             base.OnResume();
-
-            // Handle when your app resumes
         }
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
@@ -74,11 +63,8 @@ namespace MRzeszowiak
             containerRegistry.RegisterPopupNavigationService();
 
             containerRegistry.RegisterSingleton<ISetting, SettingRepository>();
-
             containerRegistry.Register<IRzeszowiak, RzeszowiakRepository>();
             containerRegistry.Register<IRzeszowiakImageContainer, RzeszowiakImageContainer>();
-
-            containerRegistry.RegisterSingleton<ListViewModel>();
 
             containerRegistry.RegisterForNavigation<MainNavigation, MainNavigationViewModel>();
             containerRegistry.RegisterForNavigation<MenuMasterDetail, MenuMasterDetailViewModel>();
@@ -88,6 +74,12 @@ namespace MRzeszowiak
             containerRegistry.RegisterForNavigation<CategorySelectPopup, CategorySelectViewModel>();
             containerRegistry.RegisterForNavigation<SearchPopup, SearchViewModel>();
             containerRegistry.RegisterForNavigation<SettingPage, SettingViewModel>();            
+        }
+
+        protected override void ConfigureViewModelLocator()
+        {
+            base.ConfigureViewModelLocator();
+            Prism.Mvvm.ViewModelLocationProvider.SetDefaultViewModelFactory((type) => { return Container.Resolve(type); });
         }
     }
 }

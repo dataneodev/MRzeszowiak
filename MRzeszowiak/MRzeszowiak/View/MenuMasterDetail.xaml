@@ -3,6 +3,8 @@
                   xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                   xmlns:local="clr-namespace:MRzeszowiak.View"
                   x:Class="MRzeszowiak.View.MenuMasterDetail"
+                  xmlns:pmvvm="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+                  pmvvm:ViewModelLocator.AutowireViewModel="True"
                   Title="Menu"
                   BackgroundColor="#f4f4f4">
     <MasterDetailPage.Master>

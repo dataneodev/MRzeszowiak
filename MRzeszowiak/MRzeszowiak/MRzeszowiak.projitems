@@ -32,7 +32,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Services\SettingRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\CategorySelectViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ListViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\MainNavigationViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\MenuMasterDetailViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\PreViewImageViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\PreviewViewModel.cs" />

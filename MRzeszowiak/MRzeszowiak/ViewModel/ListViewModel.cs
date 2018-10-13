@@ -2,13 +2,11 @@
 using MRzeszowiak.Services;
 using Prism.Navigation;
 using Prism.Services;
-using Rg.Plugins.Popup.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
@@ -105,18 +103,12 @@ namespace MRzeszowiak.ViewModel
 
             LoadNextAdvert = new Command(LoadNextItem);
             ListViewItemTapped = new Command<AdvertShort>(ListViewTappedAsync);
-            CategorySelectButtonTaped = new Command(() => 
-            {
-                _navigationService.NavigateAsync("CategorySelectPopup");
-            });
-
-            SearchButtonTapped = new Command(() =>
-            {
-                _navigationService.NavigateAsync("SearchMenuPage");
-            });
+            CategorySelectButtonTaped = new Command(() => _navigationService.NavigateAsync("CategorySelectPopup"));
+            SearchButtonTapped = new Command(() => _navigationService.NavigateAsync("SearchMenuPage"));
         }
 
         public void OnNavigatedFrom(INavigationParameters parameters) { }
+        public void OnNavigatingTo(INavigationParameters parameters) { }
         public async void OnNavigatedTo(INavigationParameters parameters)
         {
             if (parameters.ContainsKey("SelectedCategory"))
@@ -125,20 +117,45 @@ namespace MRzeszowiak.ViewModel
             if (parameters.ContainsKey("LoadAtStartup"))
                     await LoadLastOnStartup();
         }
-        public void OnNavigatingTo(INavigationParameters parameters) { }
 
         public async Task CategoryUserSelectCallbackAsync(Category selCategory)
         {
             Debug.Write("CategoryUserSelectCallbackAsync");
             if (_lastAdvertSearch == null)
-            {
-                _lastAdvertSearch = new AdvertSearch() ;
-            }
+                _lastAdvertSearch = new AdvertSearch();
             _lastAdvertSearch.Category = selCategory;
             _lastAdvertSearch.MasterCategory = selCategory?.Master;
-
             ButtonCategoryTitle = (selCategory != null) ? selCategory.getFullTitle : Category.TitleForNull;
+
             await SearchExecute(_lastAdvertSearch, false);
+        }
+
+        protected async Task LoadLastOnStartup()
+        {
+            if (_lastAdvertSearch != null)
+            {
+                ButtonCategoryTitle = _lastAdvertSearch.Category.getFullTitle;
+                await SearchExecute(_lastAdvertSearch, false);
+            }
+            else
+            {
+                ButtonCategoryTitle = Category.TitleForNull;
+                await SearchExecute(new AdvertSearch(), false);
+            }
+        }
+
+        protected async void LoadNextItem()
+        {
+            int setting = 100;
+            if (_lastAdvertSearchResult != null && _lastAdvertSearch != null && _lastAdvertSearchResult.AllPage > 1 &&
+                _lastAdvertSearchResult.Page < _lastAdvertSearchResult.AllPage - 1 && _lastAdvertSearchResult.Page < setting - 1 &&
+                !Activity && !FotterActivity)
+            {
+                _lastAdvertSearch.RequestPage = ++_lastAdvertSearchResult.Page;
+                await SearchExecute(_lastAdvertSearch, true).ConfigureAwait(false);
+                return;
+            }
+            return;
         }
 
         protected async void ListViewTappedAsync(AdvertShort advertShort)
@@ -149,20 +166,20 @@ namespace MRzeszowiak.ViewModel
             await _navigationService.NavigateAsync("PreviewPage", navigationParams);
         }
 
-        protected void LoadPreviewFoward(AdvertShort advertShort)
-        {
-            if(advertShort == null)
-            {
-                Debug.Write("LoadPreviewFoward => advertShort == null");
-                return;
-            }
+        //protected void LoadPreviewFoward(AdvertShort advertShort)
+        //{
+        //    if(advertShort == null)
+        //    {
+        //        Debug.Write("LoadPreviewFoward => advertShort == null");
+        //        return;
+        //    }
 
-            var index = AdvertShortList?.IndexOf(advertShort) ?? -1;
-            if( index != -1 && index < (AdvertShortList?.Count ?? 0) - 1)
-            {
+        //    var index = AdvertShortList?.IndexOf(advertShort) ?? -1;
+        //    if( index != -1 && index < (AdvertShortList?.Count ?? 0) - 1)
+        //    {
 
-            }
-        }
+        //    }
+        //}
 
         //protected  void categoryChange(Category category)
         //{
@@ -177,39 +194,13 @@ namespace MRzeszowiak.ViewModel
         //}
 
         // load last add on startup
-        protected async Task LoadLastOnStartup()
-        {
-            if (_lastAdvertSearch != null)
-            {
-                await SearchExecute(_lastAdvertSearch, false);
-                ButtonCategoryTitle = _lastAdvertSearch.Category.getFullTitle;
-            }  
-            else
-            {
-                await SearchExecute(new AdvertSearch(), false);
-                ButtonCategoryTitle = Category.TitleForNull;
-            }    
-        }
-
-        protected async void LoadNextItem()
-        {
-            Debug.Write("LoadNextItem");
-            int setting = 100;
-            if (_lastAdvertSearchResult != null && _lastAdvertSearch != null && _lastAdvertSearchResult.AllPage > 1 && 
-                _lastAdvertSearchResult.Page < _lastAdvertSearchResult.AllPage - 1 && _lastAdvertSearchResult.Page < setting - 1 && 
-                !Activity && !FotterActivity )
-            {
-                _lastAdvertSearch.RequestPage = ++_lastAdvertSearchResult.Page;
-                await SearchExecute(_lastAdvertSearch, true).ConfigureAwait(false);
-                return;
-            }
-            return;
-        }
+        
 
         protected async Task<bool> SearchExecute(AdvertSearch advertSearch, bool addLoad = false)
         {
             Debug.Write("SearchExecute");
             Activity = true;
+            ErrorMessage = String.Empty;
             if (advertSearch == null)
             {
                 Debug.Write("SearchExecute => advertSearch == null");
@@ -217,8 +208,7 @@ namespace MRzeszowiak.ViewModel
             }
 
             _lastAdvertSearch = advertSearch;
-            ErrorMessage = String.Empty;
-
+           
             if (addLoad)
             {
                 FotterActivity = true;
