@@ -32,7 +32,11 @@ namespace MRzeszowiak.Model
 
         public string getFullTitle
         { get
-            { return (Master != null) ? Master.Title + " - " + Title : Title; }
+            {
+                string result = (Master != null) ? Master.Title + " - " + Title : Title;
+                result += (SelectedChildCategory != null) ? " - " + SelectedChildCategory.Title : String.Empty;
+                return result;
+            }
         }
 
         public static string TitleForNull

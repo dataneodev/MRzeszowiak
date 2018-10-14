@@ -12,7 +12,7 @@ namespace MRzeszowiak.ViewModel
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var item = value as AdvertShort;
-            if(item == null )
+            if (item == null)
                 return App.normalRow;
             if (item.RowEven)
             {
@@ -88,7 +88,7 @@ namespace MRzeszowiak.ViewModel
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if(value == null || ((value as string)?.Length??0) == 0)
+            if (value == null || ((value as string)?.Length ?? 0) == 0)
             { return false; }
             else
             { return true; }
@@ -104,7 +104,7 @@ namespace MRzeszowiak.ViewModel
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            CatSelectImage image = value == null ? CatSelectImage.none : (CatSelectImage)value ;
+            CatSelectImage image = value == null ? CatSelectImage.none : (CatSelectImage)value;
             switch (image)
             {
                 case CatSelectImage.arrowDeeper:
@@ -137,6 +137,23 @@ namespace MRzeszowiak.ViewModel
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return true;
+        }
+    }
+
+    public class NegativeBool : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if ((bool)value)
+            { return false; }
+            else
+            { return true; }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return true;
+
         }
     }
 }

@@ -6,13 +6,16 @@
         x:Class="MRzeszowiak.View.SearchPopup"
         xmlns:pmvvm="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
         xmlns:b="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"
-    xmlns:ViewModel="clr-namespace:MRzeszowiak.ViewModel"
-        pmvvm:ViewModelLocator.AutowireViewModel="True">
+        xmlns:ViewModel="clr-namespace:MRzeszowiak.ViewModel"
+        pmvvm:ViewModelLocator.AutowireViewModel="True"
+        x:Name="SearchPagePopup">
     <pages:PopupPage.Resources>
         <ResourceDictionary>
             <ViewModel:AddTypeToStringTranslate x:Key="AddTypeToStringTranslate" />
             <ViewModel:SortTypeToStringTranslate x:Key="SortTypeToStringTranslate" />
             <ViewModel:CategoryToString x:Key="CategoryToString" />
+            <ViewModel:CategoryToActiveControls x:Key="CategoryToActiveControls" />
+            <ViewModel:IntToEntryConverter x:Key="IntToEntryConverter" />
         </ResourceDictionary>
     </pages:PopupPage.Resources>
     <Grid Margin="20" 
@@ -40,33 +43,33 @@
         <Button Grid.Column="1" Grid.Row="1" Text="{Binding SelectedCategory, Converter={StaticResource CategoryToString}}" Command="{Binding ButtonCategorySelectTappped}"/>
         <!--Row 3-->
         <Label Grid.Column="0" Grid.Row="2" Text="Dodane :" TextColor="Black" VerticalOptions="Center" Margin="10,10,0,10" FontSize="Medium"/>
-        <Picker Grid.Column="1" Grid.Row="2" ItemsSource="{Binding DateAdd}" BindingContextChanged="PickerDateAdd_BindingContextChanged"
+        <Picker Grid.Column="1" Grid.Row="2" ItemsSource="{Binding DateAddList}" SelectedItem="{Binding DateAdd}" 
                 ItemDisplayBinding="{Binding ., Converter={StaticResource AddTypeToStringTranslate}}">
             <Picker.Behaviors>
-                <b:EventToCommandBehavior EventName="SelectedIndexChanged"
-                                          Command="{Binding AddTypeChange}" 
-                                          EventArgsParameterPath="SelectedItem"/>
+                <b:EventToCommandBehavior EventName="SelectedIndexChanged" Command="{Binding AddTypeChange}" EventArgsParameterPath="SelectedItem"/>
             </Picker.Behaviors>
         </Picker>
         <!--Row 4-->
         <Label Grid.Column="0" Grid.Row="3" Text="Sortuj wg :" TextColor="Black" VerticalOptions="Center" Margin="10,10,0,10" FontSize="Medium"/>
-        <Picker Grid.Column="1" Grid.Row="3" ItemsSource="{Binding SortList}" BindingContextChanged="PickerSortType_BindingContextChanged"
-                ItemDisplayBinding="{Binding ., Converter={StaticResource SortTypeToStringTranslate}}">
+        <Picker Grid.Column="1" Grid.Row="3" ItemsSource="{Binding SortList}" SelectedItem="{Binding Sort}"
+                ItemDisplayBinding="{Binding ., Converter={StaticResource SortTypeToStringTranslate}}" 
+                IsEnabled="{Binding Source={x:Reference SearchPagePopup}, Path=BindingContext.SelectedCategory, Converter={StaticResource CategoryToActiveControls}}">
             <Picker.Behaviors>
-                <b:EventToCommandBehavior EventName="SelectedIndexChanged" Command="{Binding SortTypeChange}" 
-                                          EventArgsParameterPath="SelectedItem"/>
+                <b:EventToCommandBehavior EventName="SelectedIndexChanged" Command="{Binding SortTypeChange}" EventArgsParameterPath="SelectedItem"/>
             </Picker.Behaviors>
         </Picker>
         <!--Row 5-->
         <Label Grid.Column="0" Grid.Row="4" Text="Cena:" TextColor="Black" VerticalOptions="Center" Margin="10,10,0,10" FontSize="Medium"/>
         <StackLayout Grid.Column="1" Grid.Row="4" VerticalOptions="Center" HorizontalOptions="FillAndExpand" Orientation="Horizontal">
             <Label Text="Min:" FontSize="Medium" TextColor="Black" VerticalOptions="Center"/>
-            <Entry Text="{Binding PriceMin}" WidthRequest="60" Keyboard="Numeric" MaxLength="8" />
+            <Entry Text="{Binding PriceMin, Mode=TwoWay, Converter={StaticResource IntToEntryConverter}}" WidthRequest="60" Keyboard="Numeric" MaxLength="8"
+                   IsEnabled="{Binding Source={x:Reference SearchPagePopup}, Path=BindingContext.SelectedCategory, Converter={StaticResource CategoryToActiveControls}}"/>
             <Label Text="Max:" FontSize="Medium" TextColor="Black" VerticalOptions="Center"/>
-            <Entry Text="{Binding PriceMax}" WidthRequest="60" Keyboard="Numeric" MaxLength="8"/>
+            <Entry Text="{Binding PriceMax, Mode=TwoWay, Converter={StaticResource IntToEntryConverter}}" WidthRequest="60" Keyboard="Numeric" MaxLength="8"
+                   IsEnabled="{Binding Source={x:Reference SearchPagePopup}, Path=BindingContext.SelectedCategory, Converter={StaticResource CategoryToActiveControls}}"/>
         </StackLayout>
         <!--Row 6-->
-        <Button  Grid.Column="0" Grid.Row="5" Text="Anuluj"  Margin="5" Command="{Binding ButtonCancelTappped}"/>
+        <Button  Grid.Column="0" Grid.Row="5" Text="Wyczyść"  Margin="5" Command="{Binding ButtonCancelTappped}"/>
         <Button  Grid.Column="1" Grid.Row="5" Text="Wyszukaj" Margin="5" 
                  Command="{Binding ButtonSearchTappped}" HorizontalOptions="FillAndExpand"/>
     </Grid>

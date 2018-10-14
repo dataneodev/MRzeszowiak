@@ -460,7 +460,7 @@ namespace MRzeszowiak.Services
                 } while (promoPos != -1 || normalPos != -1);
             }
 
-            var HttpResult = await GetWeb.GetWebPage(searchParams.GetURL);
+            var HttpResult = await GetWeb.GetWebPage(urlRequest);
             if (!HttpResult.Success)
             {
                 Debug.Write("GetAdvertAsync => !HttpResult.Success");

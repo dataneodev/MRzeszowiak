@@ -17,19 +17,5 @@ namespace MRzeszowiak.View
 		{
 			InitializeComponent ();
 		}
-
-        private void PickerDateAdd_BindingContextChanged(object sender, EventArgs e)
-        {
-            var picker = sender as Picker;
-            if((picker != null) && (picker.Items.Count > 0))
-                picker.SelectedIndex = picker.Items.Count - 1;                
-        }
-
-        private void PickerSortType_BindingContextChanged(object sender, EventArgs e)
-        {
-            var picker = sender as Picker;
-            if ((picker != null) && (picker.Items.Count > 0))
-                picker.SelectedIndex = 0;
-        }
     }
 }

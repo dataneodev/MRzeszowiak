@@ -34,7 +34,7 @@ namespace MRzeszowiak.ViewModel
                 {
                     OnPropertyChanged();
                     OnPropertyChanged("ActivityListView");
-                }   
+                }
             }
         }
 
@@ -72,15 +72,20 @@ namespace MRzeszowiak.ViewModel
             }
         }
 
-        private string buttonCategoryTitle;
-        public string ButtonCategoryTitle
+        public Category CurrentCategory => _lastAdvertSearch?.Category;
+        public Color FilterButtonColor
         {
-            get { return buttonCategoryTitle; }
-            set
+            get
             {
-                buttonCategoryTitle = value;
-                OnPropertyChanged();
-            }
+                var normalBackground = Color.FromHex("#2196F3");
+                var activeBackground = Color.Yellow;
+                if (_lastAdvertSearch == null) return normalBackground;
+                if (((_lastAdvertSearch.SearchPattern?.Length??0) > 0) || (_lastAdvertSearch.PriceMin > 0) || 
+                    (_lastAdvertSearch.PriceMax > 0) || (_lastAdvertSearch.DateAdd != AddType.all) || 
+                    (_lastAdvertSearch.Sort != SortType.dateadd))
+                    return activeBackground;
+                return normalBackground;
+            }     
         }
 
         public bool ErrorPanelVisible => (errorMessage?.Length ?? 0) > 0 ? true : false;
@@ -102,12 +107,20 @@ namespace MRzeszowiak.ViewModel
 
             LoadNextAdvert = new Command(LoadNextItem);
             ListViewItemTapped = new Command<AdvertShort>(ListViewTappedAsync);
-            CategorySelectButtonTaped = new Command(() => _navigationService.NavigateAsync("CategorySelectPopup"));
-            SearchButtonTapped = new Command(() =>
+            CategorySelectButtonTaped = new Command(() =>
             {
                 var parameters = new NavigationParameters()
                 {
                     {"SelectedCategory", _lastAdvertSearch?.Category }
+                };
+                _navigationService.NavigateAsync("CategorySelectPopup", parameters);
+            });
+
+            SearchButtonTapped = new Command(() =>
+            {
+                var parameters = new NavigationParameters()
+                {
+                    {"SearchRecord", _lastAdvertSearch}
                 };
                 _navigationService.NavigateAsync("SearchPopup", parameters);
             });
@@ -118,10 +131,14 @@ namespace MRzeszowiak.ViewModel
         public async void OnNavigatedTo(INavigationParameters parameters)
         {
             if (parameters.ContainsKey("SelectedCategory"))
-                if (parameters["SelectedCategory"] is Category category)
-                    await CategoryUserSelectCallbackAsync(category);
+                await CategoryUserSelectCallbackAsync((Category)parameters["SelectedCategory"]);
+
             if (parameters.ContainsKey("LoadAtStartup"))
                     await LoadLastOnStartup();
+
+            if (parameters.ContainsKey("SearchRecord"))
+                if (parameters["SearchRecord"] is AdvertSearch advertSearch)
+                    await SearchRecordCallbackAsync(advertSearch);
         }
 
         public async Task CategoryUserSelectCallbackAsync(Category selCategory)
@@ -130,24 +147,21 @@ namespace MRzeszowiak.ViewModel
             if (_lastAdvertSearch == null)
                 _lastAdvertSearch = new AdvertSearch();
             _lastAdvertSearch.Category = selCategory;
-            _lastAdvertSearch.MasterCategory = selCategory?.Master;
-            ButtonCategoryTitle = (selCategory != null) ? selCategory.getFullTitle : Category.TitleForNull;
-
             await SearchExecute(_lastAdvertSearch, false);
+        }
+
+        public async Task SearchRecordCallbackAsync(AdvertSearch advertSearch)
+        {
+            Debug.Write("SearchRecordCallbackAsync");
+            await SearchExecute(advertSearch, false);
         }
 
         protected async Task LoadLastOnStartup()
         {
             if (_lastAdvertSearch != null)
-            {
-                ButtonCategoryTitle = _lastAdvertSearch.Category.getFullTitle;
                 await SearchExecute(_lastAdvertSearch, false);
-            }
             else
-            {
-                ButtonCategoryTitle = Category.TitleForNull;
                 await SearchExecute(new AdvertSearch(), false);
-            }
         }
 
         protected async void LoadNextItem()
@@ -174,49 +188,24 @@ namespace MRzeszowiak.ViewModel
             await _navigationService.NavigateAsync("PreviewPage", navigationParams);
         }
 
-        //protected void LoadPreviewFoward(AdvertShort advertShort)
-        //{
-        //    if(advertShort == null)
-        //    {
-        //        Debug.Write("LoadPreviewFoward => advertShort == null");
-        //        return;
-        //    }
-
-        //    var index = AdvertShortList?.IndexOf(advertShort) ?? -1;
-        //    if( index != -1 && index < (AdvertShortList?.Count ?? 0) - 1)
-        //    {
-
-        //    }
-        //}
-
-        //protected  void categoryChange(Category category)
-        //{
-
-        //}
-
-        // refreshing list
-        //protected async void RefreshList()
-        //{
-        //    if(_lastAdvertSearch != null)
-        //        await SearchExecute(_lastAdvertSearch, false);
-        //}
-
-        // load last add on startup
-        
+       
 
         protected async Task<bool> SearchExecute(AdvertSearch advertSearch, bool addLoad = false)
         {
             Debug.Write("SearchExecute");
             Activity = true;
             ErrorMessage = String.Empty;
+
+            _lastAdvertSearch = advertSearch;
+            OnPropertyChanged("CurrentCategory");
+            OnPropertyChanged("FilterButtonColor");
+
             if (advertSearch == null)
             {
                 Debug.Write("SearchExecute => advertSearch == null");
                 return false;
             }
 
-            _lastAdvertSearch = advertSearch;
-           
             if (addLoad)
             {
                 FotterActivity = true;

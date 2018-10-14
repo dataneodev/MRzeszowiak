@@ -13,6 +13,8 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <ViewModel:RowColorFromBool x:Key="boolToColor" />
+            <ViewModel:CategoryToString x:Key="CategoryToString" />
+            <ViewModel:NegativeBool x:Key="NegativeBool" />
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Content>
@@ -45,18 +47,20 @@
                         Clicked="MainMenuButton_Clicked"/>
                 <Button Grid.Column="1"
                         Grid.Row="0" 
-                        Text="{Binding ButtonCategoryTitle}" 
-                        x:Name="CategorySelectButton"
+                        Text="{Binding CurrentCategory, Converter={StaticResource CategoryToString}}" 
+                        x:Name="CategorySelectButton"   
                         Command="{Binding CategorySelectButtonTaped}"
+                        IsEnabled="{Binding Activity, Converter={StaticResource NegativeBool}}"
                         Style="{StaticResource backGroundColor}"/>
                 <Button  Grid.Column="2" 
                          Grid.Row="0"
                          Image="filter.png" 
-                         Text="" WidthRequest="38" 
-                         HeightRequest="38" 
-                         Margin="5,0,5,0" 
+                         Text="" 
+                         WidthRequest="45" 
+                         Margin="5,0,0,0" 
                          Command="{Binding SearchButtonTapped}"
-                         Style="{StaticResource backGroundColor}"
+                         IsEnabled="{Binding Activity, Converter={StaticResource NegativeBool}}"
+                         BackgroundColor="{Binding FilterButtonColor}"
                          x:Name="FilterButton"/>
             </Grid>
             <!--Menu end-->

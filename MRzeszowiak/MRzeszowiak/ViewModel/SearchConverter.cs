@@ -75,4 +75,37 @@ namespace MRzeszowiak.ViewModel
             return true;
         }
     }
+
+    public class CategoryToActiveControls : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null)
+                return false;
+            else
+                return true;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return true;
+        }
+    }
+
+    public class IntToEntryConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return String.Empty;
+            if((int)value == 0) return String.Empty;
+            return value.ToString();
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var input = value as String;
+            if (input == null || input.Length == 0 || input == "0") return null;
+            return input;
+        }
+    }
 }

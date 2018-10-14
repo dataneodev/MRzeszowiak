@@ -9,9 +9,7 @@ namespace MRzeszowiak.Model
     {
         protected const string RZESZOWIAK_BASE_URL = "http://www.rzeszowiak.pl/";
         protected const sbyte RECORD_ON_PAGE = 25;
-        public int AdvertID { get; set; } // if set
         public string SearchPattern { get; set; } = String.Empty; // not empty
-        public MasterCategory MasterCategory { get; set; }
         public Category Category { get; set; } // null for all
         public AddType DateAdd { get; set; } = AddType.all;
         public SortType Sort { get; set; } = SortType.dateadd;
@@ -29,32 +27,29 @@ namespace MRzeszowiak.Model
                     string Page = String.Format("{0:D2}", (int)PageType);
                     return $"0{Page}{(int)sortType}{RECORD_ON_PAGE}{(int)addType}";
                 }
-                //select category without search
-                if (SearchPattern.Length == 0 && AdvertID == 0 && Category != null)
+                char GetURLDeliver(string url) => (url?.IndexOf('?') != -1) ? '&' : '?';
+                
+                //in page search
+                if (Category != null)
                 {
                     urlRequest = $"{RZESZOWIAK_BASE_URL}{Category.GETPath}{GetUrlParams(RequestPage ?? 1, DateAdd, Sort)}";
                     urlRequest += (Category.SelectedChildCategory != null) ? $"?r={Category.SelectedChildCategory.ID}" : String.Empty;
+                    urlRequest += ((SearchPattern?.Length??0) > 0) ? $"{GetURLDeliver(urlRequest)}z={SearchPattern}" : String.Empty;
+                    urlRequest += (PriceMin != null) ? $"{GetURLDeliver(urlRequest)}min={PriceMin}" : String.Empty;
+                    urlRequest += (PriceMax != null) ? $"{GetURLDeliver(urlRequest)}max={PriceMax}" : String.Empty;
                 }
-                // search string
-                if (SearchPattern.Length > 0)
+
+                // advance search string
+                if (SearchPattern.Length > 0 && Category == null)
                 {
-                    if (Category == null || MasterCategory == null)
-                    {
-                        urlRequest = $"{RZESZOWIAK_BASE_URL}szukaj/?kat={Category?.Id ?? 0}&pkat=0&dodane={Sort}&z={SearchPattern}";
-                        urlRequest += (RequestPage ?? 0) > 0 ? $"&strona={RequestPage}" : String.Empty;
-                    }        
-                    else
-                    {
-                        urlRequest = $"{RZESZOWIAK_BASE_URL}{Category.GETPath}{GetUrlParams(RequestPage ?? 1, DateAdd, Sort)}?z={SearchPattern}";
-                        urlRequest += (PriceMin != null) ? $"&min={PriceMin}" : String.Empty;
-                        urlRequest += (PriceMax != null) ? $"&max={PriceMax}" : String.Empty;                        
-                    }
+                    urlRequest = $"{RZESZOWIAK_BASE_URL}szukaj/?kat={Category?.Id ?? 0}&pkat=0&dodane={(int)DateAdd}&z={SearchPattern}";
+                    urlRequest += (PriceMin != null) ? $"&min={PriceMin}" : String.Empty;
+                    urlRequest += (PriceMax != null) ? $"&max={PriceMax}" : String.Empty;
+                    urlRequest += (RequestPage ?? 0) > 0 ? $"&strona={RequestPage}" : String.Empty;
                 }
-                // search id
-                //if (AdvertID != 0)
-                //    urlRequest = $"{RZESZOWIAK_BASE_URL}szukaj/numer:{AdvertID}";
+
                 // last add 
-                if (SearchPattern.Length == 0 && AdvertID == 0 && Category == null)
+                if (SearchPattern.Length == 0 && Category == null)
                 {
                     urlRequest = RZESZOWIAK_BASE_URL;
                     urlRequest += (RequestPage ?? 0) > 0 ? $"?start={RequestPage}" : String.Empty;
@@ -63,8 +58,7 @@ namespace MRzeszowiak.Model
                 Debug.Write($"AdvertSearch => GetURL => {urlRequest}");
                 return urlRequest;
             }
-        }
-        
+        }   
     }
 
     public enum AddType

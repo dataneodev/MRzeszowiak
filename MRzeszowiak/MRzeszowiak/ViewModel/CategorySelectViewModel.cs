@@ -45,23 +45,34 @@ namespace MRzeszowiak.ViewModel
             _rzeszowiakRepository = RzeszowiakRepository ?? throw new NullReferenceException("ListViewModel => IRzeszowiakRepository RzeszowiakRepository == null !");
             _navigationService = navigationService ?? throw new NullReferenceException("INavigationService navigationService == null !");
 
-            ButtonList.Add(new CatButtonDisplay(1) { Title = "", IsVisible = false, Image = CatSelectImage.none });
-            ButtonList.Add(new CatButtonDisplay(2) { Title = "", IsVisible = false, Image = CatSelectImage.none });
-            ButtonList.Add(new CatButtonDisplay(3) { Title = "", IsVisible = false, Image = CatSelectImage.none });
+            for (int i = 1; i < 4; i++)
+                ButtonList.Add(new CatButtonDisplay((byte)i) { Title = "", IsVisible = false, Image = CatSelectImage.none });
             CategoryTappet = new Command<CatDisplay>(ItemTapedAsync);
             ButtonTappped = new Command<CatButtonDisplay>(ButtonTappedAsync);
             ButtonCloseTappped = new Command(async () => { await _navigationService.GoBackAsync(); });
-            DisplayCategoryAsync(null); 
         }
 
         public void OnNavigatedFrom(INavigationParameters parameters) { }
-        public void OnNavigatingTo(INavigationParameters parameters) { }
-        public async void OnNavigatedTo(INavigationParameters parameters)
+        public async void OnNavigatingTo(INavigationParameters parameters) 
         {
             if (parameters.ContainsKey("SelectedCategory"))
-                if (parameters["SelectedCategory"] is Category category)
-                    await DisplayCategoryAsync(category);
+            {
+                Debug.Write("OnNavigatingTo - SelectedCategory");
+                var cat = parameters["SelectedCategory"] as Category;
+                LastSelectedCategory = cat;
+                if(cat?.GetType() == typeof(Category))
+                {
+                    if(cat.SelectedChildCategory != null)
+                        await DisplayCategoryAsync(cat);
+                    else
+                        await DisplayCategoryAsync(cat.Master);
+                } else
+                {
+                    await DisplayCategoryAsync(null);
+                }  
+            }
         }
+        public void OnNavigatedTo(INavigationParameters parameters) { }
 
         protected async void ButtonTappedAsync(CatButtonDisplay button)
         {
@@ -201,7 +212,7 @@ namespace MRzeszowiak.ViewModel
             }
 
             // display category
-            if (categoryToShow != null &&  categoryToShow?.GetType() == typeof(MasterCategory))
+            if (categoryToShow != null &&  categoryToShow.GetType() == typeof(MasterCategory))
             {
                 Debug.Write("Displaing categoryToShow is MasterCategory");
                 var master = categoryToShow as MasterCategory;
@@ -258,18 +269,20 @@ namespace MRzeszowiak.ViewModel
                     lastSelect = catDisplay;
                     lastImageState = CatSelectImage.none;
                 }
-
+                
                 foreach (var child in category.ChildCategory)
                 {
+                    Debug.Write("End Displaing categoryToShow is MasterCategory");
                     catDisplay = new CatDisplay
                         {
                             Title = child.Title,
                             Views = child.Views,           
                             Image = ((LastSelectedCategory?.Id ?? 0) == category.Id &&
-                                    (LastSelectedCategory?.SelectedChildCategory?.ID ?? String.Empty) == child.ID) ? CatSelectImage.selected : CatSelectImage.none,
+                                    (LastSelectedCategory?.SelectedChildCategory?.ID ?? String.Empty) == child.ID) ? 
+                                    CatSelectImage.selected : CatSelectImage.none,
                             CategoryObj = child, 
                         };
-
+                    
                     CategoryAction.Add(catDisplay);
                     if (catDisplay.Image == CatSelectImage.selected)
                     {
