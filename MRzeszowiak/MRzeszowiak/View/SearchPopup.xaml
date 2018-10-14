@@ -4,14 +4,15 @@
         xmlns="http://xamarin.com/schemas/2014/forms"
         xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
         x:Class="MRzeszowiak.View.SearchPopup"
-        xmlns:local="clr-namespace:MRzeszowiak"
-        xmlns:ViewModel="clr-namespace:MRzeszowiak.ViewModel"
-        xmlns:b="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"
         xmlns:pmvvm="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+        xmlns:b="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"
+    xmlns:ViewModel="clr-namespace:MRzeszowiak.ViewModel"
         pmvvm:ViewModelLocator.AutowireViewModel="True">
     <pages:PopupPage.Resources>
         <ResourceDictionary>
-
+            <ViewModel:AddTypeToStringTranslate x:Key="AddTypeToStringTranslate" />
+            <ViewModel:SortTypeToStringTranslate x:Key="SortTypeToStringTranslate" />
+            <ViewModel:CategoryToString x:Key="CategoryToString" />
         </ResourceDictionary>
     </pages:PopupPage.Resources>
     <Grid Margin="20" 
@@ -19,16 +20,54 @@
           VerticalOptions="Center"
           Padding="0.5"
           RowSpacing="0.5"
-          BackgroundColor="Gray">
+          BackgroundColor="White">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
             <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        
+        <!--Row 1-->
+        <Label Grid.Column="0" Grid.Row="0" Text="Szukaj:" TextColor="Black" VerticalOptions="Center" Margin="10,0,0,0" FontSize="Medium"/>
+        <SearchBar Grid.Column="1" Grid.Row="0" Text="{Binding SearchPattern, Mode=TwoWay}" Margin="-20,0,0,0" Placeholder="Wyszukaj..."/>
+        <!--Row 2-->
+        <Label Grid.Column="0" Grid.Row="1" Text="Kategoria:" TextColor="Black" VerticalOptions="Center" Margin="10,10,0,10" FontSize="Medium"/>
+        <Button Grid.Column="1" Grid.Row="1" Text="{Binding SelectedCategory, Converter={StaticResource CategoryToString}}" Command="{Binding ButtonCategorySelectTappped}"/>
+        <!--Row 3-->
+        <Label Grid.Column="0" Grid.Row="2" Text="Dodane :" TextColor="Black" VerticalOptions="Center" Margin="10,10,0,10" FontSize="Medium"/>
+        <Picker Grid.Column="1" Grid.Row="2" ItemsSource="{Binding DateAdd}" BindingContextChanged="PickerDateAdd_BindingContextChanged"
+                ItemDisplayBinding="{Binding ., Converter={StaticResource AddTypeToStringTranslate}}">
+            <Picker.Behaviors>
+                <b:EventToCommandBehavior EventName="SelectedIndexChanged"
+                                          Command="{Binding AddTypeChange}" 
+                                          EventArgsParameterPath="SelectedItem"/>
+            </Picker.Behaviors>
+        </Picker>
+        <!--Row 4-->
+        <Label Grid.Column="0" Grid.Row="3" Text="Sortuj wg :" TextColor="Black" VerticalOptions="Center" Margin="10,10,0,10" FontSize="Medium"/>
+        <Picker Grid.Column="1" Grid.Row="3" ItemsSource="{Binding SortList}" BindingContextChanged="PickerSortType_BindingContextChanged"
+                ItemDisplayBinding="{Binding ., Converter={StaticResource SortTypeToStringTranslate}}">
+            <Picker.Behaviors>
+                <b:EventToCommandBehavior EventName="SelectedIndexChanged" Command="{Binding SortTypeChange}" 
+                                          EventArgsParameterPath="SelectedItem"/>
+            </Picker.Behaviors>
+        </Picker>
+        <!--Row 5-->
+        <Label Grid.Column="0" Grid.Row="4" Text="Cena:" TextColor="Black" VerticalOptions="Center" Margin="10,10,0,10" FontSize="Medium"/>
+        <StackLayout Grid.Column="1" Grid.Row="4" VerticalOptions="Center" HorizontalOptions="FillAndExpand" Orientation="Horizontal">
+            <Label Text="Min:" FontSize="Medium" TextColor="Black" VerticalOptions="Center"/>
+            <Entry Text="{Binding PriceMin}" WidthRequest="60" Keyboard="Numeric" MaxLength="8" />
+            <Label Text="Max:" FontSize="Medium" TextColor="Black" VerticalOptions="Center"/>
+            <Entry Text="{Binding PriceMax}" WidthRequest="60" Keyboard="Numeric" MaxLength="8"/>
+        </StackLayout>
+        <!--Row 6-->
+        <Button  Grid.Column="0" Grid.Row="5" Text="Anuluj"  Margin="5" Command="{Binding ButtonCancelTappped}"/>
+        <Button  Grid.Column="1" Grid.Row="5" Text="Wyszukaj" Margin="5" 
+                 Command="{Binding ButtonSearchTappped}" HorizontalOptions="FillAndExpand"/>
     </Grid>
 </pages:PopupPage>

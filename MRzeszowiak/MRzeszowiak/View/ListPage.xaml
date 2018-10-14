@@ -73,33 +73,29 @@
                        HorizontalOptions="FillAndExpand"
                        HorizontalTextAlignment="Center"/>
             <!--CONTEXT-->
-            <Extends:CustomListview x:Name="AdvertListView"
+            <ListView x:Name="AdvertListView"
                       ItemsSource="{Binding AdvertShortList}"
                       HasUnevenRows="True"
                       HorizontalOptions="FillAndExpand"
                       VerticalOptions="FillAndExpand"
                       ItemTapped="AdvertListView_ItemTapped"
                       SeparatorVisibility="None"
-                      ScrollStateChanged="AdvertListView_ScrollStateChanged"
                       IsVisible="{Binding Source={x:Reference ListPageXaml}, Path=BindingContext.ActivityListView}">
                 <x:Arguments>
                     <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
                 </x:Arguments>
-                <Extends:CustomListview.Behaviors>
+                <ListView.Behaviors>
                     <Behaviors:InfiniteScroll LoadMoreCommand="{Binding LoadNextAdvert}" />
                     <b:EventToCommandBehavior EventName="ItemTapped" 
                                               Command="{Binding ListViewItemTapped}" 
                                               EventArgsParameterPath="Item"/>
-                </Extends:CustomListview.Behaviors>
-                <Extends:CustomListview.ItemTemplate>
+                </ListView.Behaviors>
+                <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
                             <Frame CornerRadius="10"  
                                     Margin="5"
                                     Padding="0">
-                                <!--<Frame.GestureRecognizers>
-                                    <PanGestureRecognizer PanUpdated="PanGestureRecognizer_PanUpdated"/>
-                                </Frame.GestureRecognizers>-->
                                 <StackLayout VerticalOptions="FillAndExpand" 
                                      HorizontalOptions="FillAndExpand" 
                                      BackgroundColor="{Binding ., Converter={StaticResource boolToColor}}">
@@ -184,14 +180,14 @@
                                 </Frame>
                             </ViewCell>
                         </DataTemplate>
-                    </Extends:CustomListview.ItemTemplate>
+                    </ListView.ItemTemplate>
                     <ListView.Footer>
                         <ActivityIndicator IsRunning="{Binding FotterActivity}"
                                        IsEnabled="{Binding FotterActivity}"
                                        IsVisible="{Binding FotterActivity}"
                                        HeightRequest="32"/>
                     </ListView.Footer>
-                </Extends:CustomListview>
+                </ListView>
             </StackLayout>
     </ContentPage.Content>
 </ContentPage>

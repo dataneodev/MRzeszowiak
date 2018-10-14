@@ -14,12 +14,11 @@ using Xamarin.Forms;
 
 namespace MRzeszowiak.ViewModel
 {
-    public class CategorySelectViewModel : INotifyPropertyChanged
+    public class CategorySelectViewModel : BaseViewModel, INavigationAware
     {
         protected IRzeszowiak _rzeszowiakRepository;
         protected INavigationService _navigationService;
 
-        public event PropertyChangedEventHandler PropertyChanged;
         public ObservableCollection<CatDisplay> CategoryAction { get; private set; } = new ObservableCollection<CatDisplay>();
         public ObservableCollection<CatButtonDisplay> ButtonList { get; private set; } = new ObservableCollection<CatButtonDisplay>();
 
@@ -53,6 +52,15 @@ namespace MRzeszowiak.ViewModel
             ButtonTappped = new Command<CatButtonDisplay>(ButtonTappedAsync);
             ButtonCloseTappped = new Command(async () => { await _navigationService.GoBackAsync(); });
             DisplayCategoryAsync(null); 
+        }
+
+        public void OnNavigatedFrom(INavigationParameters parameters) { }
+        public void OnNavigatingTo(INavigationParameters parameters) { }
+        public async void OnNavigatedTo(INavigationParameters parameters)
+        {
+            if (parameters.ContainsKey("SelectedCategory"))
+                if (parameters["SelectedCategory"] is Category category)
+                    await DisplayCategoryAsync(category);
         }
 
         protected async void ButtonTappedAsync(CatButtonDisplay button)
@@ -270,15 +278,7 @@ namespace MRzeszowiak.ViewModel
                     }
                 }
             }
-
-            //MessagingCenter.Send<string>("MRzeszowiak", "MoveToTop");
-        }
-
-        // Create the OnPropertyChanged method to raise the event
-        private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string name = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
+        }   
     }
 
     public class CatDisplay : INotifyPropertyChanged

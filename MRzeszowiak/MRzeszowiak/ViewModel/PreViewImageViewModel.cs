@@ -10,11 +10,9 @@ using Xamarin.Forms;
 
 namespace MRzeszowiak.ViewModel
 {
-    public class PreViewImageViewModel : INotifyPropertyChanged, INavigationAware
+    public class PreViewImageViewModel : BaseViewModel, INavigationAware
     {
-        public event PropertyChangedEventHandler PropertyChanged;
         protected INavigationService _navigationService;
-
         public ObservableCollection<string> ImageURLsList { get; set; } = new ObservableCollection<string>();
 
         private int position;
@@ -58,11 +56,6 @@ namespace MRzeszowiak.ViewModel
             if (position >= 0 && position < ImageURLsList.Count)
                 Position = position;
             else Position = 0;
-        }
-
-        private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string name = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
 }

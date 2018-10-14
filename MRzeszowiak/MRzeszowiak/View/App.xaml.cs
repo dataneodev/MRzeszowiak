@@ -66,7 +66,7 @@ namespace MRzeszowiak
             containerRegistry.Register<IRzeszowiak, RzeszowiakRepository>();
             containerRegistry.Register<IRzeszowiakImageContainer, RzeszowiakImageContainer>();
 
-            containerRegistry.RegisterForNavigation<MainNavigation, MainNavigationViewModel>();
+            containerRegistry.RegisterForNavigation<MainNavigation>();
             containerRegistry.RegisterForNavigation<MenuMasterDetail, MenuMasterDetailViewModel>();
             containerRegistry.RegisterForNavigation<ListPage, ListViewModel>();
             containerRegistry.RegisterForNavigation<PreviewPage, PreviewViewModel>();

@@ -13,9 +13,8 @@ using Xamarin.Forms;
 
 namespace MRzeszowiak.ViewModel
 {
-    public class ListViewModel :  INotifyPropertyChanged, INavigationAware
+    public class ListViewModel : BaseViewModel, INavigationAware
     {
-        public event PropertyChangedEventHandler PropertyChanged;
         public ObservableCollection<AdvertShort> AdvertShortList { get; private set; } = new ObservableCollection<AdvertShort>();
         protected IRzeszowiak _rzeszowiakRepository;
         protected INavigationService _navigationService;
@@ -104,7 +103,14 @@ namespace MRzeszowiak.ViewModel
             LoadNextAdvert = new Command(LoadNextItem);
             ListViewItemTapped = new Command<AdvertShort>(ListViewTappedAsync);
             CategorySelectButtonTaped = new Command(() => _navigationService.NavigateAsync("CategorySelectPopup"));
-            SearchButtonTapped = new Command(() => _navigationService.NavigateAsync("SearchMenuPage"));
+            SearchButtonTapped = new Command(() =>
+            {
+                var parameters = new NavigationParameters()
+                {
+                    {"SelectedCategory", _lastAdvertSearch?.Category }
+                };
+                _navigationService.NavigateAsync("SearchPopup", parameters);
+            });
         }
 
         public void OnNavigatedFrom(INavigationParameters parameters) { }
@@ -161,8 +167,10 @@ namespace MRzeszowiak.ViewModel
         protected async void ListViewTappedAsync(AdvertShort advertShort)
         {
             if (advertShort == null) return;
-            var navigationParams = new NavigationParameters();
-            navigationParams.Add("AdvertShort", advertShort);
+            var navigationParams = new NavigationParameters
+            {
+                { "AdvertShort", advertShort }
+            };
             await _navigationService.NavigateAsync("PreviewPage", navigationParams);
         }
 
@@ -247,12 +255,6 @@ namespace MRzeszowiak.ViewModel
             Activity = false;
             FotterActivity = false;
             return true;
-        }
-
-        // Create the OnPropertyChanged method to raise the event
-        private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string name = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
 }

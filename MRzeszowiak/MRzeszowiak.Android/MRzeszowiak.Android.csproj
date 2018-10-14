@@ -81,7 +81,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CustomListviewRenderer.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="MultiLineRendererDroid.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />

@@ -12,9 +12,8 @@ using Xamarin.Forms;
 
 namespace MRzeszowiak.ViewModel
 {
-    public class PreviewViewModel : INotifyPropertyChanged, INavigationAware
+    public class PreviewViewModel : BaseViewModel, INavigationAware
     {
-        public event PropertyChangedEventHandler PropertyChanged;
         protected IRzeszowiak _rzeszowiakRepository;
         protected IRzeszowiakImageContainer _imageContainer;
         protected INavigationService _navigationService;
@@ -292,12 +291,6 @@ namespace MRzeszowiak.ViewModel
         protected void ImageDownloadFinish(object sender, EventArgs e)
         {
             OnPropertyChanged("PhoneImage");   
-        }
-
-        // Create the OnPropertyChanged method to raise the event
-        private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string name = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
 
