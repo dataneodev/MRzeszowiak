@@ -180,15 +180,21 @@ namespace MRzeszowiak.ViewModel
 
         protected async void ListViewTappedAsync(AdvertShort advertShort)
         {
-            if (advertShort == null) return;
+            Debug.Write("ListViewTappedAsync");
+            if (advertShort == null)
+            {
+                Debug.Write("ListViewTappedAsync => advertShort == null");
+                return;
+            }
+
             var navigationParams = new NavigationParameters
             {
                 { "AdvertShort", advertShort }
             };
-            await _navigationService.NavigateAsync("PreviewPage", navigationParams);
+            await _navigationService.NavigateAsync("PreviewPage", navigationParams, useModalNavigation: true);
         }
 
-       
+
 
         protected async Task<bool> SearchExecute(AdvertSearch advertSearch, bool addLoad = false)
         {

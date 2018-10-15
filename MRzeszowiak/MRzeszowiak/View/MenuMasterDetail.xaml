@@ -4,6 +4,7 @@
                   xmlns:local="clr-namespace:MRzeszowiak.View"
                   x:Class="MRzeszowiak.View.MenuMasterDetail"
                   xmlns:pmvvm="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+                  xmlns:View="clr-namespace:MRzeszowiak.View"
                   pmvvm:ViewModelLocator.AutowireViewModel="True"
                   Title="Menu"
                   BackgroundColor="#f4f4f4">

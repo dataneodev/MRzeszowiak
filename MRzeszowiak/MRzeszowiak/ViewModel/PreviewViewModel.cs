@@ -228,13 +228,20 @@ namespace MRzeszowiak.ViewModel
 
         public void OnNavigatedTo(INavigationParameters parameters)
         {
-            if(parameters.ContainsKey("AdvertShort"))
+            Debug.Write("OnNavigatedTo PreviewViewModel");
+            if (parameters.ContainsKey("AdvertShort"))
                 if (parameters["AdvertShort"] is AdvertShort advertShort)
                     LoadAdvertMessage(advertShort);
         }
 
-        public void OnNavigatingTo(INavigationParameters parameters) {  }
-        public void OnNavigatedFrom(INavigationParameters parameters) { }
+        public void OnNavigatingTo(INavigationParameters parameters) {
+            Debug.Write("OnNavigatingTo PreviewViewModel");
+        }
+        public async void OnNavigatedFrom(INavigationParameters parameters)
+        {
+            Debug.Write("OnNavigatedFrom PreviewViewModel");
+            //await _navigationService.GoBackAsync();
+        }
 
         async void LoadAdvertMessage(AdvertShort advertShort)
         {

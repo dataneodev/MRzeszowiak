@@ -11,7 +11,7 @@ using Xamarin.Forms.Xaml;
 namespace MRzeszowiak.View
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class MainNavigation : NavigationPage, INavigationPageOptions, IDestructible
+	public partial class MainNavigation : NavigationPage, IDestructible, INavigationPageOptions
     {
 		public MainNavigation ()
 		{

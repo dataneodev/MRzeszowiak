@@ -37,8 +37,9 @@ namespace MRzeszowiak
             #endif
 
             InitializeComponent();
+
             var navigationParams = new NavigationParameters("LoadAtStartup=true");
-            await NavigationService.NavigateAsync("MenuMasterDetail/MainNavigation/ListPage", navigationParams);
+            await NavigationService.NavigateAsync(new Uri("app:///MenuMasterDetail/MainNavigation/ListPage", UriKind.Absolute), navigationParams);
         }
 
         protected override void OnStart()
