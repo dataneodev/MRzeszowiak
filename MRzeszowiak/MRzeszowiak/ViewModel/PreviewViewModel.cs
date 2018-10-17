@@ -217,12 +217,12 @@ namespace MRzeszowiak.ViewModel
                 var navigationParams = new NavigationParameters();
                 navigationParams.Add("ImageSelectedIndex", selecteIndex);
                 navigationParams.Add("ImageList", ImageURLsList);
-                _navigationService.NavigateAsync("PreviewImagePage", navigationParams);
+                _navigationService.NavigateAsync("PreviewImagePage", navigationParams, useModalNavigation: true, animated: false);
             });
 
             BackButtonTapped = new Command(() => 
             {
-                _navigationService.GoBackAsync();
+                _navigationService.GoBackAsync(null,useModalNavigation: true, animated: false);
             });
         }
 
@@ -234,14 +234,8 @@ namespace MRzeszowiak.ViewModel
                     LoadAdvertMessage(advertShort);
         }
 
-        public void OnNavigatingTo(INavigationParameters parameters) {
-            Debug.Write("OnNavigatingTo PreviewViewModel");
-        }
-        public async void OnNavigatedFrom(INavigationParameters parameters)
-        {
-            Debug.Write("OnNavigatedFrom PreviewViewModel");
-            //await _navigationService.GoBackAsync();
-        }
+        public void OnNavigatingTo(INavigationParameters parameters) {  }
+        public void OnNavigatedFrom(INavigationParameters parameters)   {  }
 
         async void LoadAdvertMessage(AdvertShort advertShort)
         {

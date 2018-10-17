@@ -9,6 +9,7 @@ namespace MRzeszowiak.Services
     {
         string UserEmail { get; set; }
         byte MaxScrollingAutoLoadPage { get; set; }
+        void SetDBPath(string dbPath);
 
         //Task<IList<AdvertShort>> GetFavoriteAdvertListDB();
         //Task<bool> SetFavoriteAdvertListDB();

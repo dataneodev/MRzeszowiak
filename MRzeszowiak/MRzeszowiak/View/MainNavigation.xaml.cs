@@ -20,7 +20,7 @@ namespace MRzeszowiak.View
 
         public bool ClearNavigationStackOnNavigation
         {
-            get { return true; }
+            get { return false; }
         }
 
         public void Destroy()

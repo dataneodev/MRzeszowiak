@@ -17,24 +17,25 @@ namespace MRzeszowiak
 {
 	public partial class App : PrismApplication
     {
-        public static ISetting Setting { get; private set; }
+        public static ISetting Setting { get; private set; } = new SettingRepository();
 
+        public static string RzeszowiakURL = "http://www.rzeszowiak.pl";
         public static Color highlightRow = Color.FromHex("#f4f4f4");
         public static Color normalRow = Color.FromHex("#FFFFFF0");
         public static Color highlightPremiumRow = Color.FromHex("#fcd890");
-        public static Color normalPremiuzmRow = Color.FromHex("#ffedcc");
+        public static Color normalPremiumRow = Color.FromHex("#ffedcc");
         public static double DisplayScreenWidth = 0f;
         public static double DisplayScreenHeight = 0f;
         public static double DisplayScaleFactor = 0f;
 
         public App(string dbpath) :base(null)
         {
-            Setting = new SettingRepository(dbpath);
+            Setting.SetDBPath(dbpath);
         }
 
         public App(string dbpath, IPlatformInitializer initializer = null) : base(initializer)
         {
-            Setting = new SettingRepository(dbpath);
+            Setting.SetDBPath(dbpath);
         }
 
         public App(IPlatformInitializer initializer, bool setFormsDependencyResolver)
@@ -49,7 +50,7 @@ namespace MRzeszowiak
             InitializeComponent();
 
             var navigationParams = new NavigationParameters("LoadAtStartup=true");
-            await NavigationService.NavigateAsync(new Uri("app:///MenuMasterDetail/MainNavigation/ListPage", UriKind.Absolute), navigationParams);
+            await NavigationService.NavigateAsync("MenuMasterDetail/MainNavigation/ListPage", navigationParams);
         }
 
         protected override void OnStart()
@@ -82,9 +83,13 @@ namespace MRzeszowiak
             containerRegistry.RegisterForNavigation<ListPage, ListViewModel>();
             containerRegistry.RegisterForNavigation<PreviewPage, PreviewViewModel>();
             containerRegistry.RegisterForNavigation<PreviewImagePage, PreViewImageViewModel>();
+            containerRegistry.RegisterForNavigation<FavAdvertPage, FavAdvertViewModel>();
+            containerRegistry.RegisterForNavigation<FavSearchPage, FavSearchViewModel>();
             containerRegistry.RegisterForNavigation<CategorySelectPopup, CategorySelectViewModel>();
             containerRegistry.RegisterForNavigation<SearchPopup, SearchViewModel>();
-            containerRegistry.RegisterForNavigation<SettingPage, SettingViewModel>();            
+            containerRegistry.RegisterForNavigation<SettingPage, SettingViewModel>();
+            containerRegistry.RegisterForNavigation<EmailPage, EmailViewModel>();
+            containerRegistry.RegisterForNavigation<AboutPage>();
         }
 
         protected override void ConfigureViewModelLocator()

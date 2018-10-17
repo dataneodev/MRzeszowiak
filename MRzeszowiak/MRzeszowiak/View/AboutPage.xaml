@@ -5,9 +5,29 @@
              Title="O aplikacji">
     <ContentPage.Content>
         <StackLayout>
-            <Label Text="Welcome to Xamarin.Forms!"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
+            <Image Source="logo.png" Margin="0"/>
+            <Label Text="MRzeszowiak 1.0" TextColor="Black" FontSize="Large" FontAttributes="Bold" 
+                   HorizontalOptions="Center" Margin="5"/>
+            <Label Text="Nieoficjalna aplikacja strony www.rzeszowiak.pl. Aplikacja jest darmowa i bez reklam."
+                VerticalOptions="Start" 
+                HorizontalOptions="CenterAndExpand" 
+                HorizontalTextAlignment="Center"
+                TextColor="Black"
+                Margin="20"/>
+
+            <Label Text="Strona projektu:"
+                VerticalOptions="Start" 
+                HorizontalOptions="CenterAndExpand" 
+                HorizontalTextAlignment="Center"
+                TextColor="Black"
+                Margin="0"/>
+            <Label Text="https://sites.google.com/dataneo/MRzeszowiak/"
+                VerticalOptions="Start" 
+                HorizontalOptions="CenterAndExpand" 
+                HorizontalTextAlignment="Center"
+                TextColor="Blue"
+                Margin="0"/>
+            <Button Text="Sprawdź dostępne aktualizacje" Margin="20"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

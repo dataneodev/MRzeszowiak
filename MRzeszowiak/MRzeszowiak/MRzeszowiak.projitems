@@ -31,6 +31,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Services\SettingRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\BaseViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\CategorySelectViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\EmailViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\FavAdvertViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\FavSearchViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ListViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\MenuMasterDetailViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\PreViewImageViewModel.cs" />
@@ -52,6 +55,14 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)View\EmailPage.xaml.cs">
       <DependentUpon>EmailPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)View\FavAdvertPage.xaml.cs">
+      <DependentUpon>FavAdvertPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)View\FavSearchPage.xaml.cs">
+      <DependentUpon>FavSearchPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)View\ListPage.xaml.cs">
@@ -139,6 +150,18 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)View\MainNavigation.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)View\FavSearchPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)View\FavAdvertPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>

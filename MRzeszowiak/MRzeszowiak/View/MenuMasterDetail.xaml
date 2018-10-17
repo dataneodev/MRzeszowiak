@@ -5,29 +5,19 @@
                   x:Class="MRzeszowiak.View.MenuMasterDetail"
                   xmlns:pmvvm="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
                   xmlns:View="clr-namespace:MRzeszowiak.View"
+                  xmlns:b="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"
                   pmvvm:ViewModelLocator.AutowireViewModel="True"
                   Title="Menu"
                   BackgroundColor="#f4f4f4">
     <MasterDetailPage.Master>
         <ContentPage Title="Menu">
-            <StackLayout Orientation="Vertical" 
-                         Margin="0" 
-                         BackgroundColor="#f4f4f4"
-                         HorizontalOptions="FillAndExpand"
+            <StackLayout Orientation="Vertical" Margin="0" BackgroundColor="#f4f4f4" HorizontalOptions="FillAndExpand"
                          VerticalOptions="FillAndExpand">
                 <Image Source="logo.png"  HorizontalOptions="StartAndExpand"></Image>
-                <ListView x:Name="listView" 
-                          x:FieldModifier="public"
-                          ItemTapped="listView_ItemTapped">
-                    <ListView.ItemsSource>
-                        <x:Array Type="{x:Type local:MasterPageItem}">
-                            <local:MasterPageItem Title="Kategorie" IconSource="menu_category.png" TargetType="{x:Type local:SettingPage}" />
-                            <local:MasterPageItem Title="Ulubione wyszukiwania" IconSource="menu_favsearch.png" TargetType="{x:Type local:SettingPage}" />
-                            <local:MasterPageItem Title="Ulubione ogłoszenia" IconSource="menu_favadvert.png" TargetType="{x:Type local:SettingPage}" />
-                            <local:MasterPageItem Title="Ustawienia" IconSource="menu_setting.png" TargetType="{x:Type local:SettingPage}" />
-                            <local:MasterPageItem Title="O aplikacji" IconSource="menu_about.png" TargetType="{x:Type local:AboutPage}" />
-                        </x:Array>
-                    </ListView.ItemsSource>
+                <ListView x:Name="listView" x:FieldModifier="public" ItemTapped="listView_ItemTapped" ItemsSource="{Binding MenuList}">
+                    <ListView.Behaviors>
+                        <b:EventToCommandBehavior EventName="ItemTapped" Command="{Binding MenuItemTapped}" EventArgsParameterPath="Item"/>
+                    </ListView.Behaviors>
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>

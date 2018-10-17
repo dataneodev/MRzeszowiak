@@ -5211,13 +5211,13 @@ namespace MRzeszowiak.Droid
 			public const int menu_about = 2130837782;
 			
 			// aapt resource value: 0x7f020117
-			public const int menu_category = 2130837783;
+			public const int menu_favadvert = 2130837783;
 			
 			// aapt resource value: 0x7f020118
-			public const int menu_favadvert = 2130837784;
+			public const int menu_favsearch = 2130837784;
 			
 			// aapt resource value: 0x7f020119
-			public const int menu_favsearch = 2130837785;
+			public const int menu_rzeszowiak = 2130837785;
 			
 			// aapt resource value: 0x7f02011a
 			public const int menu_search = 2130837786;

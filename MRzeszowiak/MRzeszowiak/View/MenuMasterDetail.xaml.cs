@@ -20,25 +20,12 @@ namespace MRzeszowiak.View
 
         public bool IsPresentedAfterNavigation
         {
-            get { return Device.Idiom != TargetIdiom.Phone; }
+            get { return false; }
         }
 
-        private async void listView_ItemTapped(object sender, ItemTappedEventArgs e)
+        private void listView_ItemTapped(object sender, ItemTappedEventArgs e)
         {
             ((ListView)sender).SelectedItem = null;
-            var item = e.Item as MasterPageItem;
-
-            if(item?.TargetType == typeof(SettingPage))
-            {
-                await (Detail as NavigationPage)?.PushAsync(new SettingPage(), false);
-            }
-
-            if (item?.TargetType == typeof(AboutPage))
-            {
-                await (Detail as NavigationPage)?.PushAsync(new AboutPage(), false);
-            }
-
-            IsPresented = false;
         }
     }
 

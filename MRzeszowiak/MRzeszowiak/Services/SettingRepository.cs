@@ -7,7 +7,7 @@ namespace MRzeszowiak.Services
 {
     class SettingRepository : ISetting
     {
-        private readonly string _dbPath;
+        private string _dbPath;
 
         private string userEmail = String.Empty;
         public string UserEmail
@@ -33,9 +33,9 @@ namespace MRzeszowiak.Services
 
         public event EventHandler<IDBEventsArgs> OnPropertyChange;
 
-        public SettingRepository(string dbpath)
+        public void SetDBPath(string dbPath)
         {
-            _dbPath = dbpath;
+            _dbPath = dbPath;
         }
 
         private void PropertyChange([System.Runtime.CompilerServices.CallerMemberName] string name = "")
