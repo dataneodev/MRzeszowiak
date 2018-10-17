@@ -16,8 +16,8 @@ namespace MRzeszowiak.ViewModel
 {
     public class CategorySelectViewModel : BaseViewModel, INavigationAware
     {
-        protected IRzeszowiak _rzeszowiakRepository;
-        protected INavigationService _navigationService;
+        protected readonly IRzeszowiak _rzeszowiakRepository;
+        protected readonly INavigationService _navigationService;
 
         public ObservableCollection<CatDisplay> CategoryAction { get; private set; } = new ObservableCollection<CatDisplay>();
         public ObservableCollection<CatButtonDisplay> ButtonList { get; private set; } = new ObservableCollection<CatButtonDisplay>();

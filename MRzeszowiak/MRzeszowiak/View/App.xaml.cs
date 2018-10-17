@@ -17,16 +17,26 @@ namespace MRzeszowiak
 {
 	public partial class App : PrismApplication
     {
+        public static ISetting Setting { get; private set; }
+
         public static Color highlightRow = Color.FromHex("#f4f4f4");
         public static Color normalRow = Color.FromHex("#FFFFFF0");
         public static Color highlightPremiumRow = Color.FromHex("#fcd890");
-        public static Color normalPremiumRow = Color.FromHex("#ffedcc");
+        public static Color normalPremiuzmRow = Color.FromHex("#ffedcc");
         public static double DisplayScreenWidth = 0f;
         public static double DisplayScreenHeight = 0f;
         public static double DisplayScaleFactor = 0f;
 
-        public App():this(null){ }
-        public App(IPlatformInitializer initializer = null) : base(initializer){  }
+        public App(string dbpath) :base(null)
+        {
+            Setting = new SettingRepository(dbpath);
+        }
+
+        public App(string dbpath, IPlatformInitializer initializer = null) : base(initializer)
+        {
+            Setting = new SettingRepository(dbpath);
+        }
+
         public App(IPlatformInitializer initializer, bool setFormsDependencyResolver)
             : base(initializer, setFormsDependencyResolver){ }
 
@@ -63,7 +73,7 @@ namespace MRzeszowiak
         {
             containerRegistry.RegisterPopupNavigationService();
 
-            containerRegistry.RegisterSingleton<ISetting, SettingRepository>();
+            containerRegistry.RegisterInstance<ISetting>(App.Setting);
             containerRegistry.Register<IRzeszowiak, RzeszowiakRepository>();
             containerRegistry.Register<IRzeszowiakImageContainer, RzeszowiakImageContainer>();
 

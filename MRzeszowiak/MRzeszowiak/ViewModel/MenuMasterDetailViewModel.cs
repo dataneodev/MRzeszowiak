@@ -6,21 +6,23 @@ using System.Text;
 
 namespace MRzeszowiak.ViewModel
 {
-    class MenuMasterDetailViewModel
+    class MenuMasterDetailViewModel : BaseViewModel
     {
         private readonly INavigationService _navigationService;
 
-        public DelegateCommand<string> NavigateCommand { get; set; }
 
         public MenuMasterDetailViewModel(INavigationService navigationService)
         {
             _navigationService = navigationService;
-            NavigateCommand = new DelegateCommand<string>(Navigate);
-        }
 
-        private void Navigate(string name)
-        {
-            var res = _navigationService.NavigateAsync(name);
+
         }
+    }
+
+    public class MasterPageItem
+    {
+        public string Title { get; set; }
+        public string IconSource { get; set; }
+        public Type TargetType { get; set; }
     }
 }

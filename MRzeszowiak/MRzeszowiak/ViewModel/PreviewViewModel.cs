@@ -14,10 +14,10 @@ namespace MRzeszowiak.ViewModel
 {
     public class PreviewViewModel : BaseViewModel, INavigationAware
     {
-        protected IRzeszowiak _rzeszowiakRepository;
-        protected IRzeszowiakImageContainer _imageContainer;
-        protected INavigationService _navigationService;
-        protected IPageDialogService _pageDialog;
+        protected readonly IRzeszowiak _rzeszowiakRepository;
+        protected readonly IRzeszowiakImageContainer _imageContainer;
+        protected readonly INavigationService _navigationService;
+        protected readonly IPageDialogService _pageDialog;
 
         public bool ActivityForm => !Activity && !ErrorPanelVisible ? true : false;
 

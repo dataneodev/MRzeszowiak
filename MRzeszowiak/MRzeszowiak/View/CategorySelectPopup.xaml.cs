@@ -24,4 +24,5 @@ namespace MRzeszowiak.View
             ((ListView)sender).SelectedItem = null;
         }
     }
+
 }

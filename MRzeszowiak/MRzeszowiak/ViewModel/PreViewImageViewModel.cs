@@ -12,8 +12,8 @@ namespace MRzeszowiak.ViewModel
 {
     public class PreViewImageViewModel : BaseViewModel, INavigationAware
     {
-        protected INavigationService _navigationService;
-        public ObservableCollection<string> ImageURLsList { get; set; } = new ObservableCollection<string>();
+        protected readonly INavigationService _navigationService;
+        public ObservableCollection<string> ImageURLsList { get; private set; } = new ObservableCollection<string>();
 
         private int position;
         public int Position

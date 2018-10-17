@@ -16,9 +16,9 @@ namespace MRzeszowiak.ViewModel
     public class ListViewModel : BaseViewModel, INavigationAware
     {
         public ObservableCollection<AdvertShort> AdvertShortList { get; private set; } = new ObservableCollection<AdvertShort>();
-        protected IRzeszowiak _rzeszowiakRepository;
-        protected INavigationService _navigationService;
-        protected IPageDialogService _pageDialog;
+        protected readonly IRzeszowiak _rzeszowiakRepository;
+        protected readonly INavigationService _navigationService;
+        protected readonly IPageDialogService _pageDialog;
 
         public bool ActivityListView => !Activity && !ErrorPanelVisible ? true : false;
 
@@ -193,8 +193,6 @@ namespace MRzeszowiak.ViewModel
             };
             await _navigationService.NavigateAsync("PreviewPage", navigationParams, useModalNavigation: true);
         }
-
-
 
         protected async Task<bool> SearchExecute(AdvertSearch advertSearch, bool addLoad = false)
         {

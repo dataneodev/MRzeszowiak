@@ -36,7 +36,10 @@ namespace MRzeszowiak.Droid
 
             global::Xamarin.Forms.Forms.Init(this, bundle);
             CarouselView.FormsPlugin.Android.CarouselViewRenderer.Init();
-            LoadApplication(new App(new AndroidInitializer()));
+
+            var dbpath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
+
+            LoadApplication(new App(dbpath, new AndroidInitializer()));
         }
 
         public class AndroidInitializer : IPlatformInitializer

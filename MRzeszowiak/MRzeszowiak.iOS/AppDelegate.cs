@@ -32,7 +32,9 @@ namespace MRzeszowiak.iOS
 
             global::Xamarin.Forms.Forms.Init();
             CarouselView.FormsPlugin.iOS.CarouselViewRenderer.Init();
-            LoadApplication(new App(new iOSInitializer()));
+
+            var dbpath = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal), "..", "Liblary");
+            LoadApplication(new App(dbpath, new iOSInitializer()));
 
             return base.FinishedLaunching(app, options);
         }

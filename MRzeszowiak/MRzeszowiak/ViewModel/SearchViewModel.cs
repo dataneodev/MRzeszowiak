@@ -11,7 +11,7 @@ namespace MRzeszowiak.ViewModel
 {
     class SearchViewModel : BaseViewModel, INavigationAware
     {
-        protected INavigationService _navigationService;
+        protected readonly INavigationService _navigationService;
 
         private string searchPattern;
         public string SearchPattern
