@@ -36,7 +36,7 @@
                     <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding LinkPageTapped}"/>
                 </Label.GestureRecognizers>
             </Label>
-            <Button Text="Sprawdź dostępne aktualizacje" Margin="20" Command="{Binding ButtonVersionCheckTapped}"/>
+            <Button Text="Sprawdź dostępne aktualizacje" Margin="20" IsEnabled="{Binding ButtonCheckEnabled}" Command="{Binding ButtonVersionCheckTapped}"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

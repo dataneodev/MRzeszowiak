@@ -12,6 +12,7 @@ namespace MRzeszowiak.Services
         string GetAppName { get; }
         float GetAppVersion { get; }
         string GetRzeszowiakBaseURL { get; }
+        string GetProjectBaseURL { get; }
 
         string UserEmail { get; set; }
         byte MaxScrollingAutoLoadPage { get; set; }

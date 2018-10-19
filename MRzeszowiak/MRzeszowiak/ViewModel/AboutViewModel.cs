@@ -18,6 +18,15 @@ namespace MRzeszowiak.ViewModel
         public ICommand ButtonVersionCheckTapped { get; private set; }
         public string AppName { get => _setting?.GetAppName + " " +  _setting?.GetAppVersion.ToString("0.0", CultureInfo.InvariantCulture); }
 
+        private bool buttonCheckEnable;
+        public bool ButtonCheckEnabled { get { return buttonCheckEnable;  }
+            set
+            {
+                buttonCheckEnable = value;
+                OnPropertyChanged();
+            }
+        }
+
         public AboutViewModel(IPageDialogService pageDialog, ISetting setting)
         {
             _pageDialog = pageDialog ?? throw new NullReferenceException("IPageDialogService pageDialog == null !");
@@ -25,13 +34,16 @@ namespace MRzeszowiak.ViewModel
 
             LinkPageTapped = new Command(()=>
             {
-                Device.OpenUri(new Uri(_setting.GetRzeszowiakBaseURL));
+                Device.OpenUri(new Uri(_setting.GetProjectBaseURL));
             });
 
             ButtonVersionCheckTapped = new Command(async()=>
             {
                 var update = new UpdateRepository(_setting);
-                if(!await update.CheckUpdate())
+                ButtonCheckEnabled = false;
+                var checkStatus = await update.CheckUpdate();
+                ButtonCheckEnabled = true;
+                if (!checkStatus)
                 {
                     await pageDialog.DisplayAlertAsync(AppName, "Wystąpił błąd podczas sprawdzania dostępności nowej wersji.", "OK");
                     return;

@@ -13,6 +13,7 @@ namespace MRzeszowiak.Services
         public string GetAppName { get => "MRzeszowiak"; }
         public float GetAppVersion { get => 1.0f; }
         public string GetRzeszowiakBaseURL { get => "http://rzeszowiak.pl";  }
+        public string GetProjectBaseURL { get => "https://sites.google.com/site/dataneosoftware/polski/mrzeszowiak"; }
 
         private string userEmail = String.Empty;
         public string UserEmail
