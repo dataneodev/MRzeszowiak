@@ -72,7 +72,7 @@ namespace MRzeszowiak.ViewModel
             }
         }
 
-        public Category CurrentCategory => _lastAdvertSearch?.Category;
+        public Category CurrentCategory => _lastAdvertSearch?.CategorySearch;
         public Color FilterButtonColor
         {
             get
@@ -111,7 +111,7 @@ namespace MRzeszowiak.ViewModel
             {
                 var parameters = new NavigationParameters()
                 {
-                    {"SelectedCategory", _lastAdvertSearch?.Category }
+                    {"SelectedCategory", _lastAdvertSearch?.CategorySearch }
                 };
                 _navigationService.NavigateAsync("CategorySelectPopup", parameters);
             });
@@ -146,7 +146,7 @@ namespace MRzeszowiak.ViewModel
             Debug.Write("CategoryUserSelectCallbackAsync");
             if (_lastAdvertSearch == null)
                 _lastAdvertSearch = new AdvertSearch();
-            _lastAdvertSearch.Category = selCategory;
+            _lastAdvertSearch.CategorySearch = selCategory;
             await SearchExecute(_lastAdvertSearch, false);
         }
 

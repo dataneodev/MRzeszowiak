@@ -1,0 +1,53 @@
+﻿using MRzeszowiak.Services;
+using Prism.Services;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
+using System.Windows.Input;
+using Xamarin.Forms;
+
+namespace MRzeszowiak.ViewModel
+{
+    class AboutViewModel : BaseViewModel
+    {
+        protected readonly IPageDialogService _pageDialog;
+        private readonly ISetting _setting;
+
+        public ICommand LinkPageTapped { get; private set; }
+        public ICommand ButtonVersionCheckTapped { get; private set; }
+        public string AppName { get => _setting?.GetAppName + " " +  _setting?.GetAppVersion.ToString("0.0", CultureInfo.InvariantCulture); }
+
+        public AboutViewModel(IPageDialogService pageDialog, ISetting setting)
+        {
+            _pageDialog = pageDialog ?? throw new NullReferenceException("IPageDialogService pageDialog == null !");
+            _setting = setting ?? throw new NullReferenceException("ISetting setting == null !");
+
+            LinkPageTapped = new Command(()=>
+            {
+                Device.OpenUri(new Uri(_setting.GetRzeszowiakBaseURL));
+            });
+
+            ButtonVersionCheckTapped = new Command(async()=>
+            {
+                var update = new UpdateRepository(_setting);
+                if(!await update.CheckUpdate())
+                {
+                    await pageDialog.DisplayAlertAsync(AppName, "Wystąpił błąd podczas sprawdzania dostępności nowej wersji.", "OK");
+                    return;
+                }
+
+                if (update.IsNewVersion)
+                {
+                    if(await pageDialog.DisplayAlertAsync(AppName, "Znaleziono nową wersje aplikacji " + _setting?.GetAppName + " " + 
+                        update.VersionServer.ToString("0.0", CultureInfo.InvariantCulture) + "\nCzy chcesz przejść do strony z nową wersją aplikacji?", "OK", "Anuluj"))
+                        Device.OpenUri(new Uri(update.VersionUpdateUrl));
+                }                    
+                else
+                    await pageDialog.DisplayAlertAsync(AppName, "Posiadasz już najaktualniejszą wersje aplikacji.", "OK");
+            });
+        }
+
+
+    }
+}

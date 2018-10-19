@@ -2,11 +2,17 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MRzeszowiak.View.AboutPage"
+             xmlns:pmvvm="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+             pmvvm:ViewModelLocator.AutowireViewModel="True"
              Title="O aplikacji">
     <ContentPage.Content>
         <StackLayout>
-            <Image Source="logo.png" Margin="0"/>
-            <Label Text="MRzeszowiak 1.0" TextColor="Black" FontSize="Large" FontAttributes="Bold" 
+            <Image Source="logo.png" Margin="0">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding LinkPageTapped}"/>
+                </Image.GestureRecognizers>
+            </Image>
+            <Label Text="{Binding AppName}" TextColor="Black" FontSize="Large" FontAttributes="Bold" 
                    HorizontalOptions="Center" Margin="5"/>
             <Label Text="Nieoficjalna aplikacja strony www.rzeszowiak.pl. Aplikacja jest darmowa i bez reklam."
                 VerticalOptions="Start" 
@@ -14,7 +20,6 @@
                 HorizontalTextAlignment="Center"
                 TextColor="Black"
                 Margin="20"/>
-
             <Label Text="Strona projektu:"
                 VerticalOptions="Start" 
                 HorizontalOptions="CenterAndExpand" 
@@ -26,8 +31,12 @@
                 HorizontalOptions="CenterAndExpand" 
                 HorizontalTextAlignment="Center"
                 TextColor="Blue"
-                Margin="0"/>
-            <Button Text="Sprawdź dostępne aktualizacje" Margin="20"/>
+                Margin="0">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding LinkPageTapped}"/>
+                </Label.GestureRecognizers>
+            </Label>
+            <Button Text="Sprawdź dostępne aktualizacje" Margin="20" Command="{Binding ButtonVersionCheckTapped}"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

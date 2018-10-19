@@ -1,13 +1,18 @@
 ﻿using MRzeszowiak.Model;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 
 namespace MRzeszowiak.Services
 {
-    class SettingRepository : ISetting
+    class SettingRepository : ISetting, INotifyPropertyChanged
     {
         private string _dbPath;
+        public string UpdateServerUrl { get => "https://script.google.com/macros/s/AKfycbxx_fFWPUjtiwBU9uFcVKhvXFLa8SjfoHZbM7DmSD_WaWmArTu1/exec"; }
+        public string GetAppName { get => "MRzeszowiak"; }
+        public float GetAppVersion { get => 1.0f; }
+        public string GetRzeszowiakBaseURL { get => "http://rzeszowiak.pl";  }
 
         private string userEmail = String.Empty;
         public string UserEmail
@@ -16,7 +21,7 @@ namespace MRzeszowiak.Services
             set
             {
                 userEmail = value;
-                PropertyChange();
+                OnPropertyChanged();
             }
         }
 
@@ -27,30 +32,32 @@ namespace MRzeszowiak.Services
             set
             {
                 maxScrollingAutoLoadPage = value;
-                PropertyChange();
+                OnPropertyChanged();
             }
         }
 
-        public event EventHandler<IDBEventsArgs> OnPropertyChange;
+        private AdvertSearch autostartAdvertSearch = new AdvertSearch();
+        public AdvertSearch AutostartAdvertSearch
+        {
+            get { return autostartAdvertSearch; }
+            set
+            {
+                autostartAdvertSearch = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public void SetDBPath(string dbPath)
         {
             _dbPath = dbPath;
         }
 
-        private void PropertyChange([System.Runtime.CompilerServices.CallerMemberName] string name = "")
+        protected void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string name = "")
         {
-            OnPropertyChange?.Invoke(this, new DBEventsArgs(name));
-        }
-    }
-
-    class DBEventsArgs : EventArgs, IDBEventsArgs
-    {
-
-        public string PropertyChangeName { get; }
-        public DBEventsArgs(string name)
-        {
-            PropertyChangeName = name;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
 }

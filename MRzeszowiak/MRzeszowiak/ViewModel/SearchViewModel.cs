@@ -128,8 +128,8 @@ namespace MRzeszowiak.ViewModel
                 if (reciveSearchRecord == null)
                     reciveSearchRecord = new AdvertSearch();
                 this.SearchPattern = reciveSearchRecord.SearchPattern;
-                this.SelectedCategory = reciveSearchRecord.Category;
-                this.sendCategory = reciveSearchRecord.Category;
+                this.SelectedCategory = reciveSearchRecord.CategorySearch;
+                this.sendCategory = reciveSearchRecord.CategorySearch;
                 this.DateAdd = reciveSearchRecord.DateAdd;
                 this.Sort = reciveSearchRecord.Sort;
                 this.PriceMin = reciveSearchRecord.PriceMin ?? 0;
@@ -142,7 +142,7 @@ namespace MRzeszowiak.ViewModel
             var advertSearch = new AdvertSearch()
             {
                 SearchPattern = this.SearchPattern,
-                Category = this.SelectedCategory,
+                CategorySearch = this.SelectedCategory,
                 DateAdd = this.DateAdd,
                 Sort = this.Sort,
                 PriceMin = this.priceMin,
@@ -160,7 +160,7 @@ namespace MRzeszowiak.ViewModel
         {
             var advertSearch = new AdvertSearch()
             {
-                Category = this.sendCategory,
+                CategorySearch = this.sendCategory,
             };
 
             var parameters = new NavigationParameters()

@@ -89,7 +89,7 @@ namespace MRzeszowiak
             containerRegistry.RegisterForNavigation<SearchPopup, SearchViewModel>();
             containerRegistry.RegisterForNavigation<SettingPage, SettingViewModel>();
             containerRegistry.RegisterForNavigation<EmailPage, EmailViewModel>();
-            containerRegistry.RegisterForNavigation<AboutPage>();
+            containerRegistry.RegisterForNavigation<AboutPage, AboutViewModel>();
         }
 
         protected override void ConfigureViewModelLocator()

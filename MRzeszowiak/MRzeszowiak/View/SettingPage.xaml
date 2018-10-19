@@ -3,13 +3,18 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MRzeszowiak.View.SettingPage"
              xmlns:pmvvm="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+             xmlns:ViewModel="clr-namespace:MRzeszowiak.ViewModel"
              pmvvm:ViewModelLocator.AutowireViewModel="True"
+             x:Name="SettingContent" 
              Title="Ustawienia aplikacji">
+    <ContentPage.Resources>
+        <ViewModel:CategoryToString x:Key="CategoryToString" />
+    </ContentPage.Resources>
     <ContentPage.Content>
         <TableView Intent="Settings" 
                        HasUnevenRows="True" 
                        x:Name="tableSetting"
-                       BindingContext="{Binding _setting}">
+                       BindingContext="{Binding Setting}">
             <TableRoot>
                 <TableSection>
                     <ViewCell>
@@ -25,7 +30,8 @@
                     <ViewCell>
                         <StackLayout Orientation="Vertical" Margin="15,10,5,10">
                             <Label Text="Filtr wyszukiwania listy ogłoszeń podczas startu programu:"/>
-                            <Button Text="Wszystkie kategorie"/>
+                            <Button Text="{Binding AutostartAdvertSearch.CategorySearch, Converter={StaticResource CategoryToString}}"
+                                     Command="{Binding Path=BindingContext.SearchButtonTapped, Source={x:Reference SettingContent}}"/>
                         </StackLayout>
                     </ViewCell>
                 </TableSection>
@@ -41,12 +47,12 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <!--Row 0-->
+                            <!--Row 0--> 
                             <Label  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Text="Ilość stron ładowana dynamicznie podczas przewijania listy ogłoszeń: " 
                                     VerticalOptions="Center"/>
                             <!--Row 1-->
                             <Label Grid.Row="1" Grid.Column="0" Text="Strony: " VerticalOptions="Center"/>
-                            <Label Grid.Row="1" Grid.Column="1" Text="1" WidthRequest="35" FontAttributes="Bold" TextColor="Black"  VerticalOptions="Center"/>
+                            <Label Grid.Row="1" Grid.Column="1" Text="{Binding MaxScrollingAutoLoadPage}" WidthRequest="35" FontAttributes="Bold" TextColor="Black"  VerticalOptions="Center"/>
                             <Stepper Grid.Row="1" Grid.Column="2"  Value="{Binding MaxScrollingAutoLoadPage, Mode=TwoWay}" Maximum="25" Minimum="1"/>
                         </Grid>
                     </ViewCell>

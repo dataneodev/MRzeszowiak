@@ -452,7 +452,7 @@ namespace MRzeszowiak.Services
                         DescriptionShort = aDesc,
                         DateAddString = aAdd,
                         Price = aPriceInt,
-                        Category = searchParams.Category,
+                        Category = searchParams.CategorySearch,
                         Highlighted = highlighted,
                         RowEven = rowEven
                     };
