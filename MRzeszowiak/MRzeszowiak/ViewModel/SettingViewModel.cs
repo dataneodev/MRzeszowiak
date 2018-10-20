@@ -18,6 +18,7 @@ namespace MRzeszowiak.ViewModel
         public ISetting Setting { get; private set; }
         public ICommand SearchButtonTapped { get; set; }
 
+
         public SettingViewModel(INavigationService navigationService, ISetting setting)
         {
             Debug.Write("SettingViewModel Contructor");

@@ -71,11 +71,12 @@
             <StackLayout Orientation="Vertical" 
                          IsVisible="{Binding ActivityForm}"
                          Margin="10,0,10,0">
-                <Label Text="{Binding Title}"
+                    <Label Text="{Binding Title}"
                        FontSize="Large"
                        TextColor="Black"
                        LineBreakMode="WordWrap"/>
-                <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+                    <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+                    <!--highlihted-->
                     <Frame CornerRadius="10"  
                                Margin="0"
                                Padding="4" 
@@ -83,6 +84,7 @@
                                BackgroundColor="#fff268">
                             <Image Source="menu_favadvert.png" HeightRequest="20"/>
                     </Frame>
+                    <!--price-->
                     <Label>
                         <Label.FormattedText>
                             <FormattedString>
@@ -98,9 +100,9 @@
                                 </FormattedString.Spans>
                             </FormattedString>
                         </Label.FormattedText>
-                    </Label>
-                        
+                    </Label>    
                 </StackLayout>
+                <!--description-->
                 <Frame CornerRadius="10" 
                        Margin="0" 
                        Padding="0">
@@ -110,6 +112,7 @@
                            LineBreakMode="WordWrap"
                            Margin="8,5,8,5"/>
                 </Frame>
+                <!--Phone number-->
                 <Frame CornerRadius="10" 
                        Margin="0" 
                        Padding="0"
@@ -127,6 +130,7 @@
                                    Aspect="AspectFit"/>
                         </StackLayout>
                 </Frame>
+                <!--Additional data list-->
                 <Frame CornerRadius="10" 
                        Margin="0" 
                        Padding="0"
@@ -161,6 +165,21 @@
                         </ListView.ItemTemplate>
                     </ListView>
                 </Frame>
+                <!--Email-->
+                <Frame CornerRadius="12" 
+                       Margin="0" 
+                       Padding="0"
+                       IsVisible="{Binding EmailFormVisible}"
+                       IsEnabled="{Binding EmailFormVisible}">
+                    <StackLayout Orientation="Vertical">
+                        <Label Text="Twoja wiadomość email" FontSize="10" Margin="8,0,8,0"/>
+                        <Entry Margin="8,0,8,0" x:Name="EmailMessageEntry"  Keyboard="Text" HeightRequest="100" HorizontalOptions="FillAndExpand"/>
+                        <Button Text="Wyślij wiadomość" Margin="8,0,8,8" Command="{Binding MailSendButtonTapped}" 
+                                CommandParameter="{Binding Source={x:Reference EmailMessageEntry}, Path=Text}"/>
+                    </StackLayout>
+                        
+                </Frame>
+                <!--Button-->
                 <Frame CornerRadius="10" 
                        Margin="0" 
                        Padding="0">
@@ -187,6 +206,7 @@
                                     Command="{Binding FavoriteAdvert}"/>
                     </StackLayout>
                 </Frame>
+                <!--ID-->
                 <StackLayout Orientation="Horizontal">
                     <Label HorizontalTextAlignment="Start" HorizontalOptions="FillAndExpand">
                             <Label.FormattedText>

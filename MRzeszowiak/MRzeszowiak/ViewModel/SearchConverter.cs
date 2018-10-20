@@ -66,7 +66,7 @@ namespace MRzeszowiak.ViewModel
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
            if(value is Category category)
-                return category.getFullTitle;
+                return category.GetFullTitle;
            return Category.TitleForNull;
         }
 

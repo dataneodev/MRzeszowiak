@@ -1,20 +1,34 @@
 ﻿using MRzeszowiak.Model;
+using SQLite;
+using SQLiteNetExtensions;
+using SQLiteNetExtensions.Attributes;
+using SQLiteNetExtensions.Extensions;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 
 namespace MRzeszowiak.Services
 {
-    class SettingRepository : ISetting, INotifyPropertyChanged
+    public class SettingRepository : ISetting, INotifyPropertyChanged
     {
         private string _dbPath;
+        private const string dbName = "mrzeszowiak.db";
+        private string DbFullPath { get => Path.Combine(_dbPath, dbName); }
+        private bool loadingDB = false;
+        [Ignore]
         public string UpdateServerUrl { get => "https://script.google.com/macros/s/AKfycbxx_fFWPUjtiwBU9uFcVKhvXFLa8SjfoHZbM7DmSD_WaWmArTu1/exec"; }
+        [Ignore]
         public string GetAppName { get => "MRzeszowiak"; }
+        [Ignore]
         public float GetAppVersion { get => 1.0f; }
+        [Ignore]
         public string GetRzeszowiakBaseURL { get => "http://rzeszowiak.pl";  }
+        [Ignore]
         public string GetProjectBaseURL { get => "https://sites.google.com/site/dataneosoftware/polski/mrzeszowiak"; }
-
+        [PrimaryKey, AutoIncrement]
+        public int Id { get; set;}
         private string userEmail = String.Empty;
         public string UserEmail
         {
@@ -38,6 +52,7 @@ namespace MRzeszowiak.Services
         }
 
         private AdvertSearch autostartAdvertSearch = new AdvertSearch();
+        [Ignore]
         public AdvertSearch AutostartAdvertSearch
         {
             get { return autostartAdvertSearch; }
@@ -48,17 +63,73 @@ namespace MRzeszowiak.Services
             }
         }
 
+        [ForeignKey(typeof(AdvertSearch))]
+        public int AdvertSearchId { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public void SetDBPath(string dbPath)
         {
             _dbPath = dbPath;
+            if (_dbPath?.Length > 0)
+            {
+               // LoadSettingAsync();
+                OnPropertyChanged("AutostartAdvertSearch");
+            }
+                
         }
 
         protected void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string name = "")
         {
+            SaveSetting();
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+        public void LoadSettingAsync()
+        {
+            Debug.Write("LoadSettingAsync");
+    
+            loadingDB = true;
+            using (var conn = new SQLite.SQLiteConnection(DbFullPath))
+            {
+                conn.CreateTable<SettingRepository>();
+                conn.CreateTable<AdvertSearch>();
+
+                if (conn.Table<SettingRepository>().Count() == 0)
+                {
+                    loadingDB = false;
+                    return;
+                }
+
+                var res = conn.GetWithChildren<SettingRepository>(1);
+                foreach (PropertyInfo property in typeof(SettingRepository).GetProperties())
+                    if (property.CanWrite)
+                        property.SetValue(this, property.GetValue(res, null), null);
+            }
+            loadingDB = false;
+        }
+
+        public void SaveSetting()
+        {
+            if (loadingDB) return;
+            Debug.Write("SaveSetting");
+            using (var conn = new SQLite.SQLiteConnection(DbFullPath))
+            {
+                conn.CreateTable<SettingRepository>();
+                conn.CreateTable<AdvertSearch>();
+
+                //var save = new SettingRepository();
+                //foreach (PropertyInfo property in typeof(ISetting).GetProperties())
+                //    if (property.CanWrite)
+                //        property.SetValue(save, property.GetValue(this, null), null);
+
+                if (conn.Table<SettingRepository>().Count() == 0)
+                    conn.InsertWithChildren(this);
+                else
+                    conn.Update(this);
+
+                Debug.WriteLine("SaveSetting: " + this.Id);
+            }
         }
     }
 }

@@ -162,6 +162,18 @@ namespace MRzeszowiak.ViewModel
         }
         public bool ErrorPanelVisible => (errorMessage?.Length ?? 0) > 0 ? true : false;
 
+        private bool emailFormVisible = false;
+        public bool EmailFormVisible
+        {
+            get { return emailFormVisible; }
+            set
+            {
+                emailFormVisible = value;
+                OnPropertyChanged();
+            }
+        }
+
+
         public ObservableCollection<KeyValue> AdditionalData { get; set; } = new ObservableCollection<KeyValue>();
         public bool AddDataVisible => (AdditionalData?.Count ?? 0) > 0 ? true : false;
         public ObservableCollection<string> ImageURLsList { get; set; } = new ObservableCollection<string>();
@@ -174,6 +186,7 @@ namespace MRzeszowiak.ViewModel
         public ICommand FavoriteAdvert { get; private set; }
         public ICommand ImageTapped { get; private set; }
         public ICommand BackButtonTapped { get; private set; }
+        public ICommand MailSendButtonTapped { get; private set; }
 
         public PreviewViewModel(INavigationService navigationService, IRzeszowiak RzeszowiakRepository,
                                 IRzeszowiakImageContainer rzeszowiakImageContainer, IPageDialogService pageDialog)
@@ -201,7 +214,7 @@ namespace MRzeszowiak.ViewModel
 
             MailAdvert = new Command(() =>
             {
-
+                EmailFormVisible = !EmailFormVisible;
             });
 
             FavoriteAdvert = new Command(() =>
@@ -223,6 +236,11 @@ namespace MRzeszowiak.ViewModel
             BackButtonTapped = new Command(() => 
             {
                 _navigationService.GoBackAsync(null,useModalNavigation: true, animated: false);
+            });
+
+            MailSendButtonTapped = new Command<string>((message) =>
+            {
+                Debug.Write("MailSendButtonTapped");
             });
         }
 

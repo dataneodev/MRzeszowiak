@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SQLite;
+using SQLiteNetExtensions.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
@@ -7,15 +9,21 @@ namespace MRzeszowiak.Model
 {
     public class AdvertSearch
     {
+        [PrimaryKey, AutoIncrement]
+        public int Id { get; set; }
         protected const string RZESZOWIAK_BASE_URL = "http://www.rzeszowiak.pl/";
         protected const sbyte RECORD_ON_PAGE = 25;
         public string SearchPattern { get; set; } = String.Empty; // not empty
+        [Ignore]
         public Category CategorySearch { get; set; } // null for all
+        [Ignore]
         public AddType DateAdd { get; set; } = AddType.all;
+        [Ignore]
         public SortType Sort { get; set; } = SortType.dateadd;
         public int? PriceMin { get; set; }
         public int? PriceMax { get; set; }
         public int? RequestPage { get; set; }
+        [Ignore]
         public string GetURL
         {
             get
