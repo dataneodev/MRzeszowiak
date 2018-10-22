@@ -13,5 +13,6 @@ namespace MRzeszowiak.Services
         Task<AdvertSearchResult> GetAdvertListAsync(AdvertSearch searchParams, Action<string> userNotify = null);
         Task<AdvertSearchResult> GetAdvertListAsync(Action<string> userNotify = null); // default last add
         Task<Advert> GetAdvertAsync(AdvertShort advertShort, Action<string> userNotify = null);
+        Task<bool> SendUserMessage(Advert advertShort, String message);
     }
 }

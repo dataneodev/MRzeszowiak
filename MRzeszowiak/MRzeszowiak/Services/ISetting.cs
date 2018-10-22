@@ -6,11 +6,13 @@ namespace MRzeszowiak.Services
     {
         string UpdateServerUrl { get; }
         string GetAppName { get; }
+        string GetAppNameAndVersion { get; }
         float GetAppVersion { get; }
         string GetRzeszowiakBaseURL { get; }
         string GetProjectBaseURL { get; }
 
         string UserEmail { get; set; }
+        bool IsUserMailCorrect { get; }
         byte MaxScrollingAutoLoadPage { get; set; }
         AdvertSearch AutostartAdvertSearch { get; set; }
 

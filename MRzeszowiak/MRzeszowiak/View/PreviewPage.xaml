@@ -14,10 +14,11 @@
             <ViewModel:ImageFromFavorite x:Key="ImageFromFavorite" />
             <ViewModel:AbsHeight x:Key="AbsHeight" />
             <ViewModel:IsValueNotNull x:Key="PhoneImageVisible" />
+            <ViewModel:NegativeBool x:Key="NegativeBool" />
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Content>
-        <ScrollView Orientation="Vertical">
+        <ScrollView Orientation="Vertical" x:Name="PreviewPageScroll">
             <StackLayout Orientation="Vertical" CompressedLayout.IsHeadless="True">
                 <ActivityIndicator VerticalOptions="CenterAndExpand" 
                                IsRunning="{Binding Activity}"
@@ -52,7 +53,7 @@
                                 x:Name="image">
                                 <Extends:ImageFit.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding Path=BindingContext.ImageTapped, Source={x:Reference Name=PreviewPageN}}" 
-                                                          CommandParameter="{Binding Path=Position, Source={x:Reference Name=CarouselViewImageList}"
+                                                          CommandParameter="{Binding Path=Position, Source={x:Reference Name=CarouselViewImageList}}"
                                                           NumberOfTapsRequired="1" />
                                 </Extends:ImageFit.GestureRecognizers>
                             </Extends:ImageFit>
@@ -145,21 +146,15 @@
                                 ItemAppearing="AddDataList_ItemAppearing"
                                 IsVisible="{Binding AddDataVisible}"> 
                         <ListView.Header>
-                            <Label Text="Dane dodatkowe:"
-                                   FontSize="10"
-                                   Margin="8,0,8,0"
-                                   />
+                            <Label Text="Dane dodatkowe:" FontSize="10" Margin="8,0,8,0"/>
                         </ListView.Header>
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <ViewCell>
-                                    <StackLayout HorizontalOptions="FillAndExpand"
-                                                 Orientation="Horizontal" 
-                                                 Margin="8,2,8,2"
-                                                 Padding="2">
-                                            <Label Text="{Binding Key}" TextColor="Black"/>
-                                            <Label Text="{Binding Value}" TextColor="Black"/>
-                                        </StackLayout>
+                                    <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal" Margin="8,2,8,2" Padding="2">
+                                        <Label Text="{Binding Key}" TextColor="Black"/>
+                                        <Label Text="{Binding Value}" TextColor="Black"/>
+                                    </StackLayout>
                                 </ViewCell>
                             </DataTemplate>
                         </ListView.ItemTemplate>
@@ -169,15 +164,24 @@
                 <Frame CornerRadius="12" 
                        Margin="0" 
                        Padding="0"
-                       IsVisible="{Binding EmailFormVisible}"
-                       IsEnabled="{Binding EmailFormVisible}">
-                    <StackLayout Orientation="Vertical">
-                        <Label Text="Twoja wiadomość email" FontSize="10" Margin="8,0,8,0"/>
-                        <Entry Margin="8,0,8,0" x:Name="EmailMessageEntry"  Keyboard="Text" HeightRequest="100" HorizontalOptions="FillAndExpand"/>
+                       IsVisible="{Binding MailFormSendVisible}"
+                       x:Name="FrameMailForm">
+                    <StackLayout Orientation="Vertical"> 
+                        <ActivityIndicator IsRunning="{Binding MailFormSending}" IsVisible="{Binding MailFormSending}" Margin="0,10,0,0" HeightRequest="40"/>
+                        <Label Text="Twoja wiadomość:" FontSize="12" Margin="8,2,8,2" IsVisible="{Binding MailFormSending, Converter={StaticResource NegativeBool}}" />
+                        <Frame BorderColor="#f4f4f4" CornerRadius="0" Padding="0" Margin="0,-4,0,-4" IsVisible="{Binding MailFormSending, Converter={StaticResource NegativeBool}}">
+                            <Extends:CustomEditor Margin="0" x:Name="EmailMessageEntry"  Keyboard="Text" HeightRequest="140" HorizontalOptions="FillAndExpand">
+                                <Extends:CustomEditor.Triggers>
+                                    <DataTrigger TargetType="Extends:CustomEditor" Binding="{Binding MailFormSendVisible}" Value="False">
+                                        <Setter Property="Text" Value="huj"/>
+                                    </DataTrigger>
+                                </Extends:CustomEditor.Triggers>
+                            </Extends:CustomEditor>
+                        </Frame>
                         <Button Text="Wyślij wiadomość" Margin="8,0,8,8" Command="{Binding MailSendButtonTapped}" 
-                                CommandParameter="{Binding Source={x:Reference EmailMessageEntry}, Path=Text}"/>
-                    </StackLayout>
-                        
+                            IsEnabled="{Binding MailFormSending, Converter={StaticResource NegativeBool}}"
+                            CommandParameter="{Binding Source={x:Reference EmailMessageEntry}, Path=Text}"/>
+                    </StackLayout>  
                 </Frame>
                 <!--Button-->
                 <Frame CornerRadius="10" 
@@ -198,6 +202,7 @@
                                     WidthRequest="78"  
                                     Image="mail.png" 
                                     BackgroundColor="#f4f4f4"
+                                    x:Name="MailButton" 
                                     Command="{Binding MailAdvert}"/>
                             <Button HeightRequest="44" 
                                     WidthRequest="78"  
@@ -207,7 +212,7 @@
                     </StackLayout>
                 </Frame>
                 <!--ID-->
-                <StackLayout Orientation="Horizontal">
+                <StackLayout Orientation="Horizontal" x:Name="EndStackLayout">
                     <Label HorizontalTextAlignment="Start" HorizontalOptions="FillAndExpand">
                             <Label.FormattedText>
                                 <FormattedString>

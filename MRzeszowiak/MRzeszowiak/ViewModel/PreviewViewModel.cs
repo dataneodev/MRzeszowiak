@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
 
@@ -18,6 +19,7 @@ namespace MRzeszowiak.ViewModel
         protected readonly IRzeszowiakImageContainer _imageContainer;
         protected readonly INavigationService _navigationService;
         protected readonly IPageDialogService _pageDialog;
+        protected readonly ISetting _setting;
 
         public bool ActivityForm => !Activity && !ErrorPanelVisible ? true : false;
 
@@ -162,13 +164,24 @@ namespace MRzeszowiak.ViewModel
         }
         public bool ErrorPanelVisible => (errorMessage?.Length ?? 0) > 0 ? true : false;
 
-        private bool emailFormVisible = false;
-        public bool EmailFormVisible
+        private bool mailFormSendVisible = false;
+        public bool MailFormSendVisible
         {
-            get { return emailFormVisible; }
+            get { return mailFormSendVisible; }
             set
             {
-                emailFormVisible = value;
+                mailFormSendVisible = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool mailFormSending;
+        public bool MailFormSending
+        {
+            get { return mailFormSending; }
+            set
+            {
+                mailFormSending = value;
                 OnPropertyChanged();
             }
         }
@@ -178,6 +191,7 @@ namespace MRzeszowiak.ViewModel
         public bool AddDataVisible => (AdditionalData?.Count ?? 0) > 0 ? true : false;
         public ObservableCollection<string> ImageURLsList { get; set; } = new ObservableCollection<string>();
         public bool ImageVisible => (ImageURLsList?.Count ?? 0) > 0 ? true : false;
+        public Action ScrollToButtom;
 
         private Advert _lastAdvert;
         public ICommand OpenAdvertPage { get; private set; }
@@ -189,12 +203,13 @@ namespace MRzeszowiak.ViewModel
         public ICommand MailSendButtonTapped { get; private set; }
 
         public PreviewViewModel(INavigationService navigationService, IRzeszowiak RzeszowiakRepository,
-                                IRzeszowiakImageContainer rzeszowiakImageContainer, IPageDialogService pageDialog)
+                                IRzeszowiakImageContainer rzeszowiakImageContainer, IPageDialogService pageDialog, ISetting setting)
         {
             _rzeszowiakRepository = RzeszowiakRepository ?? throw new NullReferenceException("IRzeszowiakRepository RzeszowiakRepository == null !");
             _navigationService = navigationService ?? throw new NullReferenceException("INavigationService navigationService == null !");
             _pageDialog = pageDialog ?? throw new NullReferenceException("IPageDialogService pageDialog == null !");
             _imageContainer = rzeszowiakImageContainer ?? throw new NullReferenceException("IRzeszowiakImageContainer rzeszowiakImageContainer == null !");
+            _setting = setting ?? throw new NullReferenceException("ISetting setting == null !");
             _imageContainer.OnDownloadFinish += ImageDownloadFinish;
 
             ImageURLsList.CollectionChanged += (s, e) => { OnPropertyChanged("ImageVisible"); };
@@ -214,7 +229,21 @@ namespace MRzeszowiak.ViewModel
 
             MailAdvert = new Command(() =>
             {
-                EmailFormVisible = !EmailFormVisible;
+                Debug.Write("MailAdvert");
+                if (MailFormSendVisible)
+                {
+                    MailFormSendVisible = false;
+                    return;
+                }
+
+                if (!_setting.IsUserMailCorrect)
+                {
+                    _pageDialog.DisplayAlertAsync(_setting.GetAppNameAndVersion, "Nie można wysłać wiadomości.\nUzupełnij w ustawieniach aplikacji swój adres email.", "OK");
+                    return;
+                }
+
+                MailFormSendVisible = true;
+                ScrollToButtom?.Invoke();
             });
 
             FavoriteAdvert = new Command(() =>
@@ -238,9 +267,28 @@ namespace MRzeszowiak.ViewModel
                 _navigationService.GoBackAsync(null,useModalNavigation: true, animated: false);
             });
 
-            MailSendButtonTapped = new Command<string>((message) =>
+            MailSendButtonTapped = new Command<string>(async (message) =>
             {
                 Debug.Write("MailSendButtonTapped");
+                if (!_setting.IsUserMailCorrect)
+                {
+                    await _pageDialog.DisplayAlertAsync(_setting.GetAppNameAndVersion, "Nie można wysłać wiadomości.\nUzupełnij w ustawieniach aplikacji swój adres email.", "OK");
+                    return;
+                }
+
+                if((message?.Length??0) == 0)
+                {
+                    await _pageDialog.DisplayAlertAsync(_setting.GetAppNameAndVersion, "Nie można wysłać pustej wiadomości. Weź coś napisz.", "OK");
+                    return;
+                }
+
+                MailFormSending = true;
+
+                await Task.Delay(4000);
+                await _pageDialog.DisplayAlertAsync(_setting.GetAppNameAndVersion, "Twoja wiadomość została wysłana.", "OK");
+
+                MailFormSending = false;
+                MailFormSendVisible = false;
             });
         }
 

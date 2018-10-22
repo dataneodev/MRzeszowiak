@@ -16,7 +16,6 @@ namespace MRzeszowiak.ViewModel
 
         public ICommand LinkPageTapped { get; private set; }
         public ICommand ButtonVersionCheckTapped { get; private set; }
-        public string AppName { get => _setting?.GetAppName + " " +  _setting?.GetAppVersion.ToString("0.0", CultureInfo.InvariantCulture); }
 
         private bool buttonCheckEnable;
         public bool ButtonCheckEnabled { get { return buttonCheckEnable;  }
@@ -45,18 +44,18 @@ namespace MRzeszowiak.ViewModel
                 ButtonCheckEnabled = true;
                 if (!checkStatus)
                 {
-                    await pageDialog.DisplayAlertAsync(AppName, "Wystąpił błąd podczas sprawdzania dostępności nowej wersji.", "OK");
+                    await pageDialog.DisplayAlertAsync(_setting.GetAppNameAndVersion, "Wystąpił błąd podczas sprawdzania dostępności nowej wersji.", "OK");
                     return;
                 }
 
                 if (update.IsNewVersion)
                 {
-                    if(await pageDialog.DisplayAlertAsync(AppName, "Znaleziono nową wersje aplikacji " + _setting?.GetAppName + " " + 
+                    if(await pageDialog.DisplayAlertAsync(_setting.GetAppNameAndVersion, "Znaleziono nową wersje aplikacji " + _setting?.GetAppName + " " + 
                         update.VersionServer.ToString("0.0", CultureInfo.InvariantCulture) + "\nCzy chcesz przejść do strony z nową wersją aplikacji?", "OK", "Anuluj"))
                         Device.OpenUri(new Uri(update.VersionUpdateUrl));
                 }                    
                 else
-                    await pageDialog.DisplayAlertAsync(AppName, "Posiadasz już najaktualniejszą wersje aplikacji.", "OK");
+                    await pageDialog.DisplayAlertAsync(_setting.GetAppNameAndVersion, "Posiadasz już najaktualniejszą wersje aplikacji.", "OK");
             });
         }
 

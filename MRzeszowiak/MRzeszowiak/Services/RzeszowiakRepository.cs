@@ -257,6 +257,15 @@ namespace MRzeszowiak.Services
             return categoryList;
         }
 
+        public async Task<bool> SendUserMessage(Advert advert, String message)
+        {
+            if(advert == null && message?.Length == 0)
+            {
+                return false;
+            }
+            return true;
+        }
+
         protected async Task ForceUpdate()
         {
             Debug.Write("ForeceUpdate");

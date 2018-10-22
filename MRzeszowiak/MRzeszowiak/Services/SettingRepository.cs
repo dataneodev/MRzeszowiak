@@ -22,6 +22,8 @@ namespace MRzeszowiak.Services
         [Ignore]
         public string GetAppName { get => "MRzeszowiak"; }
         [Ignore]
+        public string GetAppNameAndVersion { get => GetAppName + " " + GetAppVersion.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture); }
+        [Ignore]
         public float GetAppVersion { get => 1.0f; }
         [Ignore]
         public string GetRzeszowiakBaseURL { get => "http://rzeszowiak.pl";  }
@@ -29,7 +31,7 @@ namespace MRzeszowiak.Services
         public string GetProjectBaseURL { get => "https://sites.google.com/site/dataneosoftware/polski/mrzeszowiak"; }
         [PrimaryKey, AutoIncrement]
         public int Id { get; set;}
-        private string userEmail = String.Empty;
+        private string userEmail ="gksdfsd@op.pl";
         public string UserEmail
         {
             get { return userEmail; }
@@ -37,6 +39,17 @@ namespace MRzeszowiak.Services
             {
                 userEmail = value;
                 OnPropertyChanged();
+            }
+        }
+
+        [Ignore]
+        public bool IsUserMailCorrect
+        {
+            get
+            {
+                const string pattern = @"^(?!\.)(""([^""\r\\]|\\[""\r\\])*""|" + @"([-a-z0-9!#$%&'*+/=?^_`{|}~]|(?<!\.)\.)*)(?<!\.)" + @"@[a-z0-9][\w\.-]*[a-z0-9]\.[a-z][a-z\.]*[a-z]$";
+                var regex = new System.Text.RegularExpressions.Regex(pattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                return regex.IsMatch(UserEmail);
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using CarouselView.FormsPlugin.Abstractions;
 using MRzeszowiak.Model;
+using MRzeszowiak.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -19,6 +20,8 @@ namespace MRzeszowiak.View
 		{
 			InitializeComponent ();
             NavigationPage.SetHasNavigationBar(this, false);
+            if(BindingContext is PreviewViewModel model)
+                model.ScrollToButtom = async () => await PreviewPageScroll.ScrollToAsync(0, PreviewPageScroll.ContentSize.Height, true); 
         }
 
         private void AddDataList_ItemTapped(object sender, ItemTappedEventArgs e)
