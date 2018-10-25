@@ -96,10 +96,17 @@ namespace MRzeszowiak.Extends
             var PathURI = new Uri(URI.PathAndQuery);
             using (var handler = new HttpClientHandler())
             {
-                var cookies = new CookieContainer();
-                cookies.Add(cookieCollection);
-                handler.UseCookies = true;
-                handler.CookieContainer = cookies;
+                if(cookieCollection != null)
+                {
+                    var cookies = new CookieContainer();
+                    cookies.Add(cookieCollection);
+                    handler.UseCookies = true;
+                    handler.CookieContainer = cookies;
+                }
+                else
+                {
+                    handler.UseCookies = false;
+                }
                 
                 using (HttpClient client = new HttpClient(handler) { Timeout = TimeSpan.FromSeconds(6) })
                 {

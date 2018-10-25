@@ -16,6 +16,7 @@ namespace MRzeszowiak.Services
     {
         protected const string RZESZOWIAK_BASE_URL = "http://www.rzeszowiak.pl/";
 
+
         protected static List<MasterCategory> masterCategoryList = new List<MasterCategory>{
             new MasterCategory { Id = 12, Title = "Dla domu" },
             new MasterCategory { Id = 26, Title = "Dla dzieci" },
@@ -257,10 +258,36 @@ namespace MRzeszowiak.Services
             return categoryList;
         }
 
-        public async Task<bool> SendUserMessage(Advert advert, String message)
+        public async Task<bool> SendUserMessage(Advert advert, string message, string email)
         {
-            if(advert == null && message?.Length == 0)
+            Debug.Write("SendUserMessage");
+            if (advert == null || message?.Length == 0 || email.Length == 0)
             {
+                Debug.Write("SendUserMessage: advert == null && message?.Length == 0");
+                return false;
+            }
+
+            if(advert.EmailToken.Length != 10)
+            {
+                Debug.Write("SendUserMessage: advert.EmailToken.Length != 10");
+                return false;
+            }
+
+            string Url = RZESZOWIAK_BASE_URL + $"wyslij-zapytanie-ze-strony/{advert.AdverIDinRzeszowiak}/?callback=jQuery1520060147417855342944_1540502546978";
+            var postData = new Dictionary<string, string>
+            {
+                ["token"] = advert.EmailToken,
+                ["MAX_FILE_SIZE"] = "4000000",
+                ["emailFK"] = email,
+                ["wiadomoscFK"] = message,
+                ["zgodaFormularzKontakt"] = "1",
+            };
+
+            var HttpResult = await GetWeb.PostWebPage(Url, postData, advert.URLPath, null);
+
+            if(HttpResult.IndexOf("{\"status\":\"ok\", \"opis\":\"Wiadomość została wysłana.\"}", 0, true) == -1)
+            {
+                Debug.Write("SendUserMessage => Confirm message not recive");
                 return false;
             }
             return true;
@@ -613,6 +640,14 @@ namespace MRzeszowiak.Services
             foreach (var item in HttpResult.CookieList)
                 if (item.Name == "PHPSESSID") aCookie = item;
 
+            //email token
+            string aEmailToken = String.Empty;
+            if (BodyResult.IndexOf("id=\"tokenFK\" value=\"", 0, true) != -1)
+            {
+                BodyResult.CutFoward("id=\"tokenFK\" value=\"");
+                aEmailToken = BodyResult.ToString(0, BodyResult.IndexOf("\"", 0, true)).Trim();
+            }
+
             return new Advert()
             {
                 AdverIDinRzeszowiak = advertShort.AdverIDinRzeszowiak,
@@ -629,6 +664,8 @@ namespace MRzeszowiak.Services
                 URLPath = advertShort.URLPath,
                 PhoneSsid = aSsid,
                 PhonePHPSSESION = aCookie,
+                EmailToken = aEmailToken,
+                VisitPageDate = DateTime.Now,
             };
         }
     }

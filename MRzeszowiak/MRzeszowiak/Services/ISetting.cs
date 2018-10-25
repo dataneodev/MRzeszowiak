@@ -16,6 +16,9 @@ namespace MRzeszowiak.Services
         byte MaxScrollingAutoLoadPage { get; set; }
         AdvertSearch AutostartAdvertSearch { get; set; }
 
+        bool CanSendMail(Advert advert);
+        void SendMailNotice(Advert advert);
+
         void SetDBPath(string dbPath);
 
         //Task<IList<AdvertShort>> GetFavoriteAdvertListDB();

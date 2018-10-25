@@ -19,6 +19,8 @@ namespace MRzeszowiak.Model
         public Cookie PhonePHPSSESION { get; set; }
         public Dictionary<string, string> AdditionalData { get; set; } = new Dictionary<string, string>();
         public List<string> ImageURLsList { get; set; } = new List<string>();
+        public DateTime VisitPageDate { get; set; }
+        public string EmailToken { get; set; }
         public bool IsFavorite { get; set; }
     }
 }

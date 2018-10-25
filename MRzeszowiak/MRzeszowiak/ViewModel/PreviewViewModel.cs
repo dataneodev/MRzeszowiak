@@ -164,28 +164,16 @@ namespace MRzeszowiak.ViewModel
         }
         public bool ErrorPanelVisible => (errorMessage?.Length ?? 0) > 0 ? true : false;
 
-        private bool mailFormSendVisible = false;
-        public bool MailFormSendVisible
+        private MailStatusEnum mailStatus = MailStatusEnum.email_default;
+        public MailStatusEnum MailStatus
         {
-            get { return mailFormSendVisible; }
+            get { return mailStatus; }
             set
             {
-                mailFormSendVisible = value;
+                mailStatus = value;
                 OnPropertyChanged();
             }
         }
-
-        private bool mailFormSending;
-        public bool MailFormSending
-        {
-            get { return mailFormSending; }
-            set
-            {
-                mailFormSending = value;
-                OnPropertyChanged();
-            }
-        }
-
 
         public ObservableCollection<KeyValue> AdditionalData { get; set; } = new ObservableCollection<KeyValue>();
         public bool AddDataVisible => (AdditionalData?.Count ?? 0) > 0 ? true : false;
@@ -230,9 +218,9 @@ namespace MRzeszowiak.ViewModel
             MailAdvert = new Command(() =>
             {
                 Debug.Write("MailAdvert");
-                if (MailFormSendVisible)
+                if (MailStatus == MailStatusEnum.email_creating)
                 {
-                    MailFormSendVisible = false;
+                    MailStatus = MailStatusEnum.email_default;
                     return;
                 }
 
@@ -242,7 +230,19 @@ namespace MRzeszowiak.ViewModel
                     return;
                 }
 
-                MailFormSendVisible = true;
+                if (!setting.CanSendMail(_lastAdvert))
+                {
+                    _pageDialog.DisplayAlertAsync(_setting.GetAppNameAndVersion, "Nie można narazie wysłać wiadomości.", "OK");
+                    return;
+                }
+
+                if (_lastAdvert?.EmailToken.Length != 10)
+                {
+                    _pageDialog.DisplayAlertAsync(_setting.GetAppNameAndVersion, "Problem z wysłaniem wiadomości. Odśwież ogłoszenie.", "OK");
+                    return;
+                }
+
+                MailStatus = MailStatusEnum.email_creating;
                 ScrollToButtom?.Invoke();
             });
 
@@ -282,13 +282,32 @@ namespace MRzeszowiak.ViewModel
                     return;
                 }
 
-                MailFormSending = true;
+                if (!setting.CanSendMail(_lastAdvert))
+                {
+                    await _pageDialog.DisplayAlertAsync(_setting.GetAppNameAndVersion, "Nie można narazie wysłać wiadomości.", "OK");
+                    return;
+                }
 
-                await Task.Delay(4000);
-                await _pageDialog.DisplayAlertAsync(_setting.GetAppNameAndVersion, "Twoja wiadomość została wysłana.", "OK");
+                if(_lastAdvert?.EmailToken.Length != 10)
+                {
+                    await _pageDialog.DisplayAlertAsync(_setting.GetAppNameAndVersion, "Problem z wysłaniem wiadomości. Odśwież ogłoszenie.", "OK");
+                    return;
+                }
 
-                MailFormSending = false;
-                MailFormSendVisible = false;
+                MailStatus = MailStatusEnum.email_sending;
+
+                var status = await _rzeszowiakRepository.SendUserMessage(_lastAdvert, message, _setting.UserEmail);
+                if (status)
+                {
+                    _setting.SendMailNotice(_lastAdvert);
+                    MailStatus = MailStatusEnum.email_send;
+                    await _pageDialog.DisplayAlertAsync(_setting.GetAppNameAndVersion, "Twoja wiadomość została wysłana.", "OK");
+                }
+                else
+                {
+                    MailStatus = MailStatusEnum.email_default;
+                    await _pageDialog.DisplayAlertAsync(_setting.GetAppNameAndVersion, "Twoja wiadomość nie została wysłana. Wystąpił nieoczekiwany błąd.", "OK");
+                }        
             });
         }
 
@@ -370,5 +389,13 @@ namespace MRzeszowiak.ViewModel
             Key = key;
             Value = value;
         }
+    }
+
+    public enum MailStatusEnum
+    {
+        email_default,
+        email_creating,
+        email_sending,
+        email_send,
     }
 }

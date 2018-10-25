@@ -31,7 +31,7 @@ namespace MRzeszowiak.Services
         public string GetProjectBaseURL { get => "https://sites.google.com/site/dataneosoftware/polski/mrzeszowiak"; }
         [PrimaryKey, AutoIncrement]
         public int Id { get; set;}
-        private string userEmail ="gksdfsd@op.pl";
+        private string userEmail = "gkmail@gmx.cn";
         public string UserEmail
         {
             get { return userEmail; }
@@ -80,6 +80,16 @@ namespace MRzeszowiak.Services
         public int AdvertSearchId { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public bool CanSendMail(Advert advert)
+        {
+            return true;
+        }
+
+        public void SendMailNotice(Advert advert)
+        {
+
+        }
 
         public void SetDBPath(string dbPath)
         {

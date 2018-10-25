@@ -156,4 +156,44 @@ namespace MRzeszowiak.ViewModel
 
         }
     }
+
+    public class MailStatusEnumToString : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            MailStatusEnum image = value == null ? MailStatusEnum.email_default : (MailStatusEnum)value;
+            switch (image)
+            {
+                case MailStatusEnum.email_default:
+                    return "mail.png";
+                case MailStatusEnum.email_creating:
+                    return "mail_create.png";
+                case MailStatusEnum.email_send:
+                    return "mail_send.png";
+                case MailStatusEnum.email_sending:
+                    goto case MailStatusEnum.email_creating;
+            }
+            return null;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return true;
+        }
+    }
+
+    public class MailStatusEnumNotSending : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            MailStatusEnum check = value == null ? MailStatusEnum.email_default : (MailStatusEnum)value;
+            if (check != MailStatusEnum.email_sending) return true;
+            return false;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return true;
+        }
+    }
 }
