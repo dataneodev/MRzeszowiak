@@ -4,6 +4,7 @@ namespace MRzeszowiak.Services
 {
     public interface ISetting
     {
+        bool AutoSaveDB { get; set; }
         string UpdateServerUrl { get; }
         string GetAppName { get; }
         string GetAppNameAndVersion { get; }

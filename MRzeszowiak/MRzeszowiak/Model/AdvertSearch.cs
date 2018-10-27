@@ -14,15 +14,16 @@ namespace MRzeszowiak.Model
         protected const string RZESZOWIAK_BASE_URL = "http://www.rzeszowiak.pl/";
         protected const sbyte RECORD_ON_PAGE = 25;
         public string SearchPattern { get; set; } = String.Empty; // not empty
-        [Ignore]
+
+        [ForeignKey(typeof(Category)), Indexed]
+        public int CategoryId { get; set; }
+        [OneToOne(CascadeOperations = CascadeOperation.All)]
         public Category CategorySearch { get; set; } // null for all
-        [Ignore]
         public AddType DateAdd { get; set; } = AddType.all;
-        [Ignore]
         public SortType Sort { get; set; } = SortType.dateadd;
-        public int? PriceMin { get; set; }
-        public int? PriceMax { get; set; }
-        public int? RequestPage { get; set; }
+        public Nullable<int> PriceMin { get; set; }
+        public Nullable<int> PriceMax { get; set; }
+        public Nullable<int> RequestPage { get; set; }
         [Ignore]
         public string GetURL
         {

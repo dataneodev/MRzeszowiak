@@ -1,0 +1,2 @@
++ nazwa aplikacji w android
++ ukryc paski przewijania w wyborze kategori i zawsze na wierzzchu

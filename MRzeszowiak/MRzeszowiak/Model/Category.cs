@@ -17,7 +17,9 @@ namespace MRzeszowiak.Model
 
     public class Category : MasterCategory
     {
-        [ManyToOne]
+        [ForeignKey(typeof(MasterCategory)), Indexed]
+        public int MasterCategoryId { get; set; }
+        [OneToOne(CascadeOperations = CascadeOperation.All)]
         public MasterCategory Master { get; set; } 
         public string GETPath { get; set; } //ex. Dla-domu-Meble-281 or 
         [OneToMany]

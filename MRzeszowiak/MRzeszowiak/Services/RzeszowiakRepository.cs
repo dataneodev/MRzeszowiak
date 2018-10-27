@@ -273,7 +273,8 @@ namespace MRzeszowiak.Services
                 return false;
             }
 
-            string Url = RZESZOWIAK_BASE_URL + $"wyslij-zapytanie-ze-strony/{advert.AdverIDinRzeszowiak}/?callback=jQuery1520060147417855342944_1540502546978";
+            string Url = RZESZOWIAK_BASE_URL + $"wyslij-zapytanie-ze-strony/{advert.AdverIDinRzeszowiak}/";
+            Debug.Write(Url);
             var postData = new Dictionary<string, string>
             {
                 ["token"] = advert.EmailToken,
@@ -283,13 +284,13 @@ namespace MRzeszowiak.Services
                 ["zgodaFormularzKontakt"] = "1",
             };
 
-            var HttpResult = await GetWeb.PostWebPage(Url, postData, advert.URLPath, null);
+            //var HttpResult = await GetWeb.PostWebPage(Url, postData, advert.URLPath, null);
 
-            if(HttpResult.IndexOf("{\"status\":\"ok\", \"opis\":\"Wiadomość została wysłana.\"}", 0, true) == -1)
-            {
-                Debug.Write("SendUserMessage => Confirm message not recive");
-                return false;
-            }
+            //if(HttpResult.IndexOf("{\"status\":\"ok\", \"opis\":\"Wiadomość została wysłana.\"}", 0, true) == -1)
+            //{
+            //    Debug.Write("SendUserMessage => Confirm message not recive");
+            //    return false;
+            //}
             return true;
         }
 

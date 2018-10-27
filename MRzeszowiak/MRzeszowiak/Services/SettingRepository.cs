@@ -1,4 +1,5 @@
 ﻿using MRzeszowiak.Model;
+using Newtonsoft.Json;
 using SQLite;
 using SQLiteNetExtensions;
 using SQLiteNetExtensions.Attributes;
@@ -16,7 +17,8 @@ namespace MRzeszowiak.Services
         private string _dbPath;
         private const string dbName = "mrzeszowiak.db";
         private string DbFullPath { get => Path.Combine(_dbPath, dbName); }
-        private bool loadingDB = false;
+        [Ignore]
+        public bool AutoSaveDB { get; set; } = false;
         [Ignore]
         public string UpdateServerUrl { get => "https://script.google.com/macros/s/AKfycbxx_fFWPUjtiwBU9uFcVKhvXFLa8SjfoHZbM7DmSD_WaWmArTu1/exec"; }
         [Ignore]
@@ -31,7 +33,8 @@ namespace MRzeszowiak.Services
         public string GetProjectBaseURL { get => "https://sites.google.com/site/dataneosoftware/polski/mrzeszowiak"; }
         [PrimaryKey, AutoIncrement]
         public int Id { get; set;}
-        private string userEmail = "gkmail@gmx.cn";
+
+        private string userEmail;
         public string UserEmail
         {
             get { return userEmail; }
@@ -64,8 +67,11 @@ namespace MRzeszowiak.Services
             }
         }
 
+        [ForeignKey(typeof(AdvertSearch)), Indexed]
+        public int AdvertSearchId { get; set; }
+
         private AdvertSearch autostartAdvertSearch = new AdvertSearch();
-        [Ignore]
+        [OneToOne(CascadeOperations = CascadeOperation.All)]
         public AdvertSearch AutostartAdvertSearch
         {
             get { return autostartAdvertSearch; }
@@ -74,10 +80,7 @@ namespace MRzeszowiak.Services
                 autostartAdvertSearch = value;
                 OnPropertyChanged();
             }
-        }
-
-        [ForeignKey(typeof(AdvertSearch))]
-        public int AdvertSearchId { get; set; }
+        }   
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -96,10 +99,9 @@ namespace MRzeszowiak.Services
             _dbPath = dbPath;
             if (_dbPath?.Length > 0)
             {
-               // LoadSettingAsync();
+                LoadSettingAsync();
                 OnPropertyChanged("AutostartAdvertSearch");
-            }
-                
+            }    
         }
 
         protected void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string name = "")
@@ -111,47 +113,40 @@ namespace MRzeszowiak.Services
         public void LoadSettingAsync()
         {
             Debug.Write("LoadSettingAsync");
-    
-            loadingDB = true;
             using (var conn = new SQLite.SQLiteConnection(DbFullPath))
             {
                 conn.CreateTable<SettingRepository>();
                 conn.CreateTable<AdvertSearch>();
 
-                if (conn.Table<SettingRepository>().Count() == 0)
-                {
-                    loadingDB = false;
-                    return;
-                }
+                if (conn.Table<SettingRepository>().Count() == 0) return;
 
-                var res = conn.GetWithChildren<SettingRepository>(1);
+                var res = conn.GetWithChildren<SettingRepository>(1, true);
                 foreach (PropertyInfo property in typeof(SettingRepository).GetProperties())
                     if (property.CanWrite)
                         property.SetValue(this, property.GetValue(res, null), null);
             }
-            loadingDB = false;
         }
 
         public void SaveSetting()
         {
-            if (loadingDB) return;
+            if (!AutoSaveDB) return; 
             Debug.Write("SaveSetting");
             using (var conn = new SQLite.SQLiteConnection(DbFullPath))
             {
                 conn.CreateTable<SettingRepository>();
                 conn.CreateTable<AdvertSearch>();
-
-                //var save = new SettingRepository();
-                //foreach (PropertyInfo property in typeof(ISetting).GetProperties())
-                //    if (property.CanWrite)
-                //        property.SetValue(save, property.GetValue(this, null), null);
+                //conn.CreateTable<Category>();
+                //conn.CreateTable<MasterCategory>();
+                //conn.CreateTable<ChildCategory>();
 
                 if (conn.Table<SettingRepository>().Count() == 0)
-                    conn.InsertWithChildren(this);
+                    conn.InsertWithChildren(this, true);
                 else
-                    conn.Update(this);
+                    conn.InsertOrReplaceWithChildren(this, true);
 
                 Debug.WriteLine("SaveSetting: " + this.Id);
+                Debug.WriteLine("SaveSetting.AdvertSearchId: " + this.AdvertSearchId);
+                Debug.WriteLine("SaveSetting.AutostartAdvertSearch.Id: " + this.AutostartAdvertSearch.Id);
             }
         }
     }
