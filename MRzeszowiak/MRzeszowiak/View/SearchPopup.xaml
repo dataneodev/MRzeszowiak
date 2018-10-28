@@ -37,17 +37,26 @@
         </Grid.RowDefinitions>
         <!--Row 1-->
         <Label Grid.Column="0" Grid.Row="0" Text="Szukaj:" TextColor="Black" VerticalOptions="Center" Margin="10,0,0,0" FontSize="Medium"/>
-        <SearchBar Grid.Column="1" Grid.Row="0" Text="{Binding SearchPattern, Mode=TwoWay}" Margin="-20,0,0,0" Placeholder="Wyszukaj..."/>
+        <SearchBar Grid.Column="1" Grid.Row="0" x:Name="SearchBarPattern" Text="{Binding SearchPattern, Mode=TwoWay}" Margin="-20,0,0,0" Placeholder="Wyszukaj..."/>
         <!--Row 2-->
         <Label Grid.Column="0" Grid.Row="1" Text="Kategoria:" TextColor="Black" VerticalOptions="Center" Margin="10,10,0,10" FontSize="Medium"/>
         <Button Grid.Column="1" Grid.Row="1" Text="{Binding SelectedCategory, Converter={StaticResource CategoryToString}}" Command="{Binding ButtonCategorySelectTappped}"/>
         <!--Row 3-->
         <Label Grid.Column="0" Grid.Row="2" Text="Dodane :" TextColor="Black" VerticalOptions="Center" Margin="10,10,0,10" FontSize="Medium"/>
         <Picker Grid.Column="1" Grid.Row="2" ItemsSource="{Binding DateAddList}" SelectedItem="{Binding DateAdd}" 
-                ItemDisplayBinding="{Binding ., Converter={StaticResource AddTypeToStringTranslate}}">
+                ItemDisplayBinding="{Binding ., Converter={StaticResource AddTypeToStringTranslate}}" IsEnabled="True" >
             <Picker.Behaviors>
                 <b:EventToCommandBehavior EventName="SelectedIndexChanged" Command="{Binding AddTypeChange}" EventArgsParameterPath="SelectedItem"/>
             </Picker.Behaviors>
+            <Picker.Triggers>
+                <MultiTrigger TargetType="Picker">
+                    <MultiTrigger.Conditions>
+                        <BindingCondition Binding="{Binding Source={x:Reference SearchPagePopup}, Path=BindingContext.SelectedCategory, Converter={StaticResource CategoryToActiveControls}}" Value="False"/>
+                        <BindingCondition Binding="{Binding Source={x:Reference SearchBarPattern}, Path=Text.Length}" Value="0"/>
+                    </MultiTrigger.Conditions>
+                    <Setter Property="IsEnabled" Value="False"/>
+                </MultiTrigger>
+            </Picker.Triggers>
         </Picker>
         <!--Row 4-->
         <Label Grid.Column="0" Grid.Row="3" Text="Sortuj wg :" TextColor="Black" VerticalOptions="Center" Margin="10,10,0,10" FontSize="Medium"/>

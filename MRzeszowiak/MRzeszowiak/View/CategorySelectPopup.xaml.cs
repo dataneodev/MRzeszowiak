@@ -1,11 +1,5 @@
-﻿using Rg.Plugins.Popup.Pages;
-using Rg.Plugins.Popup.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using MRzeszowiak.ViewModel;
+using Rg.Plugins.Popup.Pages;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -17,6 +11,23 @@ namespace MRzeszowiak.View
 		public CategorySelectPopup ()
 		{
 			InitializeComponent ();
+            if (BindingContext is CategorySelectViewModel model)
+                model.ScrollToTop = () =>
+                {
+                    foreach(var item in categoryListView.ItemsSource)
+                    {
+                        if (item != null)
+                            categoryListView.ScrollTo(item, 0, true);
+                        break;
+                    }
+
+                    foreach (var item in buttonListView.ItemsSource)
+                    {
+                        if (item != null)
+                            buttonListView.ScrollTo(item, 0, true);
+                        break;
+                    }
+                };
         }
 
         private void categoryListView_ItemTapped(object sender, ItemTappedEventArgs e)

@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MRzeszowiak.Services
@@ -123,7 +124,8 @@ namespace MRzeszowiak.Services
         protected void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string name = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-            SaveSettingAsync();
+            Thread saveThread = new Thread(SaveSetting);
+            saveThread.Start();
         }
 
         public void LoadSetting()
@@ -142,17 +144,29 @@ namespace MRzeszowiak.Services
             }
         }
 
-        public void SaveSettingAsync()
+        private volatile int _session;
+        private static readonly object SyncObject = new object();
+        public void SaveSetting()
         {
             if (!AutoSaveDB) return;
+            // prevent from to many save
+            Random rnd = new Random();
+            int localSession = rnd.Next(0,99999999);
+            _session = localSession;
+            Thread.Sleep(750);
+            if (_session != localSession) return;
+
             Debug.Write("SaveSetting");
-            using (var conn = new SQLite.SQLiteConnection(DbFullPath))
+            lock(SyncObject)
             {
-                conn.CreateTable<SettingRepository>();
-                if (conn.Table<SettingRepository>().Count() == 0)
-                    conn.Insert(this);
-                else
-                    conn.Update(this);
+                using (var conn = new SQLite.SQLiteConnection(DbFullPath))
+                {
+                    conn.CreateTable<SettingRepository>();
+                    if (conn.Table<SettingRepository>().Count() == 0)
+                        conn.Insert(this);
+                    else
+                        conn.Update(this);
+                }
             }
             Debug.WriteLine("SaveSetting: " + this.Id);
         }

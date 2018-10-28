@@ -40,6 +40,8 @@ namespace MRzeszowiak.ViewModel
             } 
         }
 
+        public Action ScrollToTop { get; set; }
+
         public CategorySelectViewModel(INavigationService navigationService, IRzeszowiak RzeszowiakRepository)
         {
             _rzeszowiakRepository = RzeszowiakRepository ?? throw new NullReferenceException("ListViewModel => IRzeszowiakRepository RzeszowiakRepository == null !");
@@ -71,6 +73,7 @@ namespace MRzeszowiak.ViewModel
                     await DisplayCategoryAsync(null);
                 }  
             }
+            ScrollToTop?.Invoke();
         }
         public void OnNavigatedTo(INavigationParameters parameters) { }
 

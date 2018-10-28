@@ -26,6 +26,8 @@ namespace MRzeszowiak.ViewModel
             }
         }
 
+        public string AppName { get => _setting.GetAppNameAndVersion; }
+
         public AboutViewModel(IPageDialogService pageDialog, ISetting setting)
         {
             _pageDialog = pageDialog ?? throw new NullReferenceException("IPageDialogService pageDialog == null !");

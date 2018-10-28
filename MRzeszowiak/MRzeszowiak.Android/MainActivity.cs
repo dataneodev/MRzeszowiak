@@ -24,7 +24,7 @@ namespace MRzeszowiak.Droid
             base.Window.RequestFeature(WindowFeatures.ActionBar);
             base.SetTheme(Resource.Style.MainTheme);
 
-            Forms.SetFlags("FastRenderers_Experimental");
+            //Forms.SetFlags("FastRenderers_Experimental");
 
             App.DisplayScreenWidth = (double)Resources.DisplayMetrics.WidthPixels / (double)Resources.DisplayMetrics.Density;
             App.DisplayScreenHeight = (double)Resources.DisplayMetrics.HeightPixels / (double)Resources.DisplayMetrics.Density;

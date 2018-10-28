@@ -29,14 +29,12 @@ namespace MRzeszowiak
         public static double DisplayScreenHeight = 0f;
         public static double DisplayScaleFactor = 0f;
 
-        public App(string dbpath) :base(null)
-        {
-            Setting.SetDBPath(dbpath);
-        }
-
         public App(string dbpath, IPlatformInitializer initializer = null) : base(initializer)
         {
             Setting.SetDBPath(dbpath);
+
+            var navigationParams = new NavigationParameters("LoadAtStartup=true");
+            NavigationService.NavigateAsync("MenuMasterDetail/MainNavigation/ListPage", navigationParams);
         }
 
         public App(IPlatformInitializer initializer, bool setFormsDependencyResolver)
@@ -47,15 +45,12 @@ namespace MRzeszowiak
             #if DEBUG
             LiveReload.Init();
             #endif
-
             InitializeComponent();
         }
 
         protected override void OnStart()
         {
             // Handle when your app starts
-            var navigationParams = new NavigationParameters("LoadAtStartup=true");
-            NavigationService.NavigateAsync("MenuMasterDetail/MainNavigation/ListPage", navigationParams);
         }
 
         protected override void OnSleep()
@@ -68,8 +63,6 @@ namespace MRzeszowiak
         {
             // Support IApplicationLifecycleAware
             base.OnResume();
-            var navigationParams = new NavigationParameters("LoadAtStartup=true");
-            NavigationService.NavigateAsync("MenuMasterDetail/MainNavigation/ListPage", navigationParams);
         }
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)

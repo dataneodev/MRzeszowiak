@@ -20,7 +20,7 @@ namespace MRzeszowiak.Model
         private ChildCategory selectedChildCategory;
         public ChildCategory SelectedChildCategory
         {
-            get { return selectedChildCategory != null ? selectedChildCategory : null; }
+            get { return selectedChildCategory; }
             set
             {   
             selectedChildCategory = null;
@@ -28,7 +28,7 @@ namespace MRzeszowiak.Model
                 foreach(var item in ChildCategory)
                     if(value.ID == item.ID)
                     {
-                        selectedChildCategory = value;
+                        selectedChildCategory = item;
                         break;
                     }        
             }

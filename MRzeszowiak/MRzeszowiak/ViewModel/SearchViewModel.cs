@@ -173,10 +173,10 @@ namespace MRzeszowiak.ViewModel
 
         async void CancelExecute()
         {
-            var advertSearch = new AdvertSearch()
-            {
-                CategorySearch = this.sendCategory,
-            };
+
+            var advertSearch = new AdvertSearch();
+            if (!SettingMode)
+                advertSearch.CategorySearch = this.sendCategory;
 
             var parameters = new NavigationParameters()
             {
