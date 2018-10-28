@@ -31,7 +31,8 @@ namespace MRzeszowiak.ViewModel
                 Debug.Write("SearchButtonTapped");
                 var parameters = new NavigationParameters()
                 {
-                    {"SearchRecord", Setting.AutostartAdvertSearch}
+                    {"SearchRecord", Setting.AutostartAdvertSearch},
+                    {"SettingMode", true}
                 };
                 _navigationService.NavigateAsync("SearchPopup", parameters);
             });
@@ -43,11 +44,7 @@ namespace MRzeszowiak.ViewModel
         {
             if (parameters.ContainsKey("SearchRecord"))
                 if (parameters["SearchRecord"] is AdvertSearch advertSearch)
-                {
-                    advertSearch.Id = Setting.AutostartAdvertSearch?.Id ?? 0;
-                    Setting.AutostartAdvertSearch = advertSearch;
-                }
-                    
+                    Setting.AutostartAdvertSearch = advertSearch;                    
         }
 
     }

@@ -1,5 +1,5 @@
-﻿using SQLite;
-using SQLiteNetExtensions.Attributes;
+﻿using Newtonsoft.Json;
+using SQLite;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,22 +9,16 @@ namespace MRzeszowiak.Model
 {
     public class AdvertSearch
     {
-        [PrimaryKey, AutoIncrement]
-        public int Id { get; set; }
         protected const string RZESZOWIAK_BASE_URL = "http://www.rzeszowiak.pl/";
         protected const sbyte RECORD_ON_PAGE = 25;
         public string SearchPattern { get; set; } = String.Empty; // not empty
-
-        [ForeignKey(typeof(Category)), Indexed]
-        public int CategoryId { get; set; }
-        [OneToOne(CascadeOperations = CascadeOperation.All)]
         public Category CategorySearch { get; set; } // null for all
         public AddType DateAdd { get; set; } = AddType.all;
         public SortType Sort { get; set; } = SortType.dateadd;
         public Nullable<int> PriceMin { get; set; }
         public Nullable<int> PriceMax { get; set; }
         public Nullable<int> RequestPage { get; set; }
-        [Ignore]
+        [JsonIgnore]
         public string GetURL
         {
             get

@@ -94,6 +94,18 @@ namespace MRzeszowiak.ViewModel
             }
         }
 
+        private bool settingMode = false;
+        public bool SettingMode
+        {
+            get { return settingMode; }
+            set
+            {
+                settingMode = value;
+                OnPropertyChanged();
+            }
+        }
+
+
         public ICommand ButtonCancelTappped { get; private set; }
         public ICommand ButtonSearchTappped { get; private set; }
         public ICommand ButtonCategorySelectTappped { get; private set; }
@@ -116,16 +128,15 @@ namespace MRzeszowiak.ViewModel
         }
 
         public void OnNavigatedFrom(INavigationParameters parameters) { }
-        public void OnNavigatingTo(INavigationParameters parameters) { }
-        public void OnNavigatedTo(INavigationParameters parameters)
+        public void OnNavigatedTo(INavigationParameters parameters) { }
+        public void OnNavigatingTo(INavigationParameters parameters)
         {
             if (parameters.ContainsKey("SelectedCategory"))
                 SelectedCategory = parameters["SelectedCategory"] as Category;
 
             if (parameters.ContainsKey("SearchRecord"))
             {
-                var reciveSearchRecord = parameters["SearchRecord"] as AdvertSearch;
-                if (reciveSearchRecord == null)
+                if (!(parameters["SearchRecord"] is AdvertSearch reciveSearchRecord))
                     reciveSearchRecord = new AdvertSearch();
                 this.SearchPattern = reciveSearchRecord.SearchPattern;
                 this.SelectedCategory = reciveSearchRecord.CategorySearch;
@@ -135,6 +146,10 @@ namespace MRzeszowiak.ViewModel
                 this.PriceMin = reciveSearchRecord.PriceMin ?? 0;
                 this.PriceMax = reciveSearchRecord.PriceMax ?? 0;
             }
+
+            if (parameters.ContainsKey("SettingMode"))
+                if (parameters["SettingMode"] is bool SettingM)
+                    SettingMode = SettingM;
         }    
         
         async void SearchExecute()

@@ -69,8 +69,20 @@
                    IsEnabled="{Binding Source={x:Reference SearchPagePopup}, Path=BindingContext.SelectedCategory, Converter={StaticResource CategoryToActiveControls}}"/>
         </StackLayout>
         <!--Row 6-->
-        <Button  Grid.Column="0" Grid.Row="5" Text="Wyczyść"  Margin="5" Command="{Binding ButtonCancelTappped}"/>
+        <Button  Grid.Column="0" Grid.Row="5" Text="Wyczyść"  Margin="5" Command="{Binding ButtonCancelTappped}">
+            <Button.Triggers>
+                <DataTrigger TargetType="Button" Binding="{Binding SettingMode}" Value="True">
+                    <Setter Property="Text" Value="Domyślny"/>
+                </DataTrigger>
+            </Button.Triggers>
+        </Button>
         <Button  Grid.Column="1" Grid.Row="5" Text="Wyszukaj" Margin="5" 
-                 Command="{Binding ButtonSearchTappped}" HorizontalOptions="FillAndExpand"/>
+                 Command="{Binding ButtonSearchTappped}" HorizontalOptions="FillAndExpand">
+            <Button.Triggers>
+                <DataTrigger TargetType="Button" Binding="{Binding SettingMode}" Value="True">
+                    <Setter Property="Text" Value="Zatwierdź"/>
+                </DataTrigger>
+            </Button.Triggers>
+        </Button>
     </Grid>
 </pages:PopupPage>

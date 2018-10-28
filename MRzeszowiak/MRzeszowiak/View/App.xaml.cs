@@ -8,6 +8,7 @@ using Prism.Navigation;
 using Prism.Plugin.Popups;
 using Prism.Unity;
 using System;
+using System.Diagnostics;
 using Unity.Lifetime;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -41,21 +42,20 @@ namespace MRzeszowiak
         public App(IPlatformInitializer initializer, bool setFormsDependencyResolver)
             : base(initializer, setFormsDependencyResolver){ }
 
-        protected override async void OnInitialized()
+        protected override void OnInitialized()
         {
             #if DEBUG
             LiveReload.Init();
             #endif
 
             InitializeComponent();
-
-            var navigationParams = new NavigationParameters("LoadAtStartup=true");
-            await NavigationService.NavigateAsync("MenuMasterDetail/MainNavigation/ListPage", navigationParams);
         }
 
         protected override void OnStart()
         {
             // Handle when your app starts
+            var navigationParams = new NavigationParameters("LoadAtStartup=true");
+            NavigationService.NavigateAsync("MenuMasterDetail/MainNavigation/ListPage", navigationParams);
         }
 
         protected override void OnSleep()
@@ -68,6 +68,8 @@ namespace MRzeszowiak
         {
             // Support IApplicationLifecycleAware
             base.OnResume();
+            var navigationParams = new NavigationParameters("LoadAtStartup=true");
+            NavigationService.NavigateAsync("MenuMasterDetail/MainNavigation/ListPage", navigationParams);
         }
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)

@@ -1,5 +1,4 @@
-﻿using SQLite;
-using SQLiteNetExtensions.Attributes;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,8 +7,6 @@ namespace MRzeszowiak.Model
 {
     public class MasterCategory
     {
-        [PrimaryKey, AutoIncrement]
-        public int IdDB { get; set; }
         public short Id { get; set; }
         public string Title { get; set; }
         public short Views { get; set; }
@@ -17,27 +14,26 @@ namespace MRzeszowiak.Model
 
     public class Category : MasterCategory
     {
-        [ForeignKey(typeof(MasterCategory)), Indexed]
-        public int MasterCategoryId { get; set; }
-        [OneToOne(CascadeOperations = CascadeOperation.All)]
         public MasterCategory Master { get; set; } 
         public string GETPath { get; set; } //ex. Dla-domu-Meble-281 or 
-        [OneToMany]
         public List<ChildCategory> ChildCategory { get; set; }
         private ChildCategory selectedChildCategory;
-        [ManyToOne]
         public ChildCategory SelectedChildCategory
         {
-            get { return ((selectedChildCategory != null) && (ChildCategory.IndexOf(selectedChildCategory) != -1)) ? selectedChildCategory : null; }
+            get { return selectedChildCategory != null ? selectedChildCategory : null; }
             set
-            {
-                if (value != null && ChildCategory.IndexOf(value) != -1)
-                    selectedChildCategory = value;
-                else
-                    selectedChildCategory = null;
+            {   
+            selectedChildCategory = null;
+            if (value != null)
+                foreach(var item in ChildCategory)
+                    if(value.ID == item.ID)
+                    {
+                        selectedChildCategory = value;
+                        break;
+                    }        
             }
         }
-        [Ignore]
+        [JsonIgnore]
         public string GetFullTitle
         { get
             {
@@ -46,7 +42,7 @@ namespace MRzeszowiak.Model
                 return result;
             }
         }
-        [Ignore]
+        [JsonIgnore]
         public static string TitleForNull
         {
             get { return "Wszystkie kategorie"; }
@@ -56,12 +52,10 @@ namespace MRzeszowiak.Model
 
     public class ChildCategory
     {
-        [PrimaryKey, AutoIncrement]
-        public int Id { get; set; }
         public string ID { get; set; }
         public string Title { get; set; }
         public short Views { get; set; }
-        [Ignore]
+        [JsonIgnore]
         public Category ParentCategory { get; set; }
     }
 

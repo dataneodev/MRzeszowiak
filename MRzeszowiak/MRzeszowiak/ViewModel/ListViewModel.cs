@@ -19,6 +19,7 @@ namespace MRzeszowiak.ViewModel
         protected readonly IRzeszowiak _rzeszowiakRepository;
         protected readonly INavigationService _navigationService;
         protected readonly IPageDialogService _pageDialog;
+        protected readonly ISetting _setting;
 
         public bool ActivityListView => !Activity && !ErrorPanelVisible ? true : false;
 
@@ -98,9 +99,11 @@ namespace MRzeszowiak.ViewModel
         protected AdvertSearchResult _lastAdvertSearchResult;
         protected AdvertSearch _lastAdvertSearch;
 
-        public ListViewModel(INavigationService navigationService, IPageDialogService pageDialog, IRzeszowiak RzeszowiakRepository)
+        public ListViewModel(INavigationService navigationService, IPageDialogService pageDialog, 
+            IRzeszowiak RzeszowiakRepository, ISetting setting)
         {
             Debug.Write("ListViewModel Contructor");
+            _setting = setting ?? throw new NullReferenceException("ISetting setting == null !");
             _rzeszowiakRepository = RzeszowiakRepository ?? throw new NullReferenceException("ListViewModel => IRzeszowiakRepository RzeszowiakRepository == null !");
             _navigationService = navigationService ?? throw new NullReferenceException("INavigationService navigationService == null !");
             _pageDialog = pageDialog ?? throw new NullReferenceException("IPageDialogService pageDialog == null !");
@@ -130,18 +133,23 @@ namespace MRzeszowiak.ViewModel
         public void OnNavigatingTo(INavigationParameters parameters) { }
         public async void OnNavigatedTo(INavigationParameters parameters)
         {
+            if (parameters.ContainsKey("LoadAtStartup"))
+                await LoadLastOnStartup();
+
             if (parameters.ContainsKey("SelectedCategory"))
                 await CategoryUserSelectCallbackAsync((Category)parameters["SelectedCategory"]);
-
-            if (parameters.ContainsKey("LoadAtStartup"))
-                    await LoadLastOnStartup();
 
             if (parameters.ContainsKey("SearchRecord"))
                 if (parameters["SearchRecord"] is AdvertSearch advertSearch)
                     await SearchRecordCallbackAsync(advertSearch);
         }
 
-        public async Task CategoryUserSelectCallbackAsync(Category selCategory)
+        protected async Task LoadLastOnStartup()
+        {
+            await SearchExecute(_setting.AutostartAdvertSearch, false);
+        }
+
+        protected async Task CategoryUserSelectCallbackAsync(Category selCategory)
         {
             Debug.Write("CategoryUserSelectCallbackAsync");
             if (_lastAdvertSearch == null)
@@ -150,18 +158,10 @@ namespace MRzeszowiak.ViewModel
             await SearchExecute(_lastAdvertSearch, false);
         }
 
-        public async Task SearchRecordCallbackAsync(AdvertSearch advertSearch)
+        protected async Task SearchRecordCallbackAsync(AdvertSearch advertSearch)
         {
             Debug.Write("SearchRecordCallbackAsync");
             await SearchExecute(advertSearch, false);
-        }
-
-        protected async Task LoadLastOnStartup()
-        {
-            if (_lastAdvertSearch != null)
-                await SearchExecute(_lastAdvertSearch, false);
-            else
-                await SearchExecute(new AdvertSearch(), false);
         }
 
         protected async void LoadNextItem()

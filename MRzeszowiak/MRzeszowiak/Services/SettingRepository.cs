@@ -1,19 +1,20 @@
 ﻿using MRzeszowiak.Model;
 using Newtonsoft.Json;
 using SQLite;
-using SQLiteNetExtensions;
-using SQLiteNetExtensions.Attributes;
-using SQLiteNetExtensions.Extensions;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace MRzeszowiak.Services
 {
     public class SettingRepository : ISetting, INotifyPropertyChanged
     {
+        [PrimaryKey, AutoIncrement]
+        public int Id { get; set; }
+
         private string _dbPath;
         private const string dbName = "mrzeszowiak.db";
         private string DbFullPath { get => Path.Combine(_dbPath, dbName); }
@@ -31,8 +32,6 @@ namespace MRzeszowiak.Services
         public string GetRzeszowiakBaseURL { get => "http://rzeszowiak.pl";  }
         [Ignore]
         public string GetProjectBaseURL { get => "https://sites.google.com/site/dataneosoftware/polski/mrzeszowiak"; }
-        [PrimaryKey, AutoIncrement]
-        public int Id { get; set;}
 
         private string userEmail;
         public string UserEmail
@@ -67,11 +66,8 @@ namespace MRzeszowiak.Services
             }
         }
 
-        [ForeignKey(typeof(AdvertSearch)), Indexed]
-        public int AdvertSearchId { get; set; }
-
         private AdvertSearch autostartAdvertSearch = new AdvertSearch();
-        [OneToOne(CascadeOperations = CascadeOperation.All)]
+        [Ignore]
         public AdvertSearch AutostartAdvertSearch
         {
             get { return autostartAdvertSearch; }
@@ -81,6 +77,27 @@ namespace MRzeszowiak.Services
                 OnPropertyChanged();
             }
         }   
+
+        public string AutostartAdvertSearchSerialized
+        {
+            get => JsonConvert.SerializeObject(AutostartAdvertSearch);
+            set
+            {
+                var settings = new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                    MissingMemberHandling = MissingMemberHandling.Ignore
+                };
+                try
+                {
+                    AutostartAdvertSearch = JsonConvert.DeserializeObject<AdvertSearch>(value);
+                }
+                catch (System.Exception e)
+                {
+                    Debug.Write("AutostartAdvertSearchSerialized error => " + e.Message);
+                }
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -99,55 +116,45 @@ namespace MRzeszowiak.Services
             _dbPath = dbPath;
             if (_dbPath?.Length > 0)
             {
-                LoadSettingAsync();
-                OnPropertyChanged("AutostartAdvertSearch");
+                LoadSetting();
             }    
         }
 
         protected void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string name = "")
         {
-            SaveSetting();
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+            SaveSettingAsync();
         }
 
-        public void LoadSettingAsync()
+        public void LoadSetting()
         {
             Debug.Write("LoadSettingAsync");
             using (var conn = new SQLite.SQLiteConnection(DbFullPath))
             {
                 conn.CreateTable<SettingRepository>();
-                conn.CreateTable<AdvertSearch>();
+                if (conn.Table<SettingRepository>().Count() == 0)
+                    return;
 
-                if (conn.Table<SettingRepository>().Count() == 0) return;
-
-                var res = conn.GetWithChildren<SettingRepository>(1, true);
+                var res = conn.Get<SettingRepository>(1);
                 foreach (PropertyInfo property in typeof(SettingRepository).GetProperties())
                     if (property.CanWrite)
                         property.SetValue(this, property.GetValue(res, null), null);
             }
         }
 
-        public void SaveSetting()
+        public void SaveSettingAsync()
         {
-            if (!AutoSaveDB) return; 
+            if (!AutoSaveDB) return;
             Debug.Write("SaveSetting");
             using (var conn = new SQLite.SQLiteConnection(DbFullPath))
             {
                 conn.CreateTable<SettingRepository>();
-                conn.CreateTable<AdvertSearch>();
-                //conn.CreateTable<Category>();
-                //conn.CreateTable<MasterCategory>();
-                //conn.CreateTable<ChildCategory>();
-
                 if (conn.Table<SettingRepository>().Count() == 0)
-                    conn.InsertWithChildren(this, true);
+                    conn.Insert(this);
                 else
-                    conn.InsertOrReplaceWithChildren(this, true);
-
-                Debug.WriteLine("SaveSetting: " + this.Id);
-                Debug.WriteLine("SaveSetting.AdvertSearchId: " + this.AdvertSearchId);
-                Debug.WriteLine("SaveSetting.AutostartAdvertSearch.Id: " + this.AutostartAdvertSearch.Id);
+                    conn.Update(this);
             }
+            Debug.WriteLine("SaveSetting: " + this.Id);
         }
     }
 }
