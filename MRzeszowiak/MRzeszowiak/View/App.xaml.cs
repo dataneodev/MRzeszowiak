@@ -18,7 +18,7 @@ namespace MRzeszowiak
 {
 	public partial class App : PrismApplication
     {
-        public static ISetting Setting { get; private set; } = new SettingRepository();
+        public static ISetting Setting { get; private set; } = new SettingRepository(false);
 
         public static string RzeszowiakURL = "http://www.rzeszowiak.pl";
         public static Color highlightRow = Color.FromHex("#f4f4f4");

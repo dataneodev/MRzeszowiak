@@ -16,7 +16,6 @@ namespace MRzeszowiak.Services
     {
         protected const string RZESZOWIAK_BASE_URL = "http://www.rzeszowiak.pl/";
 
-
         protected static List<MasterCategory> masterCategoryList = new List<MasterCategory>{
             new MasterCategory { Id = 12, Title = "Dla domu" },
             new MasterCategory { Id = 26, Title = "Dla dzieci" },

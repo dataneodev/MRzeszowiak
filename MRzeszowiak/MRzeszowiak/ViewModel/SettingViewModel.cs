@@ -24,7 +24,6 @@ namespace MRzeszowiak.ViewModel
             Debug.Write("SettingViewModel Contructor");
             _navigationService = navigationService ?? throw new NullReferenceException("INavigationService navigationService == null !");
             Setting = setting ?? throw new NullReferenceException("ISetting setting == null !");
-            Setting.AutoSaveDB = true;
 
             SearchButtonTapped = new Command(() =>
             {
@@ -44,7 +43,8 @@ namespace MRzeszowiak.ViewModel
         {
             if (parameters.ContainsKey("SearchRecord"))
                 if (parameters["SearchRecord"] is AdvertSearch advertSearch)
-                    Setting.AutostartAdvertSearch = advertSearch;                    
+                    Setting.AutostartAdvertSearch = advertSearch;
+            Setting.AutoSaveDB = true;
         }
 
     }

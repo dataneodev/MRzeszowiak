@@ -226,13 +226,13 @@ namespace MRzeszowiak.ViewModel
 
                 var categoryList = await _rzeszowiakRepository.GetCategoryListAsync();
                 foreach (var category in categoryList)
-                    if (master.Id == category.Master.Id)
+                    if (master == category.Master)
                     {
                         var catDisplay = new CatDisplay
                             {
                                 Title = category.Title,
                                 Views = category.Views,
-                                Image = ((LastSelectedCategory?.Id ?? 0) == category.Id) && (category.SelectedChildCategory == null)
+                                Image = (LastSelectedCategory == category) && (category.SelectedChildCategory == null)
                                         && ((category.ChildCategory?.Count ?? 0) == 0) ? CatSelectImage.selected :
                                         ((category.ChildCategory?.Count ?? 0) > 0 ? CatSelectImage.arrowDeeper : CatSelectImage.none),
                                 CategoryObj = category,
@@ -261,7 +261,7 @@ namespace MRzeszowiak.ViewModel
                 {
                     Title = $"Wszystkie w {category.Title}",
                     Views = category.Views,
-                    Image = ((LastSelectedCategory?.Id ?? 0) == category.Id) && (LastSelectedCategory?.SelectedChildCategory == null) ?
+                    Image = ((LastSelectedCategory) == category) && (LastSelectedCategory?.SelectedChildCategory == null) ?
                             CatSelectImage.selected : CatSelectImage.none,
                     CategoryObj = category,
                 };
@@ -280,8 +280,8 @@ namespace MRzeszowiak.ViewModel
                         {
                             Title = child.Title,
                             Views = child.Views,           
-                            Image = ((LastSelectedCategory?.Id ?? 0) == category.Id &&
-                                    (LastSelectedCategory?.SelectedChildCategory?.ID ?? String.Empty) == child.ID) ? 
+                            Image = (LastSelectedCategory == category &&
+                                    LastSelectedCategory?.SelectedChildCategory == child) ? 
                                     CatSelectImage.selected : CatSelectImage.none,
                             CategoryObj = child, 
                         };

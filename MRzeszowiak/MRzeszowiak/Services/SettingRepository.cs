@@ -13,12 +13,13 @@ namespace MRzeszowiak.Services
 {
     public class SettingRepository : ISetting, INotifyPropertyChanged
     {
+        private bool _rawObj;
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
         private string _dbPath;
         private const string dbName = "mrzeszowiak.db";
-        private string DbFullPath { get => Path.Combine(_dbPath, dbName); }
+        private string DbFullPath { get => Path.Combine(_dbPath ?? String.Empty, dbName); }
         [Ignore]
         public bool AutoSaveDB { get; set; } = false;
         [Ignore]
@@ -102,6 +103,15 @@ namespace MRzeszowiak.Services
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public SettingRepository()
+        {
+            _rawObj = true;
+        }
+        public SettingRepository(bool RawObj)
+        {
+            _rawObj = RawObj;
+        }
+
         public bool CanSendMail(Advert advert)
         {
             return true;
@@ -123,13 +133,17 @@ namespace MRzeszowiak.Services
 
         protected void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string name = "")
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-            Thread saveThread = new Thread(SaveSetting);
-            saveThread.Start();
+            if (!_rawObj)
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+                Thread saveThread = new Thread(SaveSetting);
+                saveThread.Start();
+            }
         }
 
         public void LoadSetting()
         {
+            if (_rawObj) return;
             Debug.Write("LoadSettingAsync");
             using (var conn = new SQLite.SQLiteConnection(DbFullPath))
             {
@@ -148,7 +162,7 @@ namespace MRzeszowiak.Services
         private static readonly object SyncObject = new object();
         public void SaveSetting()
         {
-            if (!AutoSaveDB) return;
+            if (!AutoSaveDB || _rawObj) return;
             // prevent from to many save
             Random rnd = new Random();
             int localSession = rnd.Next(0,99999999);
@@ -159,13 +173,18 @@ namespace MRzeszowiak.Services
             Debug.Write("SaveSetting");
             lock(SyncObject)
             {
+                var res = new SettingRepository();
+                foreach (PropertyInfo property in typeof(SettingRepository).GetProperties())
+                    if (property.CanWrite)
+                        property.SetValue(res, property.GetValue(this, null), null);
+
                 using (var conn = new SQLite.SQLiteConnection(DbFullPath))
                 {
                     conn.CreateTable<SettingRepository>();
                     if (conn.Table<SettingRepository>().Count() == 0)
-                        conn.Insert(this);
+                        conn.Insert(res);
                     else
-                        conn.Update(this);
+                        conn.Update(res);
                 }
             }
             Debug.WriteLine("SaveSetting: " + this.Id);

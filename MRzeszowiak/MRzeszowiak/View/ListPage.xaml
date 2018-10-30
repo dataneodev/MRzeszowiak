@@ -51,7 +51,6 @@
                         x:Name="CategorySelectButton"   
                         Command="{Binding CategorySelectButtonTaped}"
                         IsEnabled="{Binding Activity, Converter={StaticResource NegativeBool}}"
-                        Margin="0"
                         Style="{StaticResource backGroundColor}"/>
                 <Button  Grid.Column="2" 
                          Grid.Row="0"
