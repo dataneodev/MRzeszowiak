@@ -7,6 +7,7 @@ using System.Text;
 
 namespace MRzeszowiak.Model
 {
+    [Serializable]
     public class AdvertSearch
     {
         protected const string RZESZOWIAK_BASE_URL = "http://www.rzeszowiak.pl/";
@@ -61,7 +62,7 @@ namespace MRzeszowiak.Model
                 Debug.Write($"AdvertSearch => GetURL => {urlRequest}");
                 return urlRequest;
             }
-        }   
+        }
     }
 
     public enum AddType

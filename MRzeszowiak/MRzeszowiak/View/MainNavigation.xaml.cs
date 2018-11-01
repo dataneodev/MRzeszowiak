@@ -1,4 +1,5 @@
-﻿using Prism.Navigation;
+﻿using MRzeszowiak.Extends;
+using Prism.Navigation;
 using System;
 using System.Collections.Generic;
 using System.Linq;

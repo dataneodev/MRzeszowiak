@@ -1,5 +1,6 @@
 ﻿using MRzeszowiak.Model;
 using MRzeszowiak.Services;
+using MRzeszowiak.Extends;
 using Prism.Navigation;
 using Prism.Services;
 using System;
@@ -18,7 +19,6 @@ namespace MRzeszowiak.ViewModel
         public ISetting Setting { get; private set; }
         public ICommand SearchButtonTapped { get; set; }
 
-
         public SettingViewModel(INavigationService navigationService, ISetting setting)
         {
             Debug.Write("SettingViewModel Contructor");
@@ -30,7 +30,7 @@ namespace MRzeszowiak.ViewModel
                 Debug.Write("SearchButtonTapped");
                 var parameters = new NavigationParameters()
                 {
-                    {"SearchRecord", Setting.AutostartAdvertSearch},
+                    {"SearchRecord", Setting.AutostartAdvertSearch.CloneObjectSerializable<AdvertSearch>()},
                     {"SettingMode", true}
                 };
                 _navigationService.NavigateAsync("SearchPopup", parameters);

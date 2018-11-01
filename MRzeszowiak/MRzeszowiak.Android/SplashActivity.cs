@@ -12,7 +12,7 @@ using Android.Widget;
 
 namespace MRzeszowiak.Droid
 {
-    [Activity(Label = "MRzeszowiakSplashScreen",
+    [Activity(Label = "MRzeszowiak",
         Theme = "@style/splashscreen",
         MainLauncher = true,
         NoHistory = true)]

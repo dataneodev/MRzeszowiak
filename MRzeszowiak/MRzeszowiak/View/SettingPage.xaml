@@ -12,9 +12,9 @@
     </ContentPage.Resources>
     <ContentPage.Content>
         <TableView Intent="Settings" 
-                       HasUnevenRows="True" 
-                       x:Name="tableSetting"
-                       BindingContext="{Binding Setting}">
+                    HasUnevenRows="True" 
+                    x:Name="tableSetting"
+                    BindingContext="{Binding Setting}">
             <TableRoot>
                 <TableSection>
                     <ViewCell>
@@ -29,7 +29,7 @@
                 <TableSection>
                     <ViewCell>
                         <StackLayout Orientation="Vertical" Margin="15,10,5,10">
-                            <Label Text="Filtr wyszukiwania listy ogłoszeń podczas startu programu:"/>
+                            <Label Text="Filtr wyszukiwania listy ogłoszeń podczas startu aplikacji:"/>
                             <Button Text="{Binding AutostartAdvertSearch.CategorySearch, Converter={StaticResource CategoryToString}}"
                                      Command="{Binding Path=BindingContext.SearchButtonTapped, Source={x:Reference SettingContent}}"/>
                         </StackLayout>

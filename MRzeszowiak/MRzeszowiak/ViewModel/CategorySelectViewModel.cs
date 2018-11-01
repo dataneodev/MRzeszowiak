@@ -163,6 +163,7 @@ namespace MRzeszowiak.ViewModel
         protected async Task Select(CatDisplay catDisplay, Category selCategory, ChildCategory childCategory = null)
         {
             Debug.Write("Select " + catDisplay?.Title ?? "null");
+            if(selCategory == null) Debug.Write("Category is null");
             if (lastSelect != null)
                 lastSelect.Image = lastImageState;
             lastSelect = catDisplay;

@@ -25,11 +25,11 @@ namespace MRzeszowiak.Services
         [Ignore]
         public string UpdateServerUrl { get => "https://script.google.com/macros/s/AKfycbxx_fFWPUjtiwBU9uFcVKhvXFLa8SjfoHZbM7DmSD_WaWmArTu1/exec"; }
         [Ignore]
-        public string GetAppName { get => "MRzeszowiak"; }
+        public string GetAppName { get => App.GetAppName; }
         [Ignore]
-        public string GetAppNameAndVersion { get => GetAppName + " " + GetAppVersion.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture); }
+        public string GetAppNameAndVersion { get => App.GetAppNameAndVersion; }
         [Ignore]
-        public float GetAppVersion { get => 1.0f; }
+        public float GetAppVersion { get => App.GetAppVersion; }
         [Ignore]
         public string GetRzeszowiakBaseURL { get => "http://rzeszowiak.pl";  }
         [Ignore]
@@ -51,6 +51,7 @@ namespace MRzeszowiak.Services
         {
             get
             {
+                if ((UserEmail?.Length??0) == 0) return false;
                 const string pattern = @"^(?!\.)(""([^""\r\\]|\\[""\r\\])*""|" + @"([-a-z0-9!#$%&'*+/=?^_`{|}~]|(?<!\.)\.)*)(?<!\.)" + @"@[a-z0-9][\w\.-]*[a-z0-9]\.[a-z][a-z\.]*[a-z]$";
                 var regex = new System.Text.RegularExpressions.Regex(pattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
                 return regex.IsMatch(UserEmail);
@@ -78,7 +79,7 @@ namespace MRzeszowiak.Services
                 autostartAdvertSearch = value;
                 OnPropertyChanged();
             }
-        }   
+        }
 
         public string AutostartAdvertSearchSerialized
         {
@@ -126,9 +127,7 @@ namespace MRzeszowiak.Services
         {
             _dbPath = dbPath;
             if (_dbPath?.Length > 0)
-            {
-                LoadSetting();
-            }    
+                LoadSetting();   
         }
 
         protected void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string name = "")
@@ -155,6 +154,9 @@ namespace MRzeszowiak.Services
                 foreach (PropertyInfo property in typeof(SettingRepository).GetProperties())
                     if (property.CanWrite)
                         property.SetValue(this, property.GetValue(res, null), null);
+                if(this.AutostartAdvertSearch?.CategorySearch?.ChildCategory != null)
+                    foreach (var child in this.AutostartAdvertSearch?.CategorySearch?.ChildCategory) 
+                        child.ParentCategory = this.AutostartAdvertSearch?.CategorySearch;
             }
         }
 
@@ -164,6 +166,7 @@ namespace MRzeszowiak.Services
         {
             if (!AutoSaveDB || _rawObj) return;
             // prevent from to many save
+
             Random rnd = new Random();
             int localSession = rnd.Next(0,99999999);
             _session = localSession;
@@ -173,18 +176,15 @@ namespace MRzeszowiak.Services
             Debug.Write("SaveSetting");
             lock(SyncObject)
             {
-                var res = new SettingRepository();
-                foreach (PropertyInfo property in typeof(SettingRepository).GetProperties())
-                    if (property.CanWrite)
-                        property.SetValue(res, property.GetValue(this, null), null);
-
                 using (var conn = new SQLite.SQLiteConnection(DbFullPath))
                 {
+                    _rawObj = true;
                     conn.CreateTable<SettingRepository>();
                     if (conn.Table<SettingRepository>().Count() == 0)
-                        conn.Insert(res);
+                        conn.Insert(this);
                     else
-                        conn.Update(res);
+                        conn.Update(this);
+                    _rawObj = false;
                 }
             }
             Debug.WriteLine("SaveSetting: " + this.Id);

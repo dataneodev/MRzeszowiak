@@ -4,6 +4,7 @@ using MRzeszowiak.View;
 using MRzeszowiak.ViewModel;
 using Prism;
 using Prism.Ioc;
+using Prism.Mvvm;
 using Prism.Navigation;
 using Prism.Plugin.Popups;
 using Prism.Unity;
@@ -21,6 +22,10 @@ namespace MRzeszowiak
         public static ISetting Setting { get; private set; } = new SettingRepository(false);
 
         public static string RzeszowiakURL = "http://www.rzeszowiak.pl";
+        public static string GetAppName = "MRzeszowiak";
+        public static float GetAppVersion = 1.0f;
+        public static string GetAppNameAndVersion = GetAppName + " " + GetAppVersion.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture);
+
         public static Color highlightRow = Color.FromHex("#f4f4f4");
         public static Color normalRow = Color.FromHex("#FFFFFF0");
         public static Color highlightPremiumRow = Color.FromHex("#fcd890");
@@ -28,6 +33,8 @@ namespace MRzeszowiak
         public static double DisplayScreenWidth = 0f;
         public static double DisplayScreenHeight = 0f;
         public static double DisplayScaleFactor = 0f;
+
+        
 
         public App(string dbpath, IPlatformInitializer initializer = null) : base(initializer)
         {
@@ -72,7 +79,8 @@ namespace MRzeszowiak
             containerRegistry.RegisterInstance<ISetting>(App.Setting);
             containerRegistry.Register<IRzeszowiak, RzeszowiakRepository>();
             containerRegistry.Register<IRzeszowiakImageContainer, RzeszowiakImageContainer>();
-
+            //containerRegistry.RegisterSingleton<ListViewModel, ListViewModel>();
+ 
             containerRegistry.RegisterForNavigation<MainNavigation>();
             containerRegistry.RegisterForNavigation<MenuMasterDetail, MenuMasterDetailViewModel>();
             containerRegistry.RegisterForNavigation<ListPage, ListViewModel>();
@@ -90,7 +98,7 @@ namespace MRzeszowiak
         protected override void ConfigureViewModelLocator()
         {
             base.ConfigureViewModelLocator();
-            Prism.Mvvm.ViewModelLocationProvider.SetDefaultViewModelFactory((type) => { return Container.Resolve(type); });
+            //ViewModelLocationProvider.SetDefaultViewModelFactory((type) => { return Container.Resolve(type); });
         }
     }
 }

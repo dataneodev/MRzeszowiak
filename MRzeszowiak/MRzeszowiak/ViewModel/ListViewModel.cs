@@ -1,5 +1,6 @@
 ﻿using MRzeszowiak.Model;
 using MRzeszowiak.Services;
+using MRzeszowiak.Extends;
 using Prism.Navigation;
 using Prism.Services;
 using System;
@@ -7,6 +8,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
@@ -146,7 +148,8 @@ namespace MRzeszowiak.ViewModel
 
         protected async Task LoadLastOnStartup()
         {
-            await SearchExecute(_setting.AutostartAdvertSearch, false);
+            var newadvert = _setting?.AutostartAdvertSearch?.CloneObjectSerializable <AdvertSearch>();
+            await SearchExecute(newadvert, false);
         }
 
         protected async Task CategoryUserSelectCallbackAsync(Category selCategory)

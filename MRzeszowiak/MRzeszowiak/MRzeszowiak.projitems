@@ -13,7 +13,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Behaviors\InfiniteScrolling.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extends\CloneObjectSerializable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\CustomEditor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extends\NoAnimationNavigationPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\WebPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\ImageFit.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\MultiLineLabel.cs" />

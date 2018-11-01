@@ -5,6 +5,7 @@ using System.Text;
 
 namespace MRzeszowiak.Model
 {
+    [Serializable]
     public class MasterCategory
     {
         public short Id { get; set; }
@@ -14,7 +15,7 @@ namespace MRzeszowiak.Model
         {
             if (ReferenceEquals(other, null)) return false;
             if (ReferenceEquals(other, this)) return true;
-            return Id == other.Id;
+            return Id == ((other?.Id)??0);
         }
         public override bool Equals(object obj)
         {
@@ -35,7 +36,7 @@ namespace MRzeszowiak.Model
             return !Equals(left, right);
         }
     }
-
+    [Serializable]
     public class Category : MasterCategory
     {
         public MasterCategory Master { get; set; } 
@@ -61,7 +62,7 @@ namespace MRzeszowiak.Model
         public string GetFullTitle
         { get
             {
-                string result = (Master != null) ? Master.Title + " - " + Title : Title;
+                string result = (Master != null) ? Master?.Title + " - " + Title : Title;
                 result += (SelectedChildCategory != null) ? " - " + SelectedChildCategory.Title : String.Empty;
                 return result;
             }
@@ -76,7 +77,7 @@ namespace MRzeszowiak.Model
         {
             if (ReferenceEquals(other, null)) return false;
             if (ReferenceEquals(other, this)) return true;
-            return string.Equals(GETPath, other.GETPath);
+            return string.Equals(GETPath, other?.GETPath);
         }
         public override bool Equals(object obj)
         {
@@ -97,7 +98,7 @@ namespace MRzeszowiak.Model
             return !Equals(left, right);
         }
     }
-
+    [Serializable]
     public class ChildCategory
     {
         public string ID { get; set; }
@@ -110,7 +111,7 @@ namespace MRzeszowiak.Model
         {
             if (ReferenceEquals(other, null)) return false;
             if (ReferenceEquals(other, this)) return true;
-            return string.Equals(ID, other.ID);
+            return string.Equals(ID, other?.ID);
         }
         public override bool Equals(object obj)
         {
