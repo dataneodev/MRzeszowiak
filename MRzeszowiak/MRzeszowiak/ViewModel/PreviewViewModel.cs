@@ -19,21 +19,8 @@ namespace MRzeszowiak.ViewModel
         protected readonly IRzeszowiakImageContainer _imageContainer;
         protected readonly INavigationService _navigationService;
         protected readonly IPageDialogService _pageDialog;
+        protected readonly IDependencyService _dependencyService;
         protected readonly ISetting _setting;
-
-        public bool ActivityForm => !Activity && !ErrorPanelVisible ? true : false;
-
-        private bool activity = true;
-        public bool Activity
-        {
-            get { return activity; }
-            set
-            {
-                activity = value;
-                OnPropertyChanged();
-                OnPropertyChanged("ActivityForm");
-            }
-        }
 
         private int adverIDinRzeszowiak;
         public int AdverIDinRzeszowiak
@@ -150,6 +137,20 @@ namespace MRzeszowiak.ViewModel
             }
         }
 
+        public bool ActivityForm => !Activity && !ErrorPanelVisible ? true : false;
+
+        private bool activity = true;
+        public bool Activity
+        {
+            get { return activity; }
+            set
+            {
+                activity = value;
+                OnPropertyChanged();
+                OnPropertyChanged("ActivityForm");
+            }
+        }
+
         private string errorMessage = String.Empty;
         public string ErrorMessage
         {
@@ -178,9 +179,10 @@ namespace MRzeszowiak.ViewModel
         public ObservableCollection<KeyValue> AdditionalData { get; set; } = new ObservableCollection<KeyValue>();
         public bool AddDataVisible => (AdditionalData?.Count ?? 0) > 0 ? true : false;
         public ObservableCollection<string> ImageURLsList { get; set; } = new ObservableCollection<string>();
-        public bool ImageVisible => (ImageURLsList?.Count ?? 0) > 0 ? true : false;
+        public bool ImageVisible => ((ImageURLsList?.Count ?? 0) > 0 && ActivityForm) ? true : false;
         public Action ScrollToButtom;
 
+        private AdvertShort _lastAdvertShort;
         private Advert _lastAdvert;
         public ICommand OpenAdvertPage { get; private set; }
         public ICommand RefreshAdvert { get; private set; }
@@ -191,13 +193,15 @@ namespace MRzeszowiak.ViewModel
         public ICommand MailSendButtonTapped { get; private set; }
 
         public PreviewViewModel(INavigationService navigationService, IRzeszowiak RzeszowiakRepository,
-                                IRzeszowiakImageContainer rzeszowiakImageContainer, IPageDialogService pageDialog, ISetting setting)
+                                IRzeszowiakImageContainer rzeszowiakImageContainer, IPageDialogService pageDialog, 
+                                ISetting setting, IDependencyService dependencyService)
         {
             _rzeszowiakRepository = RzeszowiakRepository ?? throw new NullReferenceException("IRzeszowiakRepository RzeszowiakRepository == null !");
             _navigationService = navigationService ?? throw new NullReferenceException("INavigationService navigationService == null !");
             _pageDialog = pageDialog ?? throw new NullReferenceException("IPageDialogService pageDialog == null !");
             _imageContainer = rzeszowiakImageContainer ?? throw new NullReferenceException("IRzeszowiakImageContainer rzeszowiakImageContainer == null !");
             _setting = setting ?? throw new NullReferenceException("ISetting setting == null !");
+            _dependencyService = dependencyService ?? throw new NullReferenceException("IDependencyService setting == null !");
             _imageContainer.OnDownloadFinish += ImageDownloadFinish;
 
             ImageURLsList.CollectionChanged += (s, e) => { OnPropertyChanged("ImageVisible"); };
@@ -206,13 +210,19 @@ namespace MRzeszowiak.ViewModel
             OpenAdvertPage = new Command(() =>
             {
                 if (_lastAdvert?.URL?.Length > 0)
+                {
+                    _dependencyService.Get<IToast>().Show("Otwieram strone ogłoszenia");
                     Device.OpenUri(new Uri(_lastAdvert?.URL));
+                }     
             });
 
             RefreshAdvert = new Command(() =>
             {
-                if (_lastAdvert != null)
-                    LoadAdvertMessage(_lastAdvert);
+                if (_lastAdvertShort != null)
+                {
+                    _dependencyService.Get<IToast>().Show("Odświeżam ogłoszenie");
+                    LoadAdvertMessage(_lastAdvertShort);
+                }    
             });
 
             MailAdvert = new Command(() =>
@@ -249,7 +259,15 @@ namespace MRzeszowiak.ViewModel
             FavoriteAdvert = new Command(() =>
             {
                 IsFavorite = !IsFavorite;
-                if (_lastAdvert != null) _lastAdvert.IsFavorite = IsFavorite;
+                if (_lastAdvert != null)
+                {
+                    _lastAdvert.IsFavorite = IsFavorite;
+                    _dependencyService.Get<IToast>().Show("Dodano ogłoszenie do ulubionych");
+                }
+                else
+                {
+
+                }
             });
 
             ImageTapped = new Command<int>((selecteIndex) =>
@@ -259,13 +277,14 @@ namespace MRzeszowiak.ViewModel
                 var navigationParams = new NavigationParameters();
                 navigationParams.Add("ImageSelectedIndex", selecteIndex);
                 navigationParams.Add("ImageList", ImageURLsList);
-                _navigationService.NavigateAsync("PreviewImagePage", navigationParams, useModalNavigation: true, animated: false);
+                _navigationService.NavigateAsync("PreviewImagePage", navigationParams, useModalNavigation: false, animated: false);
             });
 
-            BackButtonTapped = new Command(() => 
+            BackButtonTapped = new Command(async () => 
             {
-                _navigationService.GoBackAsync(null,useModalNavigation: true, animated: false);
+                await _navigationService.GoBackAsync(null,false,false);
             });
+
 
             MailSendButtonTapped = new Command<string>(async (message) =>
             {
@@ -329,14 +348,15 @@ namespace MRzeszowiak.ViewModel
             if (advertShort.AdverIDinRzeszowiak == 0)
                 throw new ArgumentException("advertShort.AdverIDinRzeszowiak == 0");
 
+            _lastAdvertShort = advertShort;
             ErrorMessage = String.Empty;
             Activity = true;
             CopyAdverToViewModel(new Advert());
 
             var _advert = await _rzeszowiakRepository.GetAdvertAsync(advertShort);
                      
-            if (_advert == null)
-                ErrorMessage = "Błąd podczas ładowania strony.\nSprawdź połączenie internetowe i spróbuj ponownie.";
+            if (_advert == null) 
+                ErrorMessage = "Błąd podczas ładowania strony.\nSprawdź połączenie internetowe i spróbuj ponownie.";               
             else
                 CopyAdverToViewModel(_advert);
             Activity = false;

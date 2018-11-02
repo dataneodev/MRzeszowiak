@@ -1,5 +1,7 @@
-﻿using System;
+﻿using MRzeszowiak.ViewModel;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +18,14 @@ namespace MRzeszowiak.View
         {
             InitializeComponent();
             NavigationPage.SetHasNavigationBar(this, false);
+        }
+
+        protected override bool OnBackButtonPressed()
+        {
+            Debug.Write("OnBackButtonPressed");
+            if (BindingContext is PreViewImageViewModel model)
+                model.BackButtonTapped?.Execute(null);
+            return true;
         }
     }
 }

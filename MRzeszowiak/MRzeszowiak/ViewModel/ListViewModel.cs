@@ -194,7 +194,7 @@ namespace MRzeszowiak.ViewModel
             {
                 { "AdvertShort", advertShort }
             };
-            await _navigationService.NavigateAsync("PreviewPage", navigationParams, useModalNavigation: true, animated: false);
+            await _navigationService.NavigateAsync("PreviewPage", navigationParams, useModalNavigation: false, animated: false);
         }
 
         protected async Task<bool> SearchExecute(AdvertSearch advertSearch, bool addLoad = false)

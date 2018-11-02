@@ -5,6 +5,7 @@
              xmlns:CarouselView="clr-namespace:CarouselView.FormsPlugin.Abstractions;assembly=CarouselView.FormsPlugin.Abstractions"
              xmlns:ViewModel="clr-namespace:MRzeszowiak.ViewModel"
              xmlns:Extends="clr-namespace:MRzeszowiak.Extends"
+             xmlns:b="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"
              xmlns:pmvvm="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
              pmvvm:ViewModelLocator.AutowireViewModel="True"
              Title="Podgląd ogłoszenia"
@@ -16,7 +17,7 @@
             <ViewModel:IsValueNotNull x:Key="PhoneImageVisible" />
             <ViewModel:NegativeBool x:Key="NegativeBool" />
             <ViewModel:MailStatusEnumToString x:Key="MailStatusEnumToString" />
-            <ViewModel:MailStatusEnumNotSending x:Key="MailStatusEnumNotSending" />            
+            <ViewModel:MailStatusEnumNotSending x:Key="MailStatusEnumNotSending" />
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Content>
@@ -25,12 +26,14 @@
                 <ActivityIndicator VerticalOptions="CenterAndExpand" 
                                IsRunning="{Binding Activity}"
                                IsVisible="{Binding Activity}"/>
-                <Label IsVisible="{Binding ErrorPanelVisible}" 
-                       Text="{Binding ErrorMessage}" 
-                       FontSize="Medium" 
-                       VerticalOptions="CenterAndExpand"
-                       HorizontalOptions="FillAndExpand"
-                       HorizontalTextAlignment="Center"/>
+                <AbsoluteLayout IsVisible="{Binding ErrorPanelVisible}"  HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                    <Label IsVisible="{Binding ErrorPanelVisible}" Text="{Binding ErrorMessage}" FontSize="Medium" AbsoluteLayout.LayoutBounds="0.5,0.5,0.9,0.5"
+                           AbsoluteLayout.LayoutFlags="All" HorizontalTextAlignment="Center"/>
+                    <Button Text="Odśwież" IsVisible="{Binding ErrorPanelVisible}"
+                            Command="{Binding RefreshAdvert}"
+                            AbsoluteLayout.LayoutBounds="0.5,0.5"
+                            AbsoluteLayout.LayoutFlags="PositionProportional"/>
+                </AbsoluteLayout>
                 <AbsoluteLayout HeightRequest="{Binding ImageVisible, Converter={StaticResource AbsHeight}}"
                                 HorizontalOptions="FillAndExpand"
                                 Padding="0">
@@ -46,23 +49,23 @@
                                        AbsoluteLayout.LayoutBounds="0,0,1,220"
                                        AbsoluteLayout.LayoutFlags="WidthProportional"       
                                        x:Name="CarouselViewImageList">
-                    <CarouselView:CarouselViewControl.ItemTemplate>
-                        <DataTemplate>
-                            <Extends:ImageFit Source="{Binding .}" 
+                        <CarouselView:CarouselViewControl.ItemTemplate>
+                            <DataTemplate>
+                                <Extends:ImageFit Source="{Binding .}" 
                                 VerticalOptions="Center"
                                 HorizontalOptions="FillAndExpand"              
                                 Aspect="AspectFill"
                                 x:Name="image">
-                                <Extends:ImageFit.GestureRecognizers>
+                                    <Extends:ImageFit.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding Path=BindingContext.ImageTapped, Source={x:Reference Name=PreviewPageN}}" 
                                                           CommandParameter="{Binding Path=Position, Source={x:Reference Name=CarouselViewImageList}}"
                                                           NumberOfTapsRequired="1" />
-                                </Extends:ImageFit.GestureRecognizers>
-                            </Extends:ImageFit>
-                        </DataTemplate>
-                    </CarouselView:CarouselViewControl.ItemTemplate>
-                </CarouselView:CarouselViewControl>
-                <Button Image="back.png"
+                                    </Extends:ImageFit.GestureRecognizers>
+                                </Extends:ImageFit>
+                            </DataTemplate>
+                        </CarouselView:CarouselViewControl.ItemTemplate>
+                    </CarouselView:CarouselViewControl>
+                    <Button Image="back.png"
                         x:Name="BackButton"
                         Text="" 
                         IsVisible="{Binding ActivityForm}"
@@ -71,7 +74,7 @@
                         BackgroundColor="#50e2e2e2"
                         Command="{Binding BackButtonTapped}"/>
                 </AbsoluteLayout>
-            <StackLayout Orientation="Vertical" 
+                <StackLayout Orientation="Vertical" 
                          IsVisible="{Binding ActivityForm}"
                          Margin="10,0,10,0">
                     <Label Text="{Binding Title}"
@@ -79,44 +82,44 @@
                        TextColor="Black"
                        LineBreakMode="WordWrap"/>
                     <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
-                    <!--highlihted-->
-                    <Frame CornerRadius="10"  
+                        <!--highlihted-->
+                        <Frame CornerRadius="10"  
                                Margin="0"
                                Padding="4" 
                                IsVisible="{Binding Highlighted}"
                                BackgroundColor="#fff268">
                             <Image Source="menu_favadvert.png" HeightRequest="20"/>
-                    </Frame>
-                    <!--price-->
-                    <Label>
-                        <Label.FormattedText>
-                            <FormattedString>
-                                <FormattedString.Spans>
-                                    <Span Text="Cena: " FontSize="Medium"/>
-                                    <Span Text="{Binding Price, Mode=OneWay}" 
+                        </Frame>
+                        <!--price-->
+                        <Label>
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <FormattedString.Spans>
+                                        <Span Text="Cena: " FontSize="Medium"/>
+                                        <Span Text="{Binding Price, Mode=OneWay}" 
                                           FontAttributes="Bold"
                                           FontSize="Large"
                                           TextColor="Black"/>
-                                    <Span Text=" zł" 
+                                        <Span Text=" zł" 
                                           FontAttributes="Bold"
                                           FontSize="Medium"/>
-                                </FormattedString.Spans>
-                            </FormattedString>
-                        </Label.FormattedText>
-                    </Label>    
-                </StackLayout>
-                <!--description-->
-                <Frame CornerRadius="10" 
+                                    </FormattedString.Spans>
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                    </StackLayout>
+                    <!--description-->
+                    <Frame CornerRadius="10" 
                        Margin="0" 
                        Padding="0">
-                    <Label Text="{Binding DescriptionHTML}"
+                        <Label Text="{Binding DescriptionHTML}"
                            TextColor="Black"
                            FontSize="Small"
                            LineBreakMode="WordWrap"
                            Margin="8,5,8,5"/>
-                </Frame>
-                <!--Phone number-->
-                <Frame CornerRadius="10" 
+                    </Frame>
+                    <!--Phone number-->
+                    <Frame CornerRadius="10" 
                        Margin="0" 
                        Padding="0"
                        IsVisible="{Binding HasPhoneImage}">
@@ -132,13 +135,13 @@
                                    Margin="-5,1,0,0"
                                    Aspect="AspectFit"/>
                         </StackLayout>
-                </Frame>
-                <!--Additional data list-->
-                <Frame CornerRadius="10" 
+                    </Frame>
+                    <!--Additional data list-->
+                    <Frame CornerRadius="10" 
                        Margin="0" 
                        Padding="0"
-                       IsVisible="{Binding AddDataVisible}">                   
-                    <ListView x:Name="AddDataList"
+                       IsVisible="{Binding AddDataVisible}">
+                        <ListView x:Name="AddDataList"
                                 Grid.Row="0"
                                 ItemsSource="{Binding AdditionalData}"
                                 HasUnevenRows="True"
@@ -146,92 +149,92 @@
                                 HorizontalOptions="FillAndExpand"
                                 ItemTapped="AddDataList_ItemTapped"
                                 ItemAppearing="AddDataList_ItemAppearing"
-                                IsVisible="{Binding AddDataVisible}"> 
-                        <ListView.Header>
-                            <Label Text="Dane dodatkowe:" FontSize="10" Margin="8,0,8,0"/>
-                        </ListView.Header>
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <ViewCell>
-                                    <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal" Margin="8,2,8,2" Padding="2">
-                                        <Label Text="{Binding Key}" TextColor="Black"/>
-                                        <Label Text="{Binding Value}" TextColor="Black"/>
-                                    </StackLayout>
-                                </ViewCell>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-                </Frame>
-                <!--Email-->
-                <Frame CornerRadius="12" 
+                                IsVisible="{Binding AddDataVisible}">
+                            <ListView.Header>
+                                <Label Text="Dane dodatkowe:" FontSize="10" Margin="8,0,8,0"/>
+                            </ListView.Header>
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <ViewCell>
+                                        <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal" Margin="8,2,8,2" Padding="2">
+                                            <Label Text="{Binding Key}" TextColor="Black"/>
+                                            <Label Text="{Binding Value}" TextColor="Black"/>
+                                        </StackLayout>
+                                    </ViewCell>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </Frame>
+                    <!--Email-->
+                    <Frame CornerRadius="12" 
                        Margin="0" 
                        Padding="0"
                        x:Name="FrameMailForm">
-                    <Frame.Triggers>
-                        <DataTrigger TargetType="Frame" Binding="{Binding MailStatus}" Value="{x:Static ViewModel:MailStatusEnum.email_default}">
-                            <Setter Property="IsVisible" Value="False"/>    
-                        </DataTrigger>
-                        <DataTrigger TargetType="Frame" Binding="{Binding MailStatus}" Value="{x:Static ViewModel:MailStatusEnum.email_send}">
-                            <Setter Property="IsVisible" Value="False"/>    
-                        </DataTrigger>
-                        <DataTrigger TargetType="Frame" Binding="{Binding MailStatus}" Value="{x:Static ViewModel:MailStatusEnum.email_creating}">
-                            <Setter Property="IsVisible" Value="True"/>    
-                        </DataTrigger>
-                        <DataTrigger TargetType="Frame" Binding="{Binding MailStatus}" Value="{x:Static ViewModel:MailStatusEnum.email_sending}">
-                            <Setter Property="IsVisible" Value="True"/>    
-                        </DataTrigger>
-                    </Frame.Triggers>
-                    <StackLayout Orientation="Vertical">
-                        <ActivityIndicator IsVisible="False" IsRunning="False"  Margin="0,10,0,0" HeightRequest="40">
-                            <ActivityIndicator.Triggers>
-                                <DataTrigger TargetType="ActivityIndicator" Binding="{Binding MailStatus}" Value="{x:Static ViewModel:MailStatusEnum.email_sending}">
-                                    <Setter Property="IsVisible" Value="True"/>
-                                    <Setter Property="IsRunning" Value="True"/>
-                                </DataTrigger>
-                                <DataTrigger TargetType="ActivityIndicator" Binding="{Binding MailStatus, Converter={StaticResource MailStatusEnumNotSending}}" Value="True">
-                                    <Setter Property="IsVisible" Value="False"/>
-                                    <Setter Property="IsRunning" Value="False"/>
-                                </DataTrigger> 
-                            </ActivityIndicator.Triggers>
-                        </ActivityIndicator>
-                        <StackLayout IsVisible="True" Orientation="Vertical" Margin="0" Padding="0" Spacing="0">
-                            <StackLayout.Triggers>
-                                <DataTrigger TargetType="StackLayout" Binding="{Binding MailStatus}" Value="{x:Static ViewModel:MailStatusEnum.email_sending}">
-                                    <Setter Property="IsVisible" Value="False"/>
-                                </DataTrigger>
-                                <DataTrigger TargetType="StackLayout" Binding="{Binding MailStatus, Converter={StaticResource MailStatusEnumNotSending}}" Value="True">
-                                    <Setter Property="IsVisible" Value="True"/>
-                                </DataTrigger>
-                            </StackLayout.Triggers>
-                            <Label Text="Twoja wiadomość:" FontSize="12" Margin="8,2,8,2"/>
-                            <Frame BorderColor="#f4f4f4" CornerRadius="0" Padding="0" Margin="0,0,0,0">
-                                <Extends:CustomEditor Margin="0" x:Name="EmailMessageEntry"  Keyboard="Text" HeightRequest="140" HorizontalOptions="FillAndExpand">
-                                    <Extends:CustomEditor.Triggers>
-                                        <DataTrigger TargetType="Editor" Binding="{Binding MailStatus}" Value="{x:Static ViewModel:MailStatusEnum.email_default}">
-                                            <Setter Property="Text" Value=""/>
-                                        </DataTrigger>
-                                    </Extends:CustomEditor.Triggers>
-                                </Extends:CustomEditor>
-                            </Frame>
-                        </StackLayout>
-                        <Button Text="Wyślij wiadomość" Margin="8,0,8,8" Command="{Binding MailSendButtonTapped}" 
+                        <Frame.Triggers>
+                            <DataTrigger TargetType="Frame" Binding="{Binding MailStatus}" Value="{x:Static ViewModel:MailStatusEnum.email_default}">
+                                <Setter Property="IsVisible" Value="False"/>
+                            </DataTrigger>
+                            <DataTrigger TargetType="Frame" Binding="{Binding MailStatus}" Value="{x:Static ViewModel:MailStatusEnum.email_send}">
+                                <Setter Property="IsVisible" Value="False"/>
+                            </DataTrigger>
+                            <DataTrigger TargetType="Frame" Binding="{Binding MailStatus}" Value="{x:Static ViewModel:MailStatusEnum.email_creating}">
+                                <Setter Property="IsVisible" Value="True"/>
+                            </DataTrigger>
+                            <DataTrigger TargetType="Frame" Binding="{Binding MailStatus}" Value="{x:Static ViewModel:MailStatusEnum.email_sending}">
+                                <Setter Property="IsVisible" Value="True"/>
+                            </DataTrigger>
+                        </Frame.Triggers>
+                        <StackLayout Orientation="Vertical">
+                            <ActivityIndicator IsVisible="False" IsRunning="False"  Margin="0,10,0,0" HeightRequest="40">
+                                <ActivityIndicator.Triggers>
+                                    <DataTrigger TargetType="ActivityIndicator" Binding="{Binding MailStatus}" Value="{x:Static ViewModel:MailStatusEnum.email_sending}">
+                                        <Setter Property="IsVisible" Value="True"/>
+                                        <Setter Property="IsRunning" Value="True"/>
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="ActivityIndicator" Binding="{Binding MailStatus, Converter={StaticResource MailStatusEnumNotSending}}" Value="True">
+                                        <Setter Property="IsVisible" Value="False"/>
+                                        <Setter Property="IsRunning" Value="False"/>
+                                    </DataTrigger>
+                                </ActivityIndicator.Triggers>
+                            </ActivityIndicator>
+                            <StackLayout IsVisible="True" Orientation="Vertical" Margin="0" Padding="0" Spacing="0">
+                                <StackLayout.Triggers>
+                                    <DataTrigger TargetType="StackLayout" Binding="{Binding MailStatus}" Value="{x:Static ViewModel:MailStatusEnum.email_sending}">
+                                        <Setter Property="IsVisible" Value="False"/>
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="StackLayout" Binding="{Binding MailStatus, Converter={StaticResource MailStatusEnumNotSending}}" Value="True">
+                                        <Setter Property="IsVisible" Value="True"/>
+                                    </DataTrigger>
+                                </StackLayout.Triggers>
+                                <Label Text="Twoja wiadomość:" FontSize="12" Margin="8,2,8,2"/>
+                                <Frame BorderColor="#f4f4f4" CornerRadius="0" Padding="0" Margin="0,0,0,0">
+                                    <Extends:CustomEditor Margin="0" x:Name="EmailMessageEntry"  Keyboard="Text" HeightRequest="140" HorizontalOptions="FillAndExpand">
+                                        <Extends:CustomEditor.Triggers>
+                                            <DataTrigger TargetType="Editor" Binding="{Binding MailStatus}" Value="{x:Static ViewModel:MailStatusEnum.email_default}">
+                                                <Setter Property="Text" Value=""/>
+                                            </DataTrigger>
+                                        </Extends:CustomEditor.Triggers>
+                                    </Extends:CustomEditor>
+                                </Frame>
+                            </StackLayout>
+                            <Button Text="Wyślij wiadomość" Margin="8,0,8,8" Command="{Binding MailSendButtonTapped}" 
                             CommandParameter="{Binding Source={x:Reference EmailMessageEntry}, Path=Text}">
-                            <Button.Triggers>
-                                <DataTrigger TargetType="Button" Binding="{Binding MailStatus}" Value="{x:Static ViewModel:MailStatusEnum.email_sending}">
-                                    <Setter Property="IsEnabled" Value="False"/>
-                                </DataTrigger>
-                                <DataTrigger TargetType="Button" Binding="{Binding MailStatus, Converter={StaticResource MailStatusEnumNotSending}}" Value="True">
-                                    <Setter Property="IsEnabled" Value="True"/>
-                                </DataTrigger>
-                            </Button.Triggers>
-                        </Button>
-                    </StackLayout>  
-                </Frame>
-                <!--Button-->
-                <Frame CornerRadius="10" 
+                                <Button.Triggers>
+                                    <DataTrigger TargetType="Button" Binding="{Binding MailStatus}" Value="{x:Static ViewModel:MailStatusEnum.email_sending}">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Button" Binding="{Binding MailStatus, Converter={StaticResource MailStatusEnumNotSending}}" Value="True">
+                                        <Setter Property="IsEnabled" Value="True"/>
+                                    </DataTrigger>
+                                </Button.Triggers>
+                            </Button>
+                        </StackLayout>
+                    </Frame>
+                    <!--Button-->
+                    <Frame CornerRadius="10" 
                        Margin="0" 
                        Padding="0">
-                    <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand" Padding="4">
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand" Padding="4">
                             <Button HeightRequest="44" 
                                     WidthRequest="78"  
                                     Image="refresh.png"  
@@ -253,11 +256,11 @@
                                     Image="{Binding IsFavorite, Converter={StaticResource ImageFromFavorite}}" 
                                     BackgroundColor="#f4f4f4"
                                     Command="{Binding FavoriteAdvert}"/>
-                    </StackLayout>
-                </Frame>
-                <!--ID-->
-                <StackLayout Orientation="Horizontal" x:Name="EndStackLayout">
-                    <Label HorizontalTextAlignment="Start" HorizontalOptions="FillAndExpand">
+                        </StackLayout>
+                    </Frame>
+                    <!--ID-->
+                    <StackLayout Orientation="Horizontal" x:Name="EndStackLayout">
+                        <Label HorizontalTextAlignment="Start" HorizontalOptions="FillAndExpand">
                             <Label.FormattedText>
                                 <FormattedString>
                                     <FormattedString.Spans>
@@ -268,23 +271,23 @@
                                     </FormattedString.Spans>
                                 </FormattedString>
                             </Label.FormattedText>
-                    </Label>
-                    <Label HorizontalTextAlignment="End" HorizontalOptions="FillAndExpand">
-                    <Label.FormattedText>
-                        <FormattedString>
-                            <FormattedString.Spans>
-                                    <Span Text="Wyświetleń: "
+                        </Label>
+                        <Label HorizontalTextAlignment="End" HorizontalOptions="FillAndExpand">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <FormattedString.Spans>
+                                        <Span Text="Wyświetleń: "
                                           FontSize="12"/>
-                                    <Span Text="{Binding Views, Mode=OneWay}"
+                                        <Span Text="{Binding Views, Mode=OneWay}"
                                         TextColor="Black"
                                         FontSize="12"/>
-                                </FormattedString.Spans>        
-                        </FormattedString>        
-                    </Label.FormattedText>            
-                    </Label>
+                                    </FormattedString.Spans>
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                    </StackLayout>
                 </StackLayout>
             </StackLayout>
-        </StackLayout>
         </ScrollView>
     </ContentPage.Content>
 </ContentPage>

@@ -36,12 +36,12 @@ namespace MRzeszowiak
 
         
 
-        public App(string dbpath, IPlatformInitializer initializer = null) : base(initializer)
+        public App(string dbpath, IPlatformInitializer initializer = null) : this(initializer, true)
         {
             Setting.SetDBPath(dbpath);
 
             var navigationParams = new NavigationParameters("LoadAtStartup=true");
-            NavigationService.NavigateAsync("MenuMasterDetail/MainNavigation/ListPage", navigationParams);
+            NavigationService.NavigateAsync("app:///MenuMasterDetail/MainNavigation/ListPage", navigationParams);
         }
 
         public App(IPlatformInitializer initializer, bool setFormsDependencyResolver)

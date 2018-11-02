@@ -31,7 +31,7 @@ namespace MRzeszowiak.ViewModel
         public PreViewImageViewModel(INavigationService navigationService)
         {
             _navigationService = navigationService ?? throw new NullReferenceException("INavigationService navigationService == null !");
-            BackButtonTapped = new Command(()=>_navigationService.GoBackAsync(null, useModalNavigation: true, animated: false));
+            BackButtonTapped = new Command(()=>_navigationService.GoBackAsync(null, useModalNavigation: false, animated: false));
         }
 
         public void OnNavigatedTo(INavigationParameters parameters)
@@ -56,6 +56,6 @@ namespace MRzeszowiak.ViewModel
             if (position >= 0 && position < ImageURLsList.Count)
                 Position = position;
             else Position = 0;
-        }
+        }        
     }
 }

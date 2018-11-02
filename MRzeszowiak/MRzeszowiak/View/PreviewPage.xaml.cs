@@ -4,9 +4,7 @@ using MRzeszowiak.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Prism.Navigation;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -54,6 +52,14 @@ namespace MRzeszowiak.View
                     }
                     break;
             }
+        }
+
+        protected override bool OnBackButtonPressed()
+        {
+            Debug.Write("OnBackButtonPressed");
+            if (BindingContext is PreviewViewModel model)
+                model.BackButtonTapped?.Execute(null);
+            return true;
         }
     }
 }

@@ -47,42 +47,13 @@ namespace MRzeszowiak.Droid
             LoadApplication(new App(dbpath, new AndroidInitializer()));
         }
 
-        private bool _backToExitPressedOnce = false;
         public override void OnBackPressed()
         {
-            if (Rg.Plugins.Popup.Popup.SendBackPressed(base.OnBackPressed))
-            {
+            if (Rg.Plugins.Popup.Popup.SendBackPressed())
                 return;
-            }
 
             base.OnBackPressed();
             return;
-
-            // determine if any popups are open
-            var childViewCount = ((ViewGroup)((Activity)Forms.Context).Window.DecorView).ChildCount;
-
-            // Check if a non modal page has been pushed, if any modal page or popups are open
-            if (Xamarin.Forms.Application.Current.MainPage.Navigation.NavigationStack.Count > 1 ||
-                Xamarin.Forms.Application.Current.MainPage.Navigation.ModalStack.Count > 0 ||
-                childViewCount > 2)
-            {
-                base.OnBackPressed();
-                return;
-            }
-
-            
-
-            if (_backToExitPressedOnce)
-            {
-                base.OnBackPressed();
-                Java.Lang.JavaSystem.Exit(0);
-                return;
-            }
-
-            this._backToExitPressedOnce = true;
-            Toast.MakeText(this, "Tap again to exit", ToastLength.Short).Show();
-
-            new Handler().PostDelayed(() => { _backToExitPressedOnce = false; }, 2000);
         }
 
         public class AndroidInitializer : IPlatformInitializer

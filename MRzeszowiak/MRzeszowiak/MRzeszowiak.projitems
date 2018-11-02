@@ -29,6 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Services\IRzeszowiak.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\IRzeszowiakImageContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\ISetting.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\IToast.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\RzeszowiakImageContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\RzeszowiakRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\SettingRepository.cs" />
