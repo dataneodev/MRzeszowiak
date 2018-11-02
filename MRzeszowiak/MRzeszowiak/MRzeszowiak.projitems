@@ -16,6 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extends\CloneObjectSerializable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\CustomEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\NoAnimationNavigationPage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extends\PinchToZoomContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\WebPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\ImageFit.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\MultiLineLabel.cs" />
@@ -50,6 +51,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ViewValueConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)View\AboutPage.xaml.cs">
       <DependentUpon>AboutPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)View\AdvertListViewTemplate.xaml.cs">
+      <DependentUpon>AdvertListViewTemplate.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)View\App.xaml.cs">
@@ -168,6 +173,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)View\FavAdvertPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)View\AdvertListViewTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>

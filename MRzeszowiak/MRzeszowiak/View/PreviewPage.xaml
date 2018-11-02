@@ -35,32 +35,21 @@
                             AbsoluteLayout.LayoutFlags="PositionProportional"/>
                 </AbsoluteLayout>
                 <AbsoluteLayout HeightRequest="{Binding ImageVisible, Converter={StaticResource AbsHeight}}"
-                                HorizontalOptions="FillAndExpand"
-                                Padding="0">
-                    <CarouselView:CarouselViewControl 
-                                       ItemsSource="{Binding ImageURLsList}"
-                                       IsVisible="{Binding ImageVisible}"
-                                       IsEnabled="{Binding ImageVisible}"
-                                       ShowArrows="True"
-                                       ShowIndicators="True"
-                                       IsSwipeEnabled="True"
-                                       HorizontalOptions="FillAndExpand"
-                                       HeightRequest="220"
-                                       AbsoluteLayout.LayoutBounds="0,0,1,220"
-                                       AbsoluteLayout.LayoutFlags="WidthProportional"       
-                                       x:Name="CarouselViewImageList">
+                                HorizontalOptions="FillAndExpand" Padding="0">
+                    <CarouselView:CarouselViewControl ItemsSource="{Binding ImageURLsList}" IsVisible="{Binding ImageVisible}" IsEnabled="{Binding ImageVisible}"
+                                       ShowArrows="True" ShowIndicators="True" IsSwipeEnabled="True" HorizontalOptions="FillAndExpand" HeightRequest="220" 
+                                       AbsoluteLayout.LayoutBounds="0,0,1,220" AbsoluteLayout.LayoutFlags="WidthProportional" x:Name="CarouselViewImageList">
                         <CarouselView:CarouselViewControl.ItemTemplate>
                             <DataTemplate>
-                                <Extends:ImageFit Source="{Binding .}" 
-                                VerticalOptions="Center"
-                                HorizontalOptions="FillAndExpand"              
-                                Aspect="AspectFill"
-                                x:Name="image">
+                                <Extends:ImageFit VerticalOptions="Center" HorizontalOptions="FillAndExpand"              
+                                    Aspect="AspectFill" x:Name="image">
                                     <Extends:ImageFit.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding Path=BindingContext.ImageTapped, Source={x:Reference Name=PreviewPageN}}" 
-                                                          CommandParameter="{Binding Path=Position, Source={x:Reference Name=CarouselViewImageList}}"
-                                                          NumberOfTapsRequired="1" />
+                                                          CommandParameter="{Binding Path=Position, Source={x:Reference Name=CarouselViewImageList}}" NumberOfTapsRequired="1" />
                                     </Extends:ImageFit.GestureRecognizers>
+                                    <Extends:ImageFit.Source>
+                                        <UriImageSource Uri="{Binding .}" CachingEnabled="True" CacheValidity="1"/>
+                                    </Extends:ImageFit.Source>
                                 </Extends:ImageFit>
                             </DataTemplate>
                         </CarouselView:CarouselViewControl.ItemTemplate>
@@ -83,11 +72,7 @@
                        LineBreakMode="WordWrap"/>
                     <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
                         <!--highlihted-->
-                        <Frame CornerRadius="10"  
-                               Margin="0"
-                               Padding="4" 
-                               IsVisible="{Binding Highlighted}"
-                               BackgroundColor="#fff268">
+                        <Frame CornerRadius="10" Margin="0" Padding="4" IsVisible="{Binding Highlighted}" BackgroundColor="#fff268">
                             <Image Source="menu_favadvert.png" HeightRequest="20"/>
                         </Frame>
                         <!--price-->
@@ -96,10 +81,7 @@
                                 <FormattedString>
                                     <FormattedString.Spans>
                                         <Span Text="Cena: " FontSize="Medium"/>
-                                        <Span Text="{Binding Price, Mode=OneWay}" 
-                                          FontAttributes="Bold"
-                                          FontSize="Large"
-                                          TextColor="Black"/>
+                                        <Span Text="{Binding Price, Mode=OneWay}" FontAttributes="Bold" FontSize="Large" TextColor="Black"/>
                                         <Span Text=" zł" 
                                           FontAttributes="Bold"
                                           FontSize="Medium"/>
@@ -109,47 +91,22 @@
                         </Label>
                     </StackLayout>
                     <!--description-->
-                    <Frame CornerRadius="10" 
-                       Margin="0" 
-                       Padding="0">
-                        <Label Text="{Binding DescriptionHTML}"
-                           TextColor="Black"
-                           FontSize="Small"
-                           LineBreakMode="WordWrap"
-                           Margin="8,5,8,5"/>
+                    <Frame CornerRadius="10" Margin="0" Padding="0">
+                        <Label Text="{Binding DescriptionHTML}" TextColor="Black" FontSize="Small" LineBreakMode="WordWrap" Margin="8,5,8,5"/>
                     </Frame>
                     <!--Phone number-->
-                    <Frame CornerRadius="10" 
-                       Margin="0" 
-                       Padding="0"
-                       IsVisible="{Binding HasPhoneImage}">
+                    <Frame CornerRadius="10" Margin="0" Padding="0" IsVisible="{Binding HasPhoneImage}">
                         <StackLayout Orientation="Horizontal">
-                            <Label Text="Telefon: "
-                                TextColor="Black"
-                                FontSize="Small"
-                                Margin="8,5,0,5"/>
-                            <Image Source="{Binding PhoneImage}" 
-                                   IsVisible="{Binding PhoneImage, Converter={StaticResource PhoneImageVisible}}"
-                                   HeightRequest="28"
-                                   WidthRequest="224"
-                                   Margin="-5,1,0,0"
-                                   Aspect="AspectFit"/>
+                            <Label Text="Telefon: " TextColor="Black" FontSize="Small" Margin="8,5,0,5"/>
+                            <Image Source="{Binding PhoneImage}" IsVisible="{Binding PhoneImage, Converter={StaticResource PhoneImageVisible}}"
+                                   HeightRequest="28" WidthRequest="224" Margin="-5,1,0,0" Aspect="AspectFit"/>
                         </StackLayout>
                     </Frame>
                     <!--Additional data list-->
-                    <Frame CornerRadius="10" 
-                       Margin="0" 
-                       Padding="0"
-                       IsVisible="{Binding AddDataVisible}">
-                        <ListView x:Name="AddDataList"
-                                Grid.Row="0"
-                                ItemsSource="{Binding AdditionalData}"
-                                HasUnevenRows="True"
-                                RowHeight="26"
-                                HorizontalOptions="FillAndExpand"
-                                ItemTapped="AddDataList_ItemTapped"
-                                ItemAppearing="AddDataList_ItemAppearing"
-                                IsVisible="{Binding AddDataVisible}">
+                    <Frame CornerRadius="10" Margin="0" Padding="0" IsVisible="{Binding AddDataVisible}">
+                        <ListView x:Name="AddDataList" Grid.Row="0" ItemsSource="{Binding AdditionalData}"
+                                HasUnevenRows="True" RowHeight="26" HorizontalOptions="FillAndExpand" ItemTapped="AddDataList_ItemTapped"
+                                ItemAppearing="AddDataList_ItemAppearing" IsVisible="{Binding AddDataVisible}">
                             <ListView.Header>
                                 <Label Text="Dane dodatkowe:" FontSize="10" Margin="8,0,8,0"/>
                             </ListView.Header>
@@ -166,10 +123,7 @@
                         </ListView>
                     </Frame>
                     <!--Email-->
-                    <Frame CornerRadius="12" 
-                       Margin="0" 
-                       Padding="0"
-                       x:Name="FrameMailForm">
+                    <Frame CornerRadius="12" Margin="0" Padding="0" x:Name="FrameMailForm">
                         <Frame.Triggers>
                             <DataTrigger TargetType="Frame" Binding="{Binding MailStatus}" Value="{x:Static ViewModel:MailStatusEnum.email_default}">
                                 <Setter Property="IsVisible" Value="False"/>

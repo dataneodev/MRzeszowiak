@@ -84,14 +84,15 @@ namespace MRzeszowiak.ViewModel
                 var activeBackground = Color.Yellow;
                 if (_lastAdvertSearch == null) return normalBackground;
                 if (((_lastAdvertSearch.SearchPattern?.Length??0) > 0) || (_lastAdvertSearch.PriceMin > 0) || 
-                    (_lastAdvertSearch.PriceMax > 0) || (_lastAdvertSearch.DateAdd != AddType.all) || 
-                    (_lastAdvertSearch.Sort != SortType.dateadd))
+                    (_lastAdvertSearch.PriceMax > 0) || (_lastAdvertSearch.Sort != SortType.dateadd) || 
+                    (_lastAdvertSearch.DateAdd != AddType.all && !(_lastAdvertSearch?.CategorySearch == null && (_lastAdvertSearch.SearchPattern?.Length ?? 0) == 0))  )
                     return activeBackground;
                 return normalBackground;
             }     
         }
 
         public bool ErrorPanelVisible => (errorMessage?.Length ?? 0) > 0 ? true : false;
+        public ICommand RefreshAdverList { get; private set; }
         public ICommand LoadNextAdvert { get; private set; }
         public ICommand ListViewItemTapped { get; private set; }
         public ICommand CategorySelectButtonTaped { get; private set; }
@@ -129,6 +130,8 @@ namespace MRzeszowiak.ViewModel
                 };
                 _navigationService.NavigateAsync("SearchPopup", parameters);
             });
+
+            RefreshAdverList = new Command(async()=> await SearchExecute(_lastAdvertSearch, false));
         }
 
         public void OnNavigatedFrom(INavigationParameters parameters) { }
@@ -175,7 +178,7 @@ namespace MRzeszowiak.ViewModel
                 !Activity && !FotterActivity)
             {
                 _lastAdvertSearch.RequestPage = ++_lastAdvertSearchResult.Page;
-                await SearchExecute(_lastAdvertSearch, true).ConfigureAwait(false);
+                await SearchExecute(_lastAdvertSearch, true);
                 return;
             }
             return;
@@ -231,7 +234,7 @@ namespace MRzeszowiak.ViewModel
             if (!lastAddAdvert.Correct)
             {
                 if(!addLoad)
-                    ErrorMessage = "Błąd podczas ładowania strony.\n" + lastAddAdvert.ErrorMessage;
+                    ErrorMessage = "Błąd podczas ładowania strony.\nSprawdź połączenie internetowe i spróbuj ponownie.";
             }
             else
             {
@@ -245,8 +248,11 @@ namespace MRzeszowiak.ViewModel
                 {
                     if (adverId.IndexOf(item.AdverIDinRzeszowiak) != -1) continue;
                     AdvertShortList.Add(item);
-                    await Task.Delay(50);
+                    await Task.Delay(20);
                 }
+
+                if(AdvertShortList.Count == 0 && !addLoad)
+                    ErrorMessage = "Nic nie znaleziono.\nZmień kryteria wyszukiwania.";
             }
             Activity = false;
             FotterActivity = false;

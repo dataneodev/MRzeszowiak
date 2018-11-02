@@ -79,7 +79,6 @@ namespace MRzeszowiak
             containerRegistry.RegisterInstance<ISetting>(App.Setting);
             containerRegistry.Register<IRzeszowiak, RzeszowiakRepository>();
             containerRegistry.Register<IRzeszowiakImageContainer, RzeszowiakImageContainer>();
-            //containerRegistry.RegisterSingleton<ListViewModel, ListViewModel>();
  
             containerRegistry.RegisterForNavigation<MainNavigation>();
             containerRegistry.RegisterForNavigation<MenuMasterDetail, MenuMasterDetailViewModel>();
@@ -98,7 +97,7 @@ namespace MRzeszowiak
         protected override void ConfigureViewModelLocator()
         {
             base.ConfigureViewModelLocator();
-            //ViewModelLocationProvider.SetDefaultViewModelFactory((type) => { return Container.Resolve(type); });
+            ViewModelLocationProvider.SetDefaultViewModelFactory((type) => { return Container.Resolve(type); });
         }
     }
 }

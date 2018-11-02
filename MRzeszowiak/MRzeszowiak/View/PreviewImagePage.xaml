@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:forms="clr-namespace:CarouselView.FormsPlugin.Abstractions;assembly=CarouselView.FormsPlugin.Abstractions"
              x:Class="MRzeszowiak.View.PreviewImagePage"
+             xmlns:Extends="clr-namespace:MRzeszowiak.Extends" 
              xmlns:pmvvm="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
              pmvvm:ViewModelLocator.AutowireViewModel="True"
              BackgroundColor="Black"
@@ -22,11 +23,18 @@
                                        IsSwipeEnabled="True">
                     <forms:CarouselViewControl.ItemTemplate>
                         <DataTemplate>
-                            <Image Source="{Binding .}" 
-                               VerticalOptions="FillAndExpand"           
-                               HorizontalOptions="FillAndExpand"
-                               Aspect="AspectFit" >
-                            </Image>
+                            <Extends:PinchToZoomContainer>
+                                <Extends:PinchToZoomContainer.Content>
+                                    <Image VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" Aspect="AspectFit" >
+                                        <Image.Source>
+                                            <UriImageSource Uri="{Binding .}" CachingEnabled="True" CacheValidity="1"/>
+                                        </Image.Source>
+                                    </Image>
+                                </Extends:PinchToZoomContainer.Content>
+                                <Extends:PinchToZoomContainer.GestureRecognizers>
+                                    <TapGestureRecognizer NumberOfTapsRequired="2" Tapped="PinchToZoomContainerImage_Tapped"/>
+                                </Extends:PinchToZoomContainer.GestureRecognizers>    
+                            </Extends:PinchToZoomContainer>
                         </DataTemplate>
                     </forms:CarouselViewControl.ItemTemplate>
                 </forms:CarouselViewControl>
