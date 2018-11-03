@@ -14,11 +14,6 @@ namespace MRzeszowiak.View
             NavigationPage.SetHasNavigationBar(this, false);           
         }
 
-        private void AdvertListView_ItemTapped(object sender, ItemTappedEventArgs e)
-        {
-            ((ListView)sender).SelectedItem = null;
-        }
-
         private void MainMenuButton_Clicked(object sender, EventArgs e)
         {
             (App.Current.MainPage as MasterDetailPage).IsPresented = true;

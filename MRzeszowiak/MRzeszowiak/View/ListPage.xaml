@@ -3,9 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MRzeszowiak.View.ListPage"
              xmlns:ViewModel="clr-namespace:MRzeszowiak.ViewModel"
-             xmlns:Behaviors="clr-namespace:MRzeszowiak.Behaviors"
-             xmlns:Extends="clr-namespace:MRzeszowiak.Extends" 
-             xmlns:b="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"
+             xmlns:View="clr-namespace:MRzeszowiak.View"
              xmlns:pmvvm="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
              pmvvm:ViewModelLocator.AutowireViewModel="True"
              Title="Lista ogłoszeń"
@@ -20,9 +18,7 @@
     <ContentPage.Content>
         <StackLayout CompressedLayout.IsHeadless="true">
             <!--Menu-->
-            <Grid HorizontalOptions="FillAndExpand"
-                  Style="{StaticResource backGroundColorS}"
-                  x:Name="ToolBarMenu">
+            <Grid HorizontalOptions="FillAndExpand" Style="{StaticResource backGroundColorS}" x:Name="ToolBarMenu">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
@@ -32,168 +28,27 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid.Padding>
-                    <OnPlatform x:TypeArguments="Thickness"
-                            iOS="10, 10, 10, 10"
-                            Android="5, 0, 0, 0"/>
+                    <OnPlatform x:TypeArguments="Thickness" iOS="10, 10, 10, 10" Android="5, 0, 0, 0"/>
                 </Grid.Padding>
-                <Button Grid.Column="0" 
-                        Grid.Row="0"
-                        Image="menu.png" 
-                        Text="" WidthRequest="38" 
-                        HeightRequest="38" 
-                        Margin="0,0,0,0" 
-                        Style="{StaticResource backGroundColor}"
-                        x:Name="MainMenuButton"
-                        Clicked="MainMenuButton_Clicked"/>
-                <Button Grid.Column="1"
-                        Grid.Row="0" 
-                        Text="{Binding CurrentCategory, Converter={StaticResource CategoryToString}}" 
-                        x:Name="CategorySelectButton"   
-                        Command="{Binding CategorySelectButtonTaped}"
-                        IsEnabled="{Binding Activity, Converter={StaticResource NegativeBool}}"
-                        Style="{StaticResource backGroundColor}"/>
-                <Button  Grid.Column="2" 
-                         Grid.Row="0"
-                         Image="filter.png" 
-                         Text="" 
-                         WidthRequest="45" 
-                         Margin="5,0,0,0" 
-                         Command="{Binding SearchButtonTapped}"
-                         IsEnabled="{Binding Activity, Converter={StaticResource NegativeBool}}"
-                         BackgroundColor="{Binding FilterButtonColor}"
-                         x:Name="FilterButton"/>
+                <Button Grid.Column="0" Grid.Row="0" Image="menu.png" Text="" WidthRequest="38" HeightRequest="38" 
+                        Margin="0,0,0,0" Style="{StaticResource backGroundColor}" x:Name="MainMenuButton" Clicked="MainMenuButton_Clicked"/>
+                <Button Grid.Column="1" Grid.Row="0" x:Name="CategorySelectButton" Text="{Binding CurrentCategory, Converter={StaticResource CategoryToString}}" 
+                         Command="{Binding CategorySelectButtonTaped}" IsEnabled="{Binding Activity, Converter={StaticResource NegativeBool}}" Style="{StaticResource backGroundColor}"/>
+                <Button  Grid.Column="2" Grid.Row="0" Image="filter.png" Text="" WidthRequest="45" Margin="5,0,0,0" Command="{Binding SearchButtonTapped}"
+                         IsEnabled="{Binding Activity, Converter={StaticResource NegativeBool}}" BackgroundColor="{Binding FilterButtonColor}" x:Name="FilterButton"/>
             </Grid>
             <!--Menu end-->
-            
             <!--ACTIVITY-->
-            <ActivityIndicator IsRunning="{Binding Activity}" 
-                               IsVisible="{Binding Activity}" 
-                               VerticalOptions="CenterAndExpand"/>
+            <ActivityIndicator IsRunning="{Binding Activity}" IsVisible="{Binding Activity}" VerticalOptions="CenterAndExpand"/>
             <!--ERROR-->
             <AbsoluteLayout IsVisible="{Binding ErrorPanelVisible}"  HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
                 <Label IsVisible="{Binding ErrorPanelVisible}" Text="{Binding ErrorMessage}" FontSize="Medium" AbsoluteLayout.LayoutBounds="0.5,0.5,0.9,0.5"
                            AbsoluteLayout.LayoutFlags="All" HorizontalTextAlignment="Center"/>
-                <Button Text="Odśwież" IsVisible="{Binding ErrorPanelVisible}"
-                            Command="{Binding RefreshAdverList}"
-                            AbsoluteLayout.LayoutBounds="0.5,0.5"
+                <Button Text="Odśwież" IsVisible="{Binding ErrorPanelVisible}" Command="{Binding RefreshAdverList}" AbsoluteLayout.LayoutBounds="0.5,0.5"
                             AbsoluteLayout.LayoutFlags="PositionProportional"/>
             </AbsoluteLayout>
             <!--CONTEXT-->
-            <ListView x:Name="AdvertListView"
-                      ItemsSource="{Binding AdvertShortList}"
-                      HasUnevenRows="True"
-                      HorizontalOptions="FillAndExpand"
-                      VerticalOptions="FillAndExpand"
-                      ItemTapped="AdvertListView_ItemTapped"
-                      SeparatorVisibility="None"
-                      IsVisible="{Binding Source={x:Reference ListPageXaml}, Path=BindingContext.ActivityListView}">
-                <x:Arguments>
-                    <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
-                </x:Arguments>
-                <ListView.Behaviors>
-                    <Behaviors:InfiniteScroll LoadMoreCommand="{Binding LoadNextAdvert}" />
-                    <b:EventToCommandBehavior EventName="ItemTapped" 
-                                              Command="{Binding ListViewItemTapped}" 
-                                              EventArgsParameterPath="Item"/>
-                </ListView.Behaviors>
-                <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <ViewCell>
-                            <Frame CornerRadius="10"  
-                                    Margin="5"
-                                    Padding="0">
-                                <StackLayout VerticalOptions="FillAndExpand" 
-                                     HorizontalOptions="FillAndExpand" 
-                                     BackgroundColor="{Binding ., Converter={StaticResource boolToColor}}">
-                                        <Grid Padding="0" RowSpacing="0" ColumnSpacing="4" Margin="0,4,5,4">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition  Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                            </Grid.RowDefinitions>
-                                        <Image x:Name="ThumbnailImage" 
-                                                Grid.Column="0" 
-                                                Grid.Row="0" 
-                                                Grid.RowSpan="3" 
-                                                Aspect="AspectFit"
-                                                HorizontalOptions="Center"
-                                                VerticalOptions="Center"
-                                                WidthRequest="100"
-                                                HeightRequest="70" 
-                                                Margin="5,0,0,0">
-                                            <Image.Source>
-                                                <UriImageSource Uri="{Binding ThumbnailUrl}"    
-                                                                CachingEnabled="True"
-                                                                CacheValidity="1"/>
-                                            </Image.Source>
-                                        </Image>
-                                        <Label Grid.Column="1"
-                                                Grid.ColumnSpan="2" 
-                                                Grid.Row="0" 
-                                                Text="{Binding Title}" 
-                                                FontAttributes="Bold" 
-                                                TextColor="Black"
-                                                FontSize="14"
-                                                HorizontalOptions="FillAndExpand"
-                                                VerticalOptions="FillAndExpand"/>
-                                            <Extends:MultiLineLabel 
-                                                Grid.Column="1" 
-                                                Grid.ColumnSpan="2" 
-                                                Grid.Row="1" 
-                                                Text="{Binding DescriptionShort}" 
-                                                TextColor="Black"
-                                                VerticalOptions="CenterAndExpand"
-                                                FontSize="12" 
-                                                Margin="0"   
-                                                LineBreakMode="WordWrap"
-                                                Lines="4"/>
-                                            <Label Grid.Column="1" Grid.Row="2">
-                                                <Label.FormattedText>
-                                                    <FormattedString>
-                                                        <FormattedString.Spans>
-                                                            <Span Text="Cena: " FontSize="12"/>
-                                                            <Span Text="{Binding Price}" 
-                                                          FontAttributes="Bold"
-                                                          FontSize="13"
-                                                          TextColor="Black"/>
-                                                            <Span Text=" zł" 
-                                                          FontAttributes="Bold"
-                                                          FontSize="13"/>
-                                                        </FormattedString.Spans>
-                                                    </FormattedString>
-                                                </Label.FormattedText>
-                                            </Label>
-                                            <Label Grid.Column="2" Grid.Row="2">
-                                                <Label.FormattedText>
-                                                    <FormattedString>
-                                                        <FormattedString.Spans>
-                                                            <!--<Span Text="Data dodania: "/>-->
-                                                            <Span Text="{Binding DateAddString}" 
-                                                          FontAttributes="Bold"
-                                                          FontSize="13"
-                                                          TextColor="Black"/>
-                                                        </FormattedString.Spans>
-                                                    </FormattedString>
-                                                </Label.FormattedText>
-                                            </Label>
-                                        </Grid>
-                                    </StackLayout>
-                                </Frame>
-                            </ViewCell>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                    <ListView.Footer>
-                        <ActivityIndicator IsRunning="{Binding FotterActivity}"
-                                       IsEnabled="{Binding FotterActivity}"
-                                       IsVisible="{Binding FotterActivity}"
-                                       HeightRequest="32"/>
-                    </ListView.Footer>
-                </ListView>
-            </StackLayout>
+            <View:AdvertListViewTemplate ItemsSource="{Binding AdvertShortList}" IsVisible="{Binding Source={x:Reference ListPageXaml}, Path=BindingContext.ActivityListView}"/>
+        </StackLayout>
     </ContentPage.Content>
 </ContentPage>

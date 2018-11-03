@@ -10,11 +10,16 @@ using Xamarin.Forms.Xaml;
 namespace MRzeszowiak.View
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class AdvertListViewTemplate : ContentView
-	{
+	public partial class AdvertListViewTemplate : ListView
+    {
 		public AdvertListViewTemplate ()
 		{
 			InitializeComponent ();
 		}
-	}
+
+        private void ListView_ItemTapped(object sender, ItemTappedEventArgs e)
+        {
+            ((ListView)sender).SelectedItem = null;
+        }
+    }
 }

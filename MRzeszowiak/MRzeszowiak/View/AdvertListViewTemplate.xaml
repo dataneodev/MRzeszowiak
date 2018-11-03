@@ -1,10 +1,82 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MRzeszowiak.View.AdvertListViewTemplate">
-  <ContentView.Content>
-      <StackLayout>
-          <Label Text="Hello Xamarin.Forms!" />
-      </StackLayout>
-  </ContentView.Content>
-</ContentView>
+<ListView 
+    xmlns="http://xamarin.com/schemas/2014/forms" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:Behaviors="clr-namespace:MRzeszowiak.Behaviors"
+    xmlns:Extends="clr-namespace:MRzeszowiak.Extends" 
+    xmlns:ViewModel="clr-namespace:MRzeszowiak.ViewModel"
+    xmlns:b="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"
+    x:Class="MRzeszowiak.View.AdvertListViewTemplate"
+    HasUnevenRows="True" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"
+    SeparatorVisibility="None" ItemTapped="ListView_ItemTapped">
+    <x:Arguments>
+        <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+    </x:Arguments>
+    <ListView.Resources>
+        <ResourceDictionary>
+            <ViewModel:RowColorFromBool x:Key="boolToColor" />
+            <ViewModel:CategoryToString x:Key="CategoryToString" />
+            <ViewModel:NegativeBool x:Key="NegativeBool" />
+        </ResourceDictionary>
+    </ListView.Resources>
+    <ListView.Behaviors>
+        <Behaviors:InfiniteScroll LoadMoreCommand="{Binding LoadNextAdvert}" />
+        <b:EventToCommandBehavior EventName="ItemTapped" Command="{Binding ListViewItemTapped}" EventArgsParameterPath="Item"/>
+    </ListView.Behaviors>
+    <ListView.ItemTemplate>
+        <DataTemplate>
+            <ViewCell>
+                <Frame CornerRadius="10" Margin="5" Padding="0">
+                    <StackLayout VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" BackgroundColor="{Binding ., Converter={StaticResource boolToColor}}">
+                        <Grid Padding="0" RowSpacing="0" ColumnSpacing="4" Margin="0,4,5,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition  Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Image x:Name="ThumbnailImage" Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Aspect="AspectFit" HorizontalOptions="Center"
+                                                VerticalOptions="Center" WidthRequest="100" HeightRequest="70" Margin="5,0,0,0">
+                                <Image.Source>
+                                    <UriImageSource Uri="{Binding ThumbnailUrl}" CachingEnabled="True" CacheValidity="1"/>
+                                </Image.Source>
+                            </Image>
+                            <Label Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0" Text="{Binding Title}" FontAttributes="Bold" TextColor="Black" FontSize="14" 
+                                   HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"/>
+                            <Extends:MultiLineLabel Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Text="{Binding DescriptionShort}" TextColor="Black" 
+                                                    VerticalOptions="CenterAndExpand" FontSize="12"  Margin="0" LineBreakMode="WordWrap" Lines="4"/>
+                            <Label Grid.Column="1" Grid.Row="2">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <FormattedString.Spans>
+                                            <Span Text="Cena: " FontSize="12"/>
+                                            <Span Text="{Binding Price}" FontAttributes="Bold" FontSize="13" TextColor="Black"/>
+                                            <Span Text=" zł" FontAttributes="Bold" FontSize="13"/>
+                                        </FormattedString.Spans>
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Label Grid.Column="2" Grid.Row="2">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <FormattedString.Spans>
+                                            <!--<Span Text="Data dodania: "/>-->
+                                            <Span Text="{Binding DateAddString}" FontAttributes="Bold" FontSize="13" TextColor="Black"/>
+                                        </FormattedString.Spans>
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                        </Grid>
+                    </StackLayout>
+                </Frame>
+            </ViewCell>
+        </DataTemplate>
+    </ListView.ItemTemplate>
+    <ListView.Footer>
+        <ActivityIndicator IsRunning="{Binding FotterActivity}" IsEnabled="{Binding FotterActivity}" IsVisible="{Binding FotterActivity}" HeightRequest="32"/>
+    </ListView.Footer>
+</ListView>
