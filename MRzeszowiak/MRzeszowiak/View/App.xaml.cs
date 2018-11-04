@@ -90,7 +90,6 @@ namespace MRzeszowiak
             containerRegistry.RegisterForNavigation<CategorySelectPopup, CategorySelectViewModel>();
             containerRegistry.RegisterForNavigation<SearchPopup, SearchViewModel>();
             containerRegistry.RegisterForNavigation<SettingPage, SettingViewModel>();
-            containerRegistry.RegisterForNavigation<EmailPage, EmailViewModel>();
             containerRegistry.RegisterForNavigation<AboutPage, AboutViewModel>();
         }
 

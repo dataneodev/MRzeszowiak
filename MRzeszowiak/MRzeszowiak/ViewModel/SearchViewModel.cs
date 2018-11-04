@@ -105,7 +105,6 @@ namespace MRzeszowiak.ViewModel
             }
         }
 
-
         public ICommand ButtonCancelTappped { get; private set; }
         public ICommand ButtonSearchTappped { get; private set; }
         public ICommand ButtonCategorySelectTappped { get; private set; }
@@ -127,9 +126,7 @@ namespace MRzeszowiak.ViewModel
             });
         }
 
-        public void OnNavigatedFrom(INavigationParameters parameters) { }
-        public void OnNavigatedTo(INavigationParameters parameters) { }
-        public void OnNavigatingTo(INavigationParameters parameters)
+        public override void OnNavigatingTo(INavigationParameters parameters)
         {
             if (parameters.ContainsKey("SelectedCategory"))
                 SelectedCategory = parameters["SelectedCategory"] as Category;

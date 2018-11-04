@@ -37,9 +37,7 @@ namespace MRzeszowiak.ViewModel
             });
         }
 
-        public void OnNavigatedFrom(INavigationParameters parameters) { }
-        public void OnNavigatingTo(INavigationParameters parameters) { }
-        public void OnNavigatedTo(INavigationParameters parameters)
+        public override void OnNavigatedTo(INavigationParameters parameters)
         {
             if (parameters.ContainsKey("SearchRecord"))
                 if (parameters["SearchRecord"] is AdvertSearch advertSearch)

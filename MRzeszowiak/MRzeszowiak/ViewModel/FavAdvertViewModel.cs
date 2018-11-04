@@ -11,7 +11,7 @@ using System.Windows.Input;
 
 namespace MRzeszowiak.ViewModel
 {
-    class FavAdvertViewModel
+    class FavAdvertViewModel : BaseViewModel
     {
         public ObservableCollection<AdvertShort> AdvertShortList { get; private set; } = new ObservableCollection<AdvertShort>();
         protected readonly IRzeszowiak _rzeszowiakRepository;
@@ -34,6 +34,16 @@ namespace MRzeszowiak.ViewModel
 
             //LoadNextAdvert = new Command(LoadNextItem);
             //ListViewItemTapped = new Command<AdvertShort>(ListViewTappedAsync);
+        }
+
+        public override void OnNavigatedTo(INavigationParameters parameters)
+        {
+            base.OnNavigatedTo(parameters);
+            AdvertShortList.Clear();
+            var favList = _setting.GetFavoriteAdvertListDB();
+            if (favList != null)
+                foreach (var item in favList)
+                    AdvertShortList.Add(item);
         }
     }
 }

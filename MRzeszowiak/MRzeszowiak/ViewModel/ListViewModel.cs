@@ -134,9 +134,7 @@ namespace MRzeszowiak.ViewModel
             RefreshAdverList = new Command(async()=> await SearchExecute(_lastAdvertSearch, false));
         }
 
-        public void OnNavigatedFrom(INavigationParameters parameters) { }
-        public void OnNavigatingTo(INavigationParameters parameters) { }
-        public async void OnNavigatedTo(INavigationParameters parameters)
+        public override async void OnNavigatedTo(INavigationParameters parameters)
         {
             if (parameters.ContainsKey("LoadAtStartup"))
                 await LoadLastOnStartup();

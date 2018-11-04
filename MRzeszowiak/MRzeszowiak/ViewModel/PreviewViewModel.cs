@@ -1,5 +1,6 @@
 ﻿using MRzeszowiak.Model;
 using MRzeszowiak.Services;
+using MRzeszowiak.Extends;
 using Prism.Navigation;
 using Prism.Services;
 using System;
@@ -176,6 +177,30 @@ namespace MRzeszowiak.ViewModel
             }
         }
 
+        private DateTime _lastSendMailDate;
+        private DateTime lastSendMailDate
+        {
+            get
+            {
+                return _lastSendMailDate;
+            }
+            set
+            {
+                _lastSendMailDate = value;
+                OnPropertyChanged("LastSendMailDate");
+            }
+        }
+
+        public string LastSendMailDate
+        {
+            get
+            {
+                if (DateTime.Compare(lastSendMailDate, DateTime.Now.AddYears(-1)) < 0)
+                    return String.Empty;
+                return String.Format("{0:H:m dd-MM-yyyy}", lastSendMailDate);
+            }
+        }
+
         public ObservableCollection<KeyValue> AdditionalData { get; set; } = new ObservableCollection<KeyValue>();
         public bool AddDataVisible => (AdditionalData?.Count ?? 0) > 0 ? true : false;
         public ObservableCollection<string> ImageURLsList { get; set; } = new ObservableCollection<string>();
@@ -225,7 +250,7 @@ namespace MRzeszowiak.ViewModel
                 }    
             });
 
-            MailAdvert = new Command(() =>
+            MailAdvert = new Command(async() =>
             {
                 Debug.Write("MailAdvert");
                 if (MailStatus == MailStatusEnum.email_creating)
@@ -236,19 +261,19 @@ namespace MRzeszowiak.ViewModel
 
                 if (!_setting.IsUserMailCorrect)
                 {
-                    _pageDialog.DisplayAlertAsync(_setting.GetAppNameAndVersion, "Nie można wysłać wiadomości.\nUzupełnij w ustawieniach aplikacji swój adres email.", "OK");
+                    await _pageDialog.DisplayAlertAsync(_setting.GetAppNameAndVersion, "Nie można wysłać wiadomości.\nUzupełnij w ustawieniach aplikacji swój adres email.", "OK");
                     return;
                 }
 
-                if (!setting.CanSendMail(_lastAdvert))
+                if (!CanSendMail())
                 {
-                    _pageDialog.DisplayAlertAsync(_setting.GetAppNameAndVersion, "Nie można narazie wysłać wiadomości.", "OK");
+                    await _pageDialog.DisplayAlertAsync(_setting.GetAppNameAndVersion, "Nie można narazie wysłać wiadomości.", "OK");
                     return;
                 }
 
                 if (_lastAdvert?.EmailToken.Length != 10)
                 {
-                    _pageDialog.DisplayAlertAsync(_setting.GetAppNameAndVersion, "Problem z wysłaniem wiadomości. Odśwież ogłoszenie.", "OK");
+                    await _pageDialog.DisplayAlertAsync(_setting.GetAppNameAndVersion, "Problem z wysłaniem wiadomości. Odśwież ogłoszenie.", "OK");
                     return;
                 }
 
@@ -258,15 +283,28 @@ namespace MRzeszowiak.ViewModel
 
             FavoriteAdvert = new Command(() =>
             {
-                IsFavorite = !IsFavorite;
-                if (_lastAdvert != null)
+                if (_lastAdvert == null)
+                    return;
+
+                if (IsFavorite)
                 {
-                    _lastAdvert.IsFavorite = IsFavorite;
-                    _dependencyService.Get<IToast>().Show("Dodano ogłoszenie do ulubionych");
+                    if (_setting.DeleteAdvertDB(_lastAdvert))
+                    {
+                        _dependencyService.Get<IToast>().Show("Usunięto ogłoszenie z ulubionych");
+                        IsFavorite = !IsFavorite;
+                    }  
+                    else
+                        _dependencyService.Get<IToast>().Show("Wystąpił błąd podczas usuwania ogłoszenia z ulubionych");
                 }
                 else
                 {
-
+                    if (_setting.InsertOrUpdateAdvertDB(_lastAdvert))
+                    {
+                        _dependencyService.Get<IToast>().Show("Dodano ogłoszenie do ulubionych");
+                        IsFavorite = !IsFavorite;
+                    }
+                    else
+                        _dependencyService.Get<IToast>().Show("Wystąpił błąd podczas dodawania ogłoszenia do ulubionych");
                 }
             });
 
@@ -301,7 +339,7 @@ namespace MRzeszowiak.ViewModel
                     return;
                 }
 
-                if (!setting.CanSendMail(_lastAdvert))
+                if (!CanSendMail())
                 {
                     await _pageDialog.DisplayAlertAsync(_setting.GetAppNameAndVersion, "Nie można narazie wysłać wiadomości.", "OK");
                     return;
@@ -318,7 +356,8 @@ namespace MRzeszowiak.ViewModel
                 var status = await _rzeszowiakRepository.SendUserMessage(_lastAdvert, message, _setting.UserEmail);
                 if (status)
                 {
-                    _setting.SendMailNotice(_lastAdvert);
+                    _setting.UpdateSendMailNotice(_lastAdvert);
+                    lastSendMailDate = DateTime.Now;
                     MailStatus = MailStatusEnum.email_send;
                     await _pageDialog.DisplayAlertAsync(_setting.GetAppNameAndVersion, "Twoja wiadomość została wysłana.", "OK");
                 }
@@ -330,16 +369,13 @@ namespace MRzeszowiak.ViewModel
             });
         }
 
-        public void OnNavigatedTo(INavigationParameters parameters)
+        public override void OnNavigatedTo(INavigationParameters parameters)
         {
             Debug.Write("OnNavigatedTo PreviewViewModel");
             if (parameters.ContainsKey("AdvertShort"))
                 if (parameters["AdvertShort"] is AdvertShort advertShort)
                     LoadAdvertMessage(advertShort);
         }
-
-        public void OnNavigatingTo(INavigationParameters parameters) {  }
-        public void OnNavigatedFrom(INavigationParameters parameters)   {  }
 
         async void LoadAdvertMessage(AdvertShort advertShort)
         {
@@ -354,11 +390,21 @@ namespace MRzeszowiak.ViewModel
             CopyAdverToViewModel(new Advert());
 
             var _advert = await _rzeszowiakRepository.GetAdvertAsync(advertShort);
-                     
-            if (_advert == null) 
-                ErrorMessage = "Błąd podczas ładowania strony.\nSprawdź połączenie internetowe i spróbuj ponownie.";               
+
+            if (_advert == null)
+            {
+                ErrorMessage = "Błąd podczas ładowania strony.\nSprawdź połączenie internetowe i spróbuj ponownie.";
+                MailStatus = MailStatusEnum.email_default;
+            }
             else
+            {
                 CopyAdverToViewModel(_advert);
+                lastSendMailDate = _setting.LastMailSendDate(_advert);
+                if(lastSendMailDate.IsSend())
+                    MailStatus = MailStatusEnum.email_send;
+                else
+                    MailStatus = MailStatusEnum.email_default;
+            }
             Activity = false;
         }
 
@@ -372,7 +418,7 @@ namespace MRzeszowiak.ViewModel
             DateAdd = advert?.DateAddString ?? String.Empty;
             ExpiredDateAdd = advert?.ExpiredString ?? String.Empty;
             Highlighted = advert?.Highlighted ?? false;
-
+            
             AdditionalData.Clear();
             foreach (var item in advert?.AdditionalData)
                 AdditionalData.Add(new KeyValue(item.Key, item.Value));
@@ -380,7 +426,6 @@ namespace MRzeszowiak.ViewModel
             ImageURLsList.Clear();
             foreach (var item in advert?.ImageURLsList)
                 ImageURLsList.Add(item);
-            IsFavorite = advert.IsFavorite;
 
             if (advert.PhoneSsid.Length == 10 && advert.PhonePHPSSESION != null)
             {
@@ -389,9 +434,15 @@ namespace MRzeszowiak.ViewModel
                 _imageContainer.DownloadImage(advert.PhoneSsid, advert.AdverIDinRzeszowiak, advert.URLPath, advert.PhonePHPSSESION); // no wait
             }
             else
-                HasPhoneImage = false;       
-                
+                HasPhoneImage = false;
             _lastAdvert = advert;
+        }
+
+        protected bool CanSendMail()
+        {
+            //if (DateTime.Compare(lastSendMailDate, DateTime.Now.AddHours(-1)) > 0)
+            //    return false;
+            return true;
         }
 
         protected void ImageDownloadFinish(object sender, EventArgs e)

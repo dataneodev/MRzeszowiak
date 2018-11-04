@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using SQLite;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using Xamarin.Forms;
 
@@ -8,8 +11,34 @@ namespace MRzeszowiak.Model
     public class AdvertShort
     {
         protected const string RZESZOWIAK_BASE_URL = "http://www.rzeszowiak.pl/";
+        [PrimaryKey, AutoIncrement]
+        public int IdDb { get; set; }
         public int AdverIDinRzeszowiak { get; set; }
+        [Ignore]
         public Category Category { get; set; }
+        public string CategorySerialized
+        {
+            get => JsonConvert.SerializeObject(Category);
+            set
+            {
+                var settings = new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                    MissingMemberHandling = MissingMemberHandling.Ignore
+                };
+                try
+                {
+                    Category = JsonConvert.DeserializeObject<Category>(value);
+                    if (Category?.ChildCategory != null)
+                        foreach (var child in Category.ChildCategory)
+                            child.ParentCategory = Category;
+                }
+                catch (System.Exception e)
+                {
+                    Debug.Write("CategorySerialized error => " + e.Message);
+                }
+            }
+        }
         public string Title { get; set; }
         public string DateAddString { get; set; }
         public int Price { get; set; }
@@ -21,7 +50,7 @@ namespace MRzeszowiak.Model
             get { return uRLPath; }
             set { uRLPath = value; }
         }
-
+        [Ignore]
         public string URL
         {
             get { return URLPath.Length > 0 ? RZESZOWIAK_BASE_URL + URLPath : 
@@ -40,6 +69,7 @@ namespace MRzeszowiak.Model
             }
             set { thumbnailUrl = value; }
         }
+        [Ignore]
         public bool RowEven { get; set; }
     }
 }

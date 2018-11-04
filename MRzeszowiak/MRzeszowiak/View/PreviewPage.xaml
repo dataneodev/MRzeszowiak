@@ -161,6 +161,13 @@
                                     </DataTrigger>
                                 </StackLayout.Triggers>
                                 <Label Text="Twoja wiadomość:" FontSize="12" Margin="8,2,8,2"/>
+                                <Label Text="{Binding LastSendMailDate, StringFormat='Wysłano już wiadomość dnia: {0}'}" FontSize="12" Margin="8,0,8,2" IsVisible="True">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding LastSendMailDate.Length}" Value="0">
+                                            <Setter Property="IsVisible" Value="False"/>
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
                                 <Frame BorderColor="#f4f4f4" CornerRadius="0" Padding="0" Margin="0,0,0,0">
                                     <Extends:CustomEditor Margin="0" x:Name="EmailMessageEntry"  Keyboard="Text" HeightRequest="140" HorizontalOptions="FillAndExpand">
                                         <Extends:CustomEditor.Triggers>

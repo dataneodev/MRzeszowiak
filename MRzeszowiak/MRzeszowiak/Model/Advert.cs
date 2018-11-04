@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SQLite;
+using SQLiteNetExtensions.Attributes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -16,11 +18,13 @@ namespace MRzeszowiak.Model
         public int Views { get; set; }
         public string DescriptionHTML { get; set; } = String.Empty;
         public string PhoneSsid { get; set; } = String.Empty;
+        [Ignore]
         public Cookie PhonePHPSSESION { get; set; }
+        [OneToMany(CascadeOperations = CascadeOperation.All)]
         public Dictionary<string, string> AdditionalData { get; set; } = new Dictionary<string, string>();
+        [OneToMany(CascadeOperations = CascadeOperation.All)]
         public List<string> ImageURLsList { get; set; } = new List<string>();
         public DateTime VisitPageDate { get; set; }
         public string EmailToken { get; set; }
-        public bool IsFavorite { get; set; }
     }
 }

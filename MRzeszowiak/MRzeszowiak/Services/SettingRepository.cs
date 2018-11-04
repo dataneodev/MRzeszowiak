@@ -2,18 +2,20 @@
 using Newtonsoft.Json;
 using SQLite;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using SQLiteNetExtensions;
+using SQLiteNetExtensions.Extensions;
 
 namespace MRzeszowiak.Services
 {
     public class SettingRepository : ISetting, INotifyPropertyChanged
     {
-        private bool _rawObj;
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
@@ -22,6 +24,16 @@ namespace MRzeszowiak.Services
         private string DbFullPath { get => Path.Combine(_dbPath ?? String.Empty, dbName); }
         [Ignore]
         public bool AutoSaveDB { get; set; } = false;
+        private bool _rawObj;
+        [Ignore]
+        public bool RawObj
+        {
+            get
+            {
+                return _rawObj || (_dbPath?.Length ?? 0) == 0; 
+            }
+        }
+
         [Ignore]
         public string UpdateServerUrl { get => "https://script.google.com/macros/s/AKfycbxx_fFWPUjtiwBU9uFcVKhvXFLa8SjfoHZbM7DmSD_WaWmArTu1/exec"; }
         [Ignore]
@@ -94,6 +106,9 @@ namespace MRzeszowiak.Services
                 try
                 {
                     AutostartAdvertSearch = JsonConvert.DeserializeObject<AdvertSearch>(value);
+                    if (AutostartAdvertSearch?.CategorySearch?.ChildCategory != null)
+                        foreach (var child in AutostartAdvertSearch?.CategorySearch?.ChildCategory)
+                            child.ParentCategory = AutostartAdvertSearch?.CategorySearch;
                 }
                 catch (System.Exception e)
                 {
@@ -113,14 +128,122 @@ namespace MRzeszowiak.Services
             _rawObj = RawObj;
         }
 
-        public bool CanSendMail(Advert advert)
+        public DateTime LastMailSendDate(Advert advert)
         {
+            if (RawObj || advert == null) return DateTime.Now.AddYears(-1);
+            Debug.Write("LastMailSendDate");
+            using (var conn = new SQLite.SQLiteConnection(DbFullPath))
+            {
+                conn.CreateTable<MailAdvertDB>();
+                var tab = conn.Table<MailAdvertDB>().Where(v => v.AdverIDinRzeszowiak == advert.AdverIDinRzeszowiak);
+                if (tab.Count() > 0)
+                    return tab.First().MailSendDateTime.ToLocalTime();
+            }
+            return DateTime.Now.AddYears(-1);
+        }
+
+        public bool UpdateSendMailNotice(Advert advert)
+        {
+            if (RawObj || advert == null) return false;
+            Debug.Write("UpdateSendMailNotice");
+            if (advert == null) return false;
+            using (var conn = new SQLite.SQLiteConnection(DbFullPath))
+            {
+                conn.CreateTable<MailAdvertDB>();
+                var tab = conn.Table<MailAdvertDB>().Where(v => v.AdverIDinRzeszowiak == advert.AdverIDinRzeszowiak) ;
+                if(tab.Count() == 0)
+                {
+                    var dbInsert = new MailAdvertDB
+                    {
+                        AdverIDinRzeszowiak = advert.AdverIDinRzeszowiak,
+                        MailSendDateTime = DateTime.Now,
+                    };
+
+                    if (conn.Insert(dbInsert) == 0)
+                        return false;
+                }    
+                else
+                {
+                    var exists = tab.First();
+                    exists.MailSendDateTime = DateTime.Now;
+                    conn.Update(exists);
+                }  
+            }
             return true;
         }
 
-        public void SendMailNotice(Advert advert)
+        //
+        public class MailAdvertDB
         {
+            [PrimaryKey, AutoIncrement]
+            public int IdDb { get; set; }
+            public int AdverIDinRzeszowiak { get; set; }
+            public DateTime MailSendDateTime { get; set; }
+        }
 
+        public IEnumerable<AdvertShort> GetFavoriteAdvertListDB()
+        {
+            if (RawObj) new List<AdvertShort>();
+            Debug.Write("GetFavoriteAdvertListDB");
+
+            using (var conn = new SQLite.SQLiteConnection(DbFullPath))
+            {
+                conn.CreateTable<Advert>();
+                return conn.Table<Advert>().OrderByDescending(x => x.IdDb);
+            }
+        }
+
+        public bool InsertOrUpdateAdvertDB(Advert advert)
+        {
+            if (RawObj || advert == null) return false; ;
+            Debug.Write("InsertOrUpdateAdvertDB");
+            using (var conn = new SQLite.SQLiteConnection(DbFullPath))
+            {
+                conn.CreateTable<Advert>();
+                var tab = conn.Table<Advert>().Where(v => v.AdverIDinRzeszowiak == advert.AdverIDinRzeszowiak);
+                if (tab.Count() == 0)
+                {
+                    conn.InsertWithChildren(advert); 
+                }
+                else
+                {
+                    advert.IdDb = tab.First().IdDb;
+                    conn.InsertOrReplaceWithChildren(advert);
+                }
+            }
+            return true;
+        }
+
+        public bool DeleteAdvertDB(Advert advert)
+        {
+            if (RawObj || advert == null) return false; ;
+            Debug.Write("DeleteAdvertDB");
+            using (var conn = new SQLite.SQLiteConnection(DbFullPath))
+            {
+                conn.CreateTable<Advert>();
+                var tab = conn.Table<Advert>().Where(v => v.AdverIDinRzeszowiak == advert.AdverIDinRzeszowiak);
+                if (tab.Count() >= 1)
+                {
+                    advert.IdDb = tab.First().IdDb;
+                    conn.Delete(advert);
+                }
+                else return false;
+            }
+            return true;
+        }
+
+        public bool IsAdvertInDB(Advert advert)
+        {
+            if (RawObj || advert == null) return false; ;
+            Debug.Write("IsAdvertInDB");
+            using (var conn = new SQLite.SQLiteConnection(DbFullPath))
+            {
+                conn.CreateTable<Advert>();
+                var tab = conn.Table<Advert>().Where(v => v.AdverIDinRzeszowiak == advert.AdverIDinRzeszowiak);
+                if (tab.Count() >= 1)
+                    return true;
+            }
+            return false;
         }
 
         public void SetDBPath(string dbPath)
@@ -132,7 +255,7 @@ namespace MRzeszowiak.Services
 
         protected void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string name = "")
         {
-            if (!_rawObj)
+            if (!RawObj)
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
                 Thread saveThread = new Thread(SaveSetting);
@@ -140,9 +263,9 @@ namespace MRzeszowiak.Services
             }
         }
 
-        public void LoadSetting()
+        protected void LoadSetting()
         {
-            if (_rawObj) return;
+            if (RawObj) return;
             Debug.Write("LoadSettingAsync");
             using (var conn = new SQLite.SQLiteConnection(DbFullPath))
             {
@@ -153,18 +276,15 @@ namespace MRzeszowiak.Services
                 var res = conn.Get<SettingRepository>(1);
                 foreach (PropertyInfo property in typeof(SettingRepository).GetProperties())
                     if (property.CanWrite)
-                        property.SetValue(this, property.GetValue(res, null), null);
-                if(this.AutostartAdvertSearch?.CategorySearch?.ChildCategory != null)
-                    foreach (var child in this.AutostartAdvertSearch?.CategorySearch?.ChildCategory) 
-                        child.ParentCategory = this.AutostartAdvertSearch?.CategorySearch;
+                        property.SetValue(this, property.GetValue(res, null), null); 
             }
         }
 
         private volatile int _session;
         private static readonly object SyncObject = new object();
-        public void SaveSetting()
+        protected void SaveSetting()
         {
-            if (!AutoSaveDB || _rawObj) return;
+            if (!AutoSaveDB || RawObj) return;
             // prevent from to many save
 
             Random rnd = new Random();

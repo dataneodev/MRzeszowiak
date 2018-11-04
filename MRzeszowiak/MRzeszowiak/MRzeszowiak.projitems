@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Behaviors\InfiniteScrolling.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\CloneObjectSerializable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\CustomEditor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extends\DateTimeExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\NoAnimationNavigationPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\PinchToZoomContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\WebPage.cs" />
@@ -38,7 +39,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\AboutViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\BaseViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\CategorySelectViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ViewModel\EmailViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\FavAdvertViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\FavSearchViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ListViewModel.cs" />
@@ -62,10 +62,6 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)View\CategorySelectPopup.xaml.cs">
       <DependentUpon>CategorySelectPopup.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)View\EmailPage.xaml.cs">
-      <DependentUpon>EmailPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)View\FavAdvertPage.xaml.cs">
@@ -137,12 +133,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)View\AboutPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)View\EmailPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>

@@ -34,7 +34,7 @@ namespace MRzeszowiak.ViewModel
             BackButtonTapped = new Command(()=>_navigationService.GoBackAsync(null, useModalNavigation: false, animated: false));
         }
 
-        public void OnNavigatedTo(INavigationParameters parameters)
+        public override void OnNavigatedTo(INavigationParameters parameters)
         {
             if (parameters.ContainsKey("ImageSelectedIndex") && parameters.ContainsKey("ImageList"))
             {
@@ -43,9 +43,6 @@ namespace MRzeszowiak.ViewModel
                         LoadImage(ImageList, index);    
             }
         }
-
-        public void OnNavigatingTo(INavigationParameters parameters) { }
-        public void OnNavigatedFrom(INavigationParameters parameters) { }
 
         void LoadImage(IEnumerable<string> imageList, int position)
         {
