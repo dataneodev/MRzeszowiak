@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
+using Prism.Events;
 
 namespace MRzeszowiak.ViewModel
 {
@@ -22,6 +23,7 @@ namespace MRzeszowiak.ViewModel
         protected readonly IPageDialogService _pageDialog;
         protected readonly IDependencyService _dependencyService;
         protected readonly ISetting _setting;
+        private readonly IEventAggregator _eventAggregator;
 
         private int adverIDinRzeszowiak;
         public int AdverIDinRzeszowiak
@@ -178,26 +180,13 @@ namespace MRzeszowiak.ViewModel
         }
 
         private DateTime _lastSendMailDate;
-        private DateTime lastSendMailDate
+        public DateTime LastSendMailDate
         {
-            get
-            {
-                return _lastSendMailDate;
-            }
+            get { return _lastSendMailDate; }
             set
             {
                 _lastSendMailDate = value;
                 OnPropertyChanged("LastSendMailDate");
-            }
-        }
-
-        public string LastSendMailDate
-        {
-            get
-            {
-                if (DateTime.Compare(lastSendMailDate, DateTime.Now.AddYears(-1)) < 0)
-                    return String.Empty;
-                return String.Format("{0:H:m dd-MM-yyyy}", lastSendMailDate);
             }
         }
 
@@ -219,14 +208,15 @@ namespace MRzeszowiak.ViewModel
 
         public PreviewViewModel(INavigationService navigationService, IRzeszowiak RzeszowiakRepository,
                                 IRzeszowiakImageContainer rzeszowiakImageContainer, IPageDialogService pageDialog, 
-                                ISetting setting, IDependencyService dependencyService)
+                                ISetting setting, IDependencyService dependencyService, IEventAggregator eventAggregator)
         {
             _rzeszowiakRepository = RzeszowiakRepository ?? throw new NullReferenceException("IRzeszowiakRepository RzeszowiakRepository == null !");
             _navigationService = navigationService ?? throw new NullReferenceException("INavigationService navigationService == null !");
             _pageDialog = pageDialog ?? throw new NullReferenceException("IPageDialogService pageDialog == null !");
             _imageContainer = rzeszowiakImageContainer ?? throw new NullReferenceException("IRzeszowiakImageContainer rzeszowiakImageContainer == null !");
             _setting = setting ?? throw new NullReferenceException("ISetting setting == null !");
-            _dependencyService = dependencyService ?? throw new NullReferenceException("IDependencyService setting == null !");
+            _dependencyService = dependencyService ?? throw new NullReferenceException("IDependencyService dependencyService == null !");
+            _eventAggregator = eventAggregator ?? throw new NullReferenceException("IEventAggregator eventAggregator == null !");
             _imageContainer.OnDownloadFinish += ImageDownloadFinish;
 
             ImageURLsList.CollectionChanged += (s, e) => { OnPropertyChanged("ImageVisible"); };
@@ -255,7 +245,10 @@ namespace MRzeszowiak.ViewModel
                 Debug.Write("MailAdvert");
                 if (MailStatus == MailStatusEnum.email_creating)
                 {
-                    MailStatus = MailStatusEnum.email_default;
+                    if(LastSendMailDate.IsSend())
+                        MailStatus = MailStatusEnum.email_send;
+                        else
+                        MailStatus = MailStatusEnum.email_default;
                     return;
                 }
 
@@ -283,14 +276,14 @@ namespace MRzeszowiak.ViewModel
 
             FavoriteAdvert = new Command(() =>
             {
-                if (_lastAdvert == null)
-                    return;
+                if (_lastAdvert == null) return;
 
                 if (IsFavorite)
                 {
                     if (_setting.DeleteAdvertDB(_lastAdvert))
                     {
                         _dependencyService.Get<IToast>().Show("Usunięto ogłoszenie z ulubionych");
+                        _eventAggregator.GetEvent<AdvertDeleteFavEvent>().Publish(_lastAdvertShort);
                         IsFavorite = !IsFavorite;
                     }  
                     else
@@ -300,6 +293,7 @@ namespace MRzeszowiak.ViewModel
                 {
                     if (_setting.InsertOrUpdateAdvertDB(_lastAdvert))
                     {
+                        _eventAggregator.GetEvent<AdvertAddFavEvent>().Publish(_lastAdvert);
                         _dependencyService.Get<IToast>().Show("Dodano ogłoszenie do ulubionych");
                         IsFavorite = !IsFavorite;
                     }
@@ -357,7 +351,7 @@ namespace MRzeszowiak.ViewModel
                 if (status)
                 {
                     _setting.UpdateSendMailNotice(_lastAdvert);
-                    lastSendMailDate = DateTime.Now;
+                    LastSendMailDate = DateTime.Now;
                     MailStatus = MailStatusEnum.email_send;
                     await _pageDialog.DisplayAlertAsync(_setting.GetAppNameAndVersion, "Twoja wiadomość została wysłana.", "OK");
                 }
@@ -375,9 +369,13 @@ namespace MRzeszowiak.ViewModel
             if (parameters.ContainsKey("AdvertShort"))
                 if (parameters["AdvertShort"] is AdvertShort advertShort)
                     LoadAdvertMessage(advertShort);
+
+            if (parameters.ContainsKey("AdvertShortDB"))
+                if (parameters["AdvertShortDB"] is AdvertShort advertShort)
+                    LoadAdvertMessage(advertShort, true);
         }
 
-        async void LoadAdvertMessage(AdvertShort advertShort)
+        async void LoadAdvertMessage(AdvertShort advertShort, bool dbLoad = false)
         {
             if(advertShort == null)
                 throw new NullReferenceException("LoadAdvert => advertShort == null !");
@@ -389,18 +387,26 @@ namespace MRzeszowiak.ViewModel
             Activity = true;
             CopyAdverToViewModel(new Advert());
 
-            var _advert = await _rzeszowiakRepository.GetAdvertAsync(advertShort);
+            Advert _advert;
+            if (!dbLoad)
+                _advert = await _rzeszowiakRepository.GetAdvertAsync(advertShort);
+            else
+                _advert = _setting.GetFavoriteAdvertDB(advertShort);
 
             if (_advert == null)
             {
-                ErrorMessage = "Błąd podczas ładowania strony.\nSprawdź połączenie internetowe i spróbuj ponownie.";
+                if (!dbLoad)
+                    ErrorMessage = "Błąd podczas ładowania strony.\nSprawdź połączenie internetowe i spróbuj ponownie.";
+                else
+                    ErrorMessage = "Błąd podczas wczytywania ogłoszenia z bazy danych.\nSkontaktuj się z deweloperem aplikacji.";
                 MailStatus = MailStatusEnum.email_default;
             }
             else
             {
                 CopyAdverToViewModel(_advert);
-                lastSendMailDate = _setting.LastMailSendDate(_advert);
-                if(lastSendMailDate.IsSend())
+                LastSendMailDate = _setting.LastMailSendDate(_advert);
+                IsFavorite = _setting.IsAdvertInDB(_advert);
+                if(LastSendMailDate.IsSend())
                     MailStatus = MailStatusEnum.email_send;
                 else
                     MailStatus = MailStatusEnum.email_default;
@@ -427,11 +433,11 @@ namespace MRzeszowiak.ViewModel
             foreach (var item in advert?.ImageURLsList)
                 ImageURLsList.Add(item);
 
-            if (advert.PhoneSsid.Length == 10 && advert.PhonePHPSSESION != null)
+            if ((advert.PhoneSsid.Length == 10 && advert.PhonePHPSSESION != null) || advert?.PhoneImageByteArray?.Length>0)
             {
                 HasPhoneImage = true;
                 _imageContainer.HideImage();
-                _imageContainer.DownloadImage(advert.PhoneSsid, advert.AdverIDinRzeszowiak, advert.URLPath, advert.PhonePHPSSESION); // no wait
+                _imageContainer.DownloadImage(advert, advert.PhoneSsid, advert.AdverIDinRzeszowiak, advert.URLPath, advert.PhonePHPSSESION); // no wait
             }
             else
                 HasPhoneImage = false;

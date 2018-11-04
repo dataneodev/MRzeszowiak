@@ -18,6 +18,7 @@
             <ViewModel:NegativeBool x:Key="NegativeBool" />
             <ViewModel:MailStatusEnumToString x:Key="MailStatusEnumToString" />
             <ViewModel:MailStatusEnumNotSending x:Key="MailStatusEnumNotSending" />
+            <ViewModel:DateTimeToString x:Key="DateTimeToString" />
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Content>
@@ -161,9 +162,9 @@
                                     </DataTrigger>
                                 </StackLayout.Triggers>
                                 <Label Text="Twoja wiadomość:" FontSize="12" Margin="8,2,8,2"/>
-                                <Label Text="{Binding LastSendMailDate, StringFormat='Wysłano już wiadomość dnia: {0}'}" FontSize="12" Margin="8,0,8,2" IsVisible="True">
+                                <Label Text="{Binding LastSendMailDate, Converter={StaticResource DateTimeToString}, StringFormat='Wysłano już wiadomość dnia: {0}'}" FontSize="12" Margin="8,0,8,2" IsVisible="True">
                                     <Label.Triggers>
-                                        <DataTrigger TargetType="Label" Binding="{Binding LastSendMailDate.Length}" Value="0">
+                                        <DataTrigger TargetType="Label" Binding="{Binding LastSendMailDate, Converter={StaticResource DateTimeToString}}" Value="">
                                             <Setter Property="IsVisible" Value="False"/>
                                         </DataTrigger>
                                     </Label.Triggers>

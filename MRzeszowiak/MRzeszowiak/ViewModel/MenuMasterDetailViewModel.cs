@@ -13,7 +13,7 @@ namespace MRzeszowiak.ViewModel
         private readonly INavigationService _navigationService;
         public List<MasterPageItem> MenuList { get; private set; } = new List<MasterPageItem>()
         {
-            new MasterPageItem{Title = "Ulubione wyszukiwania", IconSource = "menu_favsearch.png", TargetPage = "FavSearchPage"  },
+            //new MasterPageItem{Title = "Ulubione wyszukiwania", IconSource = "menu_favsearch.png", TargetPage = "FavSearchPage"  },
             new MasterPageItem{Title = "Ulubione ogłoszenia", IconSource = "menu_favadvert.png", TargetPage = "FavAdvertPage"  },
             new MasterPageItem{Title = "Ustawienia", IconSource = "menu_setting.png", TargetPage = "SettingPage"  },
             new MasterPageItem{Title = "O aplikacji", IconSource = "menu_about.png", TargetPage = "AboutPage"  },
@@ -31,12 +31,19 @@ namespace MRzeszowiak.ViewModel
         protected async void MenuItemTappedm(MasterPageItem item)
         {
             if (item == null) return;
-            if( item.TargetPage == "www.rzeszowiak.pl")
+
+            switch (item.TargetPage)
             {
-                Device.OpenUri(new Uri(App.RzeszowiakURL));
-                return;
-            }
-            await _navigationService.NavigateAsync("MainNavigation/" + item.TargetPage, null);
+                case "www.rzeszowiak.pl":
+                    Device.OpenUri(new Uri(App.RzeszowiakURL));
+                    break;
+                case "FavAdvertPage":
+                    await _navigationService.NavigateAsync($"MainNavigation/{item.TargetPage}?LoadFavAdvert=true");
+                    break;
+                default:
+                    await _navigationService.NavigateAsync("MainNavigation/"+item.TargetPage);
+                    break;
+            }; 
         }
     }
 

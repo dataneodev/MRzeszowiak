@@ -3,13 +3,21 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MRzeszowiak.View.FavAdvertPage"
              xmlns:View="clr-namespace:MRzeszowiak.View"
+             xmlns:ViewModel="clr-namespace:MRzeszowiak.ViewModel"
              Title="Ulubione ogłoszenia">
     <ContentPage.ToolbarItems>
-        <ToolbarItem Name="MenuItem1" Order="Secondary" Text="Wyczyść liste ulubionych" Priority="0" />
+        <ToolbarItem Name="MenuItem1" Order="Secondary" Text="Wyczyść liste ulubionych" 
+                     Command="{Binding DeleteAllButtonTapped}" Priority="0" />
     </ContentPage.ToolbarItems>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <ViewModel:NegativeBool x:Key="NegativeBool" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <ContentPage.Content>
         <StackLayout>
-            <View:AdvertListViewTemplate ItemsSource="{Binding AdvertShortList}"/>
+            <ActivityIndicator IsRunning="{Binding Activity}" IsVisible="{Binding Activity}" VerticalOptions="CenterAndExpand"/>
+            <View:AdvertListViewTemplate IsVisible="{Binding Activity, Converter={StaticResource NegativeBool}}" ItemsSource="{Binding AdvertShortList}"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

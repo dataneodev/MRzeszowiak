@@ -23,7 +23,7 @@ namespace MRzeszowiak
 
         public static string RzeszowiakURL = "http://www.rzeszowiak.pl";
         public static string GetAppName = "MRzeszowiak";
-        public static float GetAppVersion = 1.0f;
+        public static float GetAppVersion = 0.1f;
         public static string GetAppNameAndVersion = GetAppName + " " + GetAppVersion.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture);
 
         public static Color highlightRow = Color.FromHex("#f4f4f4");
@@ -39,7 +39,6 @@ namespace MRzeszowiak
         public App(string dbpath, IPlatformInitializer initializer = null) : this(initializer, true)
         {
             Setting.SetDBPath(dbpath);
-
             var navigationParams = new NavigationParameters("LoadAtStartup=true");
             NavigationService.NavigateAsync("app:///MenuMasterDetail/MainNavigation/ListPage", navigationParams);
         }

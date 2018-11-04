@@ -39,12 +39,14 @@ namespace MRzeszowiak.Model
                 }
             }
         }
-        public string Title { get; set; }
-        public string DateAddString { get; set; }
+        public string Title { get; set; } = String.Empty;
+        public DateTime DateAddDateTime { get; set; }
+        [Ignore]
+        public string DateAddString { get => GetFormatedDateTime(DateAddDateTime); } 
         public int Price { get; set; }
         public bool Highlighted { get; set; }
 
-        protected string uRLPath;
+        protected string uRLPath = String.Empty;
         public string URLPath
         {
             get { return uRLPath; }
@@ -57,19 +59,34 @@ namespace MRzeszowiak.Model
                         RZESZOWIAK_BASE_URL + "uslugi-transportowe-" + AdverIDinRzeszowiak.ToString();  }
             set { URLPath = value; }
         }
-        public string DescriptionShort { get; set; }
-        protected string thumbnailUrl;
+        public string DescriptionShort { get; set; } = String.Empty;
+        protected string thumbnailUrl = String.Empty;
+        protected string blankImage = "https://sites.google.com/site/dataneosoftware/polski/mrzeszowiak/no-image.png?attredirects=0";
         public string ThumbnailUrl
         {
-            get
+            get { return ((thumbnailUrl?.Length??0) == 0) ? blankImage : RZESZOWIAK_BASE_URL + thumbnailUrl; }
+            set
             {
-                return (thumbnailUrl.IndexOf("/wsp/mini/l_no.gif") != -1) ? 
-                        "https://sites.google.com/site/dataneosoftware/polski/mrzeszowiak/no-image.png?attredirects=0" : 
-                        RZESZOWIAK_BASE_URL + thumbnailUrl;
+                if(value?.IndexOf("/wsp/mini/l_no.gif") != -1 || value == blankImage)
+                    thumbnailUrl = String.Empty;
+                else
+                    thumbnailUrl = value?.Replace(RZESZOWIAK_BASE_URL, String.Empty);
             }
-            set { thumbnailUrl = value; }
         }
         [Ignore]
         public bool RowEven { get; set; }
+        protected string GetFormatedDateTime(DateTime dt)
+        {
+            if(dt.Date == DateTime.Today)
+                return String.Format("dziś, {0:HH:mm}", dt);
+
+            if (dt.Date == DateTime.Now.AddDays(-1).Date)
+                return String.Format("wczoraj, {0:HH:mm}", dt);
+
+            if (dt.Date == DateTime.Now.AddDays(1).Date)
+                return String.Format("jutro, {0:HH:mm}", dt);
+
+            return String.Format("{0:yyyy-MM-dd HH:mm}", dt); ;
+        }
     }
 }

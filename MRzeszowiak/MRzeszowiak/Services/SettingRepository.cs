@@ -9,8 +9,6 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using SQLiteNetExtensions;
-using SQLiteNetExtensions.Extensions;
 
 namespace MRzeszowiak.Services
 {
@@ -106,9 +104,6 @@ namespace MRzeszowiak.Services
                 try
                 {
                     AutostartAdvertSearch = JsonConvert.DeserializeObject<AdvertSearch>(value);
-                    if (AutostartAdvertSearch?.CategorySearch?.ChildCategory != null)
-                        foreach (var child in AutostartAdvertSearch?.CategorySearch?.ChildCategory)
-                            child.ParentCategory = AutostartAdvertSearch?.CategorySearch;
                 }
                 catch (System.Exception e)
                 {
@@ -181,18 +176,43 @@ namespace MRzeszowiak.Services
             public DateTime MailSendDateTime { get; set; }
         }
 
-        public IEnumerable<AdvertShort> GetFavoriteAdvertListDB()
+        public bool GetFavoriteAdvertListDB(IList<AdvertShort> list)
         {
-            if (RawObj) new List<AdvertShort>();
+            if (RawObj || list == null) return false;
             Debug.Write("GetFavoriteAdvertListDB");
 
             using (var conn = new SQLite.SQLiteConnection(DbFullPath))
             {
                 conn.CreateTable<Advert>();
-                return conn.Table<Advert>().OrderByDescending(x => x.IdDb);
+                var result = conn.Table<Advert>().OrderByDescending(x => x.IdDb);
+                bool rowEven = false;
+                if (result != null)
+                    foreach (var item in result)
+                    {
+                        item.RowEven = rowEven;
+                        list.Add(item);
+                        rowEven = !rowEven;
+                    }    
+            }
+            return true;
+        }
+
+        public Advert GetFavoriteAdvertDB(AdvertShort advertShort)
+        {
+            if (RawObj || advertShort == null) return null;
+            Debug.Write("GetFavoriteAdvertDB");
+            using (var conn = new SQLite.SQLiteConnection(DbFullPath))
+            {
+                conn.CreateTable<Advert>();
+                var tab = conn.Table<Advert>().Where(v => v.AdverIDinRzeszowiak == advertShort.AdverIDinRzeszowiak);
+                if (tab.Count() == 0)
+                    return null;
+                else
+                    return tab.First();
             }
         }
 
+        //favorite adver
         public bool InsertOrUpdateAdvertDB(Advert advert)
         {
             if (RawObj || advert == null) return false; ;
@@ -203,17 +223,17 @@ namespace MRzeszowiak.Services
                 var tab = conn.Table<Advert>().Where(v => v.AdverIDinRzeszowiak == advert.AdverIDinRzeszowiak);
                 if (tab.Count() == 0)
                 {
-                    conn.InsertWithChildren(advert); 
+                    conn.Insert(advert); 
                 }
                 else
                 {
                     advert.IdDb = tab.First().IdDb;
-                    conn.InsertOrReplaceWithChildren(advert);
+                    conn.InsertOrReplace(advert);
                 }
             }
             return true;
         }
-
+        //favorite adver
         public bool DeleteAdvertDB(Advert advert)
         {
             if (RawObj || advert == null) return false; ;
@@ -231,7 +251,18 @@ namespace MRzeszowiak.Services
             }
             return true;
         }
-
+        //favorite adver
+        public bool DeleteAdvertAllDB()
+        {
+            if (RawObj) return false; ;
+            Debug.Write("DeleteAdvertAllDB");
+            using (var conn = new SQLite.SQLiteConnection(DbFullPath))
+            {
+                conn.DeleteAll<Advert>();
+            }
+            return true;
+        }
+        //favorite adver
         public bool IsAdvertInDB(Advert advert)
         {
             if (RawObj || advert == null) return false; ;

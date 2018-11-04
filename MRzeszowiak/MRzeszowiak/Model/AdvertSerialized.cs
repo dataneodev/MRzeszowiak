@@ -1,36 +1,19 @@
 ﻿using Newtonsoft.Json;
-using SQLite;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Net;
-using Xamarin.Forms;
+using System.Text;
 
 namespace MRzeszowiak.Model
 {
-    public class Advert : AdvertShort
-    {      
-        public DateTime ExpiredDatetime { get; set; }
-        [Ignore]
-        public string ExpiredString { get => GetFormatedDateTime(ExpiredDatetime); }
-        public int Views { get; set; }
-        public string DescriptionHTML { get; set; } = String.Empty;
-        public string PhoneSsid { get; set; } = String.Empty;
-        [Ignore]
-        public Cookie PhonePHPSSESION { get; set; }
-        [Ignore]
-        public Dictionary<string, string> AdditionalData { get; set; } = new Dictionary<string, string>();
-        [Ignore]
-        public List<string> ImageURLsList { get; set; } = new List<string>();
-        public DateTime VisitPageDate { get; set; }
-        public string EmailToken { get; set; } = String.Empty;
-        public byte[] PhoneImageByteArray { get; set; }
-        // for db
+    public class AdvertSerialized : Advert
+    {
         public string AdditionalDataSerialize
         {
             get => GetSerialized<Dictionary<string, string>>(AdditionalData);
             set => AdditionalData = SetSerialized<Dictionary<string, string>>(value);
         }
+
         public string ImageURLsListSerialize
         {
             get => GetSerialized<List<string>>(ImageURLsList);
@@ -41,7 +24,7 @@ namespace MRzeszowiak.Model
         {
             return JsonConvert.SerializeObject(objToSerialie);
         }
-
+        
         T SetSerialized<T>(string objToDeserialize)
         {
             var settings = new JsonSerializerSettings

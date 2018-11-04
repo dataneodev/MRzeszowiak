@@ -24,9 +24,11 @@ namespace MRzeszowiak.Services
         DateTime LastMailSendDate(Advert advert);
         bool UpdateSendMailNotice(Advert advert);
 
-        IEnumerable<AdvertShort> GetFavoriteAdvertListDB();
+        bool GetFavoriteAdvertListDB(IList<AdvertShort> list);
+        Advert GetFavoriteAdvertDB(AdvertShort advertShort);
         bool InsertOrUpdateAdvertDB(Advert advert);
         bool DeleteAdvertDB(Advert advert);
+        bool DeleteAdvertAllDB();
         bool IsAdvertInDB(Advert advert);
 
         //Task<IList<AdvertSearch>> GetFavoriteAdvertSearchListDB();

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MRzeszowiak.Model;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
@@ -11,7 +12,7 @@ namespace MRzeszowiak.Services
     {
         ImageSource ImageData { get; }
         event EventHandler OnDownloadFinish;
-        Task<bool> DownloadImage(string ssid, int advertID, string advertURL, Cookie PHPSESSIDPcookie);
+        Task<bool> DownloadImage(Advert advert, string ssid, int advertID, string advertURL, Cookie PHPSESSIDPcookie);
         void HideImage();
     }
 }

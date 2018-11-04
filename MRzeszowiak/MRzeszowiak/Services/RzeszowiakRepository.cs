@@ -486,7 +486,7 @@ namespace MRzeszowiak.Services
                         URLPath = aUrl,
                         ThumbnailUrl = aThumb,
                         DescriptionShort = aDesc,
-                        DateAddString = aAdd,
+                        DateAddDateTime = GetDateTimeFromISR(aAdd),
                         Price = aPriceInt,
                         Category = searchParams.CategorySearch,
                         Highlighted = highlighted,
@@ -578,7 +578,10 @@ namespace MRzeszowiak.Services
 
             string aCategory = GetValue(BodyResult, "kategoria :");
             string aTitle = GetValue(BodyResult, "tytuł :").Trim();
-            string aDateAdd = GetValue(BodyResult, "data dodania :");
+            string aDateExpiredString = GetValue(BodyResult, "data dodania :").CutFoward(" - ").CutFoward(":");
+            if(DateTime.TryParse(aDateExpiredString, out DateTime aDateExpired))
+                aDateExpired = aDateExpired.Add(advertShort.DateAddDateTime.TimeOfDay);
+
             string aViews = GetValue(BodyResult, "wyświetleń :").Replace(" razy", "");
             if (!Int32.TryParse(aViews, out int aViewsInt))
             {
@@ -653,11 +656,12 @@ namespace MRzeszowiak.Services
                 AdverIDinRzeszowiak = advertShort.AdverIDinRzeszowiak,
                 Category = null,
                 Title = aTitle,
-                DateAddString = aDateAdd,
-                ExpiredString = String.Empty,
+                DateAddDateTime = advertShort.DateAddDateTime,
+                ExpiredDatetime = aDateExpired,
                 Views = aViewsInt,
                 Price = aPriceInt,
                 Highlighted = advertShort.Highlighted,
+                DescriptionShort = advertShort.DescriptionShort,
                 DescriptionHTML = aDesc,
                 AdditionalData = additionalData,
                 ImageURLsList = pictureList,
@@ -666,7 +670,23 @@ namespace MRzeszowiak.Services
                 PhonePHPSSESION = aCookie,
                 EmailToken = aEmailToken,
                 VisitPageDate = DateTime.Now,
+                ThumbnailUrl = advertShort.ThumbnailUrl,
             };
+        }
+
+        DateTime GetDateTimeFromISR(string strinDt)
+        {
+            if((strinDt?.Length??0) == 0) return DateTime.Now;
+            strinDt = strinDt.Replace("dziś,", String.Format("{0:yyyy-MM-dd}", DateTime.Now));
+            if(DateTime.TryParse(strinDt, out DateTime dtRes))
+            {
+                return dtRes;
+            }
+            else
+            {
+                Debug.Write("GetDateTimeFromISR DateTime convert fail: " + strinDt);
+                return DateTime.Now;
+            }
         }
     }
 }

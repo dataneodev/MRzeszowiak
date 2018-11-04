@@ -149,7 +149,7 @@ namespace MRzeszowiak.ViewModel
 
         protected async Task LoadLastOnStartup()
         {
-            var newadvert = _setting?.AutostartAdvertSearch?.CloneObjectSerializable <AdvertSearch>();
+            var newadvert = _setting?.AutostartAdvertSearch?.CloneObjectSerializable<AdvertSearch>();
             await SearchExecute(newadvert, false);
         }
 
@@ -170,9 +170,8 @@ namespace MRzeszowiak.ViewModel
 
         protected async void LoadNextItem()
         {
-            int setting = 100;
             if (_lastAdvertSearchResult != null && _lastAdvertSearch != null && _lastAdvertSearchResult.AllPage > 1 &&
-                _lastAdvertSearchResult.Page < _lastAdvertSearchResult.AllPage - 1 && _lastAdvertSearchResult.Page < setting - 1 &&
+                _lastAdvertSearchResult.Page < _lastAdvertSearchResult.AllPage - 1 && _lastAdvertSearchResult.Page < _setting.MaxScrollingAutoLoadPage - 1 &&
                 !Activity && !FotterActivity)
             {
                 _lastAdvertSearch.RequestPage = ++_lastAdvertSearchResult.Page;
@@ -225,7 +224,7 @@ namespace MRzeszowiak.ViewModel
                 Activity = true;
                 FotterActivity = false;
                 AdvertShortList.Clear();
-            }
+            } 
 
             var lastAddAdvert = await _rzeszowiakRepository.GetAdvertListAsync(advertSearch);
 

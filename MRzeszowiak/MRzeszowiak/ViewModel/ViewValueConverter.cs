@@ -1,4 +1,5 @@
-﻿using MRzeszowiak.Model;
+﻿using MRzeszowiak.Extends;
+using MRzeszowiak.Model;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -189,6 +190,22 @@ namespace MRzeszowiak.ViewModel
             MailStatusEnum check = value == null ? MailStatusEnum.email_default : (MailStatusEnum)value;
             if (check != MailStatusEnum.email_sending) return true;
             return false;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return true;
+        }
+    }
+
+    public class DateTimeToString : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is DateTime dt)
+                if(dt.IsSend())
+                    return dt.GetDateTimeFormated();
+            return String.Empty;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
