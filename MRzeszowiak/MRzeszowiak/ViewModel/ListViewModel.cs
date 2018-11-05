@@ -1,17 +1,15 @@
 ﻿using MRzeszowiak.Model;
-using MRzeszowiak.Services;
 using MRzeszowiak.Extends;
 using Prism.Navigation;
 using Prism.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
+using MRzeszowiak.Interfaces;
 
 namespace MRzeszowiak.ViewModel
 {
@@ -171,7 +169,7 @@ namespace MRzeszowiak.ViewModel
         protected async void LoadNextItem()
         {
             if (_lastAdvertSearchResult != null && _lastAdvertSearch != null && _lastAdvertSearchResult.AllPage > 1 &&
-                _lastAdvertSearchResult.Page < _lastAdvertSearchResult.AllPage - 1 && _lastAdvertSearchResult.Page < _setting.MaxScrollingAutoLoadPage - 1 &&
+                _lastAdvertSearchResult.Page < _lastAdvertSearchResult.AllPage - 1 && _lastAdvertSearchResult.Page < _setting.MaxScrollingAutoLoadPage &&
                 !Activity && !FotterActivity)
             {
                 _lastAdvertSearch.RequestPage = ++_lastAdvertSearchResult.Page;

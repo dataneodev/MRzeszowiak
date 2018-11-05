@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
-namespace MRzeszowiak.Services
+namespace MRzeszowiak.Interfaces
 {
     public interface IRzeszowiakImageContainer
     {

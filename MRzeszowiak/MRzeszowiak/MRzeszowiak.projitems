@@ -27,13 +27,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Model\AdvertFavEvent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\AdvertSearch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\AdvertSearchResult.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Model\AdvertSerialized.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\AdvertShort.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Category.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\IRzeszowiak.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\IRzeszowiakImageContainer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\ISetting.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\IToast.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IRzeszowiak.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IRzeszowiakImageContainer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\ISetting.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IToast.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\RzeszowiakImageContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\RzeszowiakRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\SettingRepository.cs" />
@@ -174,5 +173,8 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Interfaces\" />
   </ItemGroup>
 </Project>

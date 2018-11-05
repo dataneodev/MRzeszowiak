@@ -1,13 +1,10 @@
-﻿using MRzeszowiak.Model;
-using MRzeszowiak.Services;
+﻿using MRzeszowiak.Interfaces;
+using MRzeszowiak.Model;
 using Prism.Navigation;
-using Rg.Plugins.Popup.Services;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;

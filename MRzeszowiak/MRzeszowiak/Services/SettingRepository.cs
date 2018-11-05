@@ -1,4 +1,5 @@
-﻿using MRzeszowiak.Model;
+﻿using MRzeszowiak.Interfaces;
+using MRzeszowiak.Model;
 using Newtonsoft.Json;
 using SQLite;
 using System;
@@ -8,7 +9,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace MRzeszowiak.Services
 {
@@ -20,8 +20,6 @@ namespace MRzeszowiak.Services
         private string _dbPath;
         private const string dbName = "mrzeszowiak.db";
         private string DbFullPath { get => Path.Combine(_dbPath ?? String.Empty, dbName); }
-        [Ignore]
-        public bool AutoSaveDB { get; set; } = false;
         private bool _rawObj;
         [Ignore]
         public bool RawObj
@@ -104,6 +102,9 @@ namespace MRzeszowiak.Services
                 try
                 {
                     AutostartAdvertSearch = JsonConvert.DeserializeObject<AdvertSearch>(value);
+                    if (AutostartAdvertSearch?.CategorySearch?.ChildCategory != null)
+                        foreach (var child in AutostartAdvertSearch?.CategorySearch?.ChildCategory)
+                            child.ParentCategory = AutostartAdvertSearch?.CategorySearch;
                 }
                 catch (System.Exception e)
                 {
@@ -132,7 +133,7 @@ namespace MRzeszowiak.Services
                 conn.CreateTable<MailAdvertDB>();
                 var tab = conn.Table<MailAdvertDB>().Where(v => v.AdverIDinRzeszowiak == advert.AdverIDinRzeszowiak);
                 if (tab.Count() > 0)
-                    return tab.First().MailSendDateTime.ToLocalTime();
+                    return tab.First().MailSendDateTime;
             }
             return DateTime.Now.AddYears(-1);
         }
@@ -289,8 +290,6 @@ namespace MRzeszowiak.Services
             if (!RawObj)
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-                Thread saveThread = new Thread(SaveSetting);
-                saveThread.Start();
             }
         }
 
@@ -311,32 +310,19 @@ namespace MRzeszowiak.Services
             }
         }
 
-        private volatile int _session;
-        private static readonly object SyncObject = new object();
-        protected void SaveSetting()
+        public void SaveSetting()
         {
-            if (!AutoSaveDB || RawObj) return;
-            // prevent from to many save
-
-            Random rnd = new Random();
-            int localSession = rnd.Next(0,99999999);
-            _session = localSession;
-            Thread.Sleep(750);
-            if (_session != localSession) return;
-
+            if (RawObj) return;
             Debug.Write("SaveSetting");
-            lock(SyncObject)
+            using (var conn = new SQLite.SQLiteConnection(DbFullPath))
             {
-                using (var conn = new SQLite.SQLiteConnection(DbFullPath))
-                {
-                    _rawObj = true;
-                    conn.CreateTable<SettingRepository>();
-                    if (conn.Table<SettingRepository>().Count() == 0)
-                        conn.Insert(this);
-                    else
-                        conn.Update(this);
-                    _rawObj = false;
-                }
+                _rawObj = true;
+                conn.CreateTable<SettingRepository>();
+                if (conn.Table<SettingRepository>().Count() == 0)
+                    conn.Insert(this);
+                else
+                    conn.Update(this);
+                _rawObj = false;
             }
             Debug.WriteLine("SaveSetting: " + this.Id);
         }

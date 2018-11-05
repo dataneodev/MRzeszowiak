@@ -1,11 +1,11 @@
 ﻿using MRzeszowiak.Extends;
+using MRzeszowiak.Interfaces;
 using MRzeszowiak.Model;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 

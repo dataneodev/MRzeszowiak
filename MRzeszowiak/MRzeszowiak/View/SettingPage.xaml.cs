@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MRzeszowiak.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,12 @@ namespace MRzeszowiak.View
 		public SettingPage ()
 		{
 			InitializeComponent ();
+            Disappearing += (sender, e) => {
+                if (BindingContext is SettingViewModel model)
+                    model.Setting.SaveSetting();
+            };
 		}
+
+
 	}
 }

@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using Prism.Services;
+﻿using MRzeszowiak.Interfaces;
+using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
 using System.IO;

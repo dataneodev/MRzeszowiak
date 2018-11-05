@@ -3,11 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace MRzeszowiak.Services
+namespace MRzeszowiak.Interfaces
 {
     public interface ISetting
     {
-        bool AutoSaveDB { get; set; }
         string UpdateServerUrl { get; }
         string GetAppName { get; }
         string GetAppNameAndVersion { get; }
@@ -20,6 +19,7 @@ namespace MRzeszowiak.Services
         AdvertSearch AutostartAdvertSearch { get; set; }
 
         void SetDBPath(string dbPath);
+        void SaveSetting();
 
         DateTime LastMailSendDate(Advert advert);
         bool UpdateSendMailNotice(Advert advert);

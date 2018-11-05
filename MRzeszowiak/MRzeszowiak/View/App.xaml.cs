@@ -1,4 +1,4 @@
-using MRzeszowiak.Model;
+using MRzeszowiak.Interfaces;
 using MRzeszowiak.Services;
 using MRzeszowiak.View;
 using MRzeszowiak.ViewModel;
@@ -8,9 +8,6 @@ using Prism.Mvvm;
 using Prism.Navigation;
 using Prism.Plugin.Popups;
 using Prism.Unity;
-using System;
-using System.Diagnostics;
-using Unity.Lifetime;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 

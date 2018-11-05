@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-
-using Foundation;
+﻿using Foundation;
+using MRzeszowiak.Interfaces;
 using MRzeszowiak.iOS;
-using MRzeszowiak.Services;
 using UIKit;
 
 [assembly: Xamarin.Forms.Dependency(typeof(Toast_IOS))]

@@ -1,14 +1,11 @@
 ﻿using MRzeszowiak.Model;
-using MRzeszowiak.Services;
 using MRzeszowiak.Extends;
 using Prism.Navigation;
-using Prism.Services;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using System.Windows.Input;
 using Xamarin.Forms;
+using MRzeszowiak.Interfaces;
 
 namespace MRzeszowiak.ViewModel
 {
@@ -42,8 +39,6 @@ namespace MRzeszowiak.ViewModel
             if (parameters.ContainsKey("SearchRecord"))
                 if (parameters["SearchRecord"] is AdvertSearch advertSearch)
                     Setting.AutostartAdvertSearch = advertSearch;
-            Setting.AutoSaveDB = true;
         }
-
     }
 }

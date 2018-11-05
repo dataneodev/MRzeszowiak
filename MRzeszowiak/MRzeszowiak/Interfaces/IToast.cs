@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MRzeszowiak.Services
+namespace MRzeszowiak.Interfaces
 {
     public interface IToast
     {
