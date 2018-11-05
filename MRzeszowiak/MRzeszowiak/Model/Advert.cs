@@ -59,5 +59,19 @@ namespace MRzeszowiak.Model
             }
             return default(T);
         }
+
+        public bool Equals(Advert other)
+        {
+            if (ReferenceEquals(other, null)) return false;
+            if (ReferenceEquals(other, this)) return true;
+            return AdverIDinRzeszowiak == other?.AdverIDinRzeszowiak;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            return Equals(obj as Advert);
+        }
     }
 }

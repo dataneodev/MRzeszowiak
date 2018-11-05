@@ -1,4 +1,5 @@
-﻿using MRzeszowiak.Interfaces;
+﻿using MRzeszowiak.Extends;
+using MRzeszowiak.Interfaces;
 using MRzeszowiak.Model;
 using Newtonsoft.Json;
 using SQLite;
@@ -9,27 +10,21 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace MRzeszowiak.Services
 {
     public class SettingRepository : ISetting, INotifyPropertyChanged
     {
+        private SQLiteAsyncConnection _sqliteConnection;
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
-
         private string _dbPath;
         private const string dbName = "mrzeszowiak.db";
-        private string DbFullPath { get => Path.Combine(_dbPath ?? String.Empty, dbName); }
+        private string DbFullPath { get => _dbPath?.Length > 0 ? Path.Combine(_dbPath, dbName) : String.Empty; }
         private bool _rawObj;
         [Ignore]
-        public bool RawObj
-        {
-            get
-            {
-                return _rawObj || (_dbPath?.Length ?? 0) == 0; 
-            }
-        }
-
+        public bool RawObj => _rawObj || (_dbPath?.Length ?? 0) == 0;
         [Ignore]
         public string UpdateServerUrl { get => "https://script.google.com/macros/s/AKfycbxx_fFWPUjtiwBU9uFcVKhvXFLa8SjfoHZbM7DmSD_WaWmArTu1/exec"; }
         [Ignore]
@@ -124,46 +119,49 @@ namespace MRzeszowiak.Services
             _rawObj = RawObj;
         }
 
-        public DateTime LastMailSendDate(Advert advert)
+        public async Task<DateTime> LastMailSendDateAsync(Advert advert)
         {
             if (RawObj || advert == null) return DateTime.Now.AddYears(-1);
             Debug.Write("LastMailSendDate");
-            using (var conn = new SQLite.SQLiteConnection(DbFullPath))
+            if (_sqliteConnection == null)
             {
-                conn.CreateTable<MailAdvertDB>();
-                var tab = conn.Table<MailAdvertDB>().Where(v => v.AdverIDinRzeszowiak == advert.AdverIDinRzeszowiak);
-                if (tab.Count() > 0)
-                    return tab.First().MailSendDateTime;
+                Debug.Write("UpdateSendMailNoticeAsync => sqlite connection is not open");
+                return DateTime.Now.AddYears(-1);
             }
+            await _sqliteConnection.CreateTableAsync<MailAdvertDB>();
+            var tab = _sqliteConnection.Table<MailAdvertDB>().Where(v => v.AdverIDinRzeszowiak == advert.AdverIDinRzeszowiak);
+            if (await tab.CountAsync() > 0)
+                return (await tab.FirstAsync()).MailSendDateTime;
             return DateTime.Now.AddYears(-1);
         }
 
-        public bool UpdateSendMailNotice(Advert advert)
+        public async Task<bool> UpdateSendMailNoticeAsync(Advert advert)
         {
             if (RawObj || advert == null) return false;
-            Debug.Write("UpdateSendMailNotice");
+            Debug.Write("UpdateSendMailNoticeAsync");
             if (advert == null) return false;
-            using (var conn = new SQLite.SQLiteConnection(DbFullPath))
+            if (_sqliteConnection == null)
             {
-                conn.CreateTable<MailAdvertDB>();
-                var tab = conn.Table<MailAdvertDB>().Where(v => v.AdverIDinRzeszowiak == advert.AdverIDinRzeszowiak) ;
-                if(tab.Count() == 0)
+                Debug.Write("UpdateSendMailNoticeAsync => sqlite connection is not open");
+                return false;
+            }
+            await _sqliteConnection.CreateTableAsync<MailAdvertDB>();
+            var tab = _sqliteConnection.Table<MailAdvertDB>().Where(v => v.AdverIDinRzeszowiak == advert.AdverIDinRzeszowiak);
+            if (await tab.CountAsync() == 0)
+            {
+                var dbInsert = new MailAdvertDB
                 {
-                    var dbInsert = new MailAdvertDB
-                    {
-                        AdverIDinRzeszowiak = advert.AdverIDinRzeszowiak,
-                        MailSendDateTime = DateTime.Now,
-                    };
-
-                    if (conn.Insert(dbInsert) == 0)
-                        return false;
-                }    
-                else
-                {
-                    var exists = tab.First();
-                    exists.MailSendDateTime = DateTime.Now;
-                    conn.Update(exists);
-                }  
+                    AdverIDinRzeszowiak = advert.AdverIDinRzeszowiak,
+                    MailSendDateTime = DateTime.Now,
+                };
+                if (await _sqliteConnection.InsertAsync(dbInsert) == 0)
+                    return false;
+            }
+            else
+            {
+                var exists = await tab.FirstAsync();
+                exists.MailSendDateTime = DateTime.Now;
+                await _sqliteConnection.UpdateAsync(exists);
             }
             return true;
         }
@@ -177,154 +175,188 @@ namespace MRzeszowiak.Services
             public DateTime MailSendDateTime { get; set; }
         }
 
-        public bool GetFavoriteAdvertListDB(IList<AdvertShort> list)
+        public async Task<bool> GetFavoriteAdvertListDBAsync(IList<AdvertShort> list)
         {
             if (RawObj || list == null) return false;
-            Debug.Write("GetFavoriteAdvertListDB");
-
-            using (var conn = new SQLite.SQLiteConnection(DbFullPath))
+            Debug.Write("GetFavoriteAdvertListDBAsync");
+            if (_sqliteConnection == null)
             {
-                conn.CreateTable<Advert>();
-                var result = conn.Table<Advert>().OrderByDescending(x => x.IdDb);
-                bool rowEven = false;
-                if (result != null)
-                    foreach (var item in result)
-                    {
-                        item.RowEven = rowEven;
-                        list.Add(item);
-                        rowEven = !rowEven;
-                    }    
+                Debug.Write("GetFavoriteAdvertDBAsync => sqlite connection is not open");
+                return false;
             }
+
+            await _sqliteConnection.CreateTableAsync<Advert>();
+            var result = await _sqliteConnection.Table<Advert>().OrderByDescending(x => x.IdDb).ToListAsync();
+            bool rowEven = false;
+            if (result != null)
+                foreach (var item in result)
+                {
+                    item.RowEven = rowEven;
+                    list.Add(item);
+                    rowEven = !rowEven;
+                }
             return true;
         }
 
-        public Advert GetFavoriteAdvertDB(AdvertShort advertShort)
+        //favorite adver
+        public async Task<Advert> GetFavoriteAdvertDBAsync(AdvertShort advertShort)
         {
             if (RawObj || advertShort == null) return null;
-            Debug.Write("GetFavoriteAdvertDB");
-            using (var conn = new SQLite.SQLiteConnection(DbFullPath))
+            Debug.Write("GetFavoriteAdvertDBAsync");
+            if (_sqliteConnection == null)
             {
-                conn.CreateTable<Advert>();
-                var tab = conn.Table<Advert>().Where(v => v.AdverIDinRzeszowiak == advertShort.AdverIDinRzeszowiak);
-                if (tab.Count() == 0)
-                    return null;
-                else
-                    return tab.First();
+                Debug.Write("GetFavoriteAdvertDBAsync => sqlite connection is not open");
+                return null;
             }
+
+            await _sqliteConnection.CreateTableAsync<Advert>();
+            var tab = _sqliteConnection.Table<Advert>().Where(v => v.AdverIDinRzeszowiak == advertShort.AdverIDinRzeszowiak);
+            if (await tab.CountAsync() == 0)
+                return null;
+            else
+                return await tab.FirstAsync();
         }
 
-        //favorite adver
-        public bool InsertOrUpdateAdvertDB(Advert advert)
+            //favorite adver
+        public async Task<bool> InsertOrUpdateAdvertDBAsync(Advert advert)
         {
             if (RawObj || advert == null) return false; ;
-            Debug.Write("InsertOrUpdateAdvertDB");
-            using (var conn = new SQLite.SQLiteConnection(DbFullPath))
+            Debug.Write("InsertOrUpdateAdvertDBAsync");
+            if (_sqliteConnection == null)
             {
-                conn.CreateTable<Advert>();
-                var tab = conn.Table<Advert>().Where(v => v.AdverIDinRzeszowiak == advert.AdverIDinRzeszowiak);
-                if (tab.Count() == 0)
-                {
-                    conn.Insert(advert); 
-                }
-                else
-                {
-                    advert.IdDb = tab.First().IdDb;
-                    conn.InsertOrReplace(advert);
-                }
+                Debug.Write("InsertOrUpdateAdvertDBAsync => sqlite connection is not open");
+                return false;
+            }
+            await _sqliteConnection.CreateTableAsync<Advert>();
+            var tab = _sqliteConnection.Table<Advert>().Where(v => v.AdverIDinRzeszowiak == advert.AdverIDinRzeszowiak);
+            if (await tab.CountAsync() == 0)
+            {
+                await _sqliteConnection.InsertAsync(advert);
+            }
+            else
+            {
+                advert.IdDb = (await tab.FirstAsync()).IdDb;
+                await _sqliteConnection.InsertOrReplaceAsync(advert);
             }
             return true;
         }
         //favorite adver
-        public bool DeleteAdvertDB(Advert advert)
+        public async Task<bool> DeleteAdvertDBAsync(Advert advert)
         {
             if (RawObj || advert == null) return false; ;
-            Debug.Write("DeleteAdvertDB");
-            using (var conn = new SQLite.SQLiteConnection(DbFullPath))
+            Debug.Write("DeleteAdvertDBAsync");
+            if (_sqliteConnection == null)
             {
-                conn.CreateTable<Advert>();
-                var tab = conn.Table<Advert>().Where(v => v.AdverIDinRzeszowiak == advert.AdverIDinRzeszowiak);
-                if (tab.Count() >= 1)
-                {
-                    advert.IdDb = tab.First().IdDb;
-                    conn.Delete(advert);
-                }
-                else return false;
+                Debug.Write("DeleteAdvertDBAsync => sqlite connection is not open");
+                return false;
             }
+
+            await _sqliteConnection.CreateTableAsync<Advert>();
+            var tab = _sqliteConnection.Table<Advert>().Where(v => v.AdverIDinRzeszowiak == advert.AdverIDinRzeszowiak);
+            if (await tab.CountAsync() >= 1)
+            {
+                advert.IdDb = (await tab.FirstAsync()).IdDb;
+                await _sqliteConnection.DeleteAsync(advert);
+            }
+            else return false;
             return true;
         }
         //favorite adver
-        public bool DeleteAdvertAllDB()
+        public async Task<bool> DeleteAdvertAllDBAsync()
         {
             if (RawObj) return false; ;
-            Debug.Write("DeleteAdvertAllDB");
-            using (var conn = new SQLite.SQLiteConnection(DbFullPath))
+            Debug.Write("DeleteAdvertAllDBAsync");
+            if (_sqliteConnection == null)
             {
-                conn.DeleteAll<Advert>();
+                Debug.Write("DeleteAdvertAllDBAsync => sqlite connection is not open");
+                return false;
             }
+            await _sqliteConnection.DeleteAllAsync<Advert>();
             return true;
         }
         //favorite adver
-        public bool IsAdvertInDB(Advert advert)
+        public async Task<bool> IsAdvertInDBAsync(Advert advert)
         {
             if (RawObj || advert == null) return false; ;
-            Debug.Write("IsAdvertInDB");
-            using (var conn = new SQLite.SQLiteConnection(DbFullPath))
+            Debug.Write("IsAdvertInDBAsync");
+            if (_sqliteConnection == null)
             {
-                conn.CreateTable<Advert>();
-                var tab = conn.Table<Advert>().Where(v => v.AdverIDinRzeszowiak == advert.AdverIDinRzeszowiak);
-                if (tab.Count() >= 1)
-                    return true;
+                Debug.Write("IsAdvertInDBAsync => sqlite connection is not open");
+                return false;
             }
+            await _sqliteConnection.CreateTableAsync<Advert>();
+            var tab = _sqliteConnection.Table<Advert>().Where(v => v.AdverIDinRzeszowiak == advert.AdverIDinRzeszowiak);
+            if (await tab.CountAsync() >= 1)
+                return true;
             return false;
         }
 
-        public void SetDBPath(string dbPath)
+        public async Task SetDBPath(string dbPath)
         {
             _dbPath = dbPath;
-            if (_dbPath?.Length > 0)
-                LoadSetting();   
+            if (!PathExtensions.IsValidPath(DbFullPath, true))
+            {
+                Debug.Write("SetDBPath => !PathExtensions.IsValidPath(DbFullPath)");
+                _dbPath = String.Empty;
+                return;
+            }
+            if(!RawObj && _sqliteConnection == null)
+            {
+                _sqliteConnection = new SQLiteAsyncConnection(DbFullPath);
+                await LoadSettingAsync();
+            }                  
         }
 
         protected void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string name = "")
         {
             if (!RawObj)
-            {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-            }
         }
 
-        protected void LoadSetting()
+        protected async Task<bool> LoadSettingAsync()
         {
-            if (RawObj) return;
+            if (RawObj) return false;
             Debug.Write("LoadSettingAsync");
-            using (var conn = new SQLite.SQLiteConnection(DbFullPath))
+            if (_sqliteConnection == null)
             {
-                conn.CreateTable<SettingRepository>();
-                if (conn.Table<SettingRepository>().Count() == 0)
-                    return;
-
-                var res = conn.Get<SettingRepository>(1);
-                foreach (PropertyInfo property in typeof(SettingRepository).GetProperties())
-                    if (property.CanWrite)
-                        property.SetValue(this, property.GetValue(res, null), null); 
+                Debug.Write("LoadSettingAsync => sqlite connection is not open");
+                return false;
             }
+
+            await _sqliteConnection.CreateTableAsync<SettingRepository>();
+            if (await _sqliteConnection.Table<SettingRepository>().CountAsync() == 0)
+                return false;
+            var res = await _sqliteConnection.GetAsync<SettingRepository>(1);
+            foreach (PropertyInfo property in typeof(SettingRepository).GetProperties())
+                if (property.CanWrite)
+                    property.SetValue(this, property.GetValue(res, null), null);
+            return true;
         }
 
-        public void SaveSetting()
+        public async Task<bool> SaveSettingAsync()
         {
-            if (RawObj) return;
-            Debug.Write("SaveSetting");
-            using (var conn = new SQLite.SQLiteConnection(DbFullPath))
+            if (RawObj) return false;
+            Debug.Write("SaveSettingAsync");
+            if(_sqliteConnection == null)
             {
-                _rawObj = true;
-                conn.CreateTable<SettingRepository>();
-                if (conn.Table<SettingRepository>().Count() == 0)
-                    conn.Insert(this);
-                else
-                    conn.Update(this);
-                _rawObj = false;
+                Debug.Write("SaveSettingAsync => sqlite connection is not open");
+                return false;
             }
-            Debug.WriteLine("SaveSetting: " + this.Id);
+
+            _rawObj = true;
+            await _sqliteConnection.CreateTableAsync<SettingRepository>();
+            if (await _sqliteConnection.Table<SettingRepository>().CountAsync() == 0)
+                await _sqliteConnection.InsertAsync(this);
+            else
+                await _sqliteConnection.UpdateAsync(this);
+            _rawObj = false;
+            Debug.WriteLine("SaveSettingAsync: " + this.Id);
+            return true;
+        }
+
+        public async void Dispose()
+        {
+            await _sqliteConnection.CloseAsync();
         }
     }
 }

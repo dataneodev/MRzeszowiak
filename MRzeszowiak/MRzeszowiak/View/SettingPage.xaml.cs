@@ -16,9 +16,9 @@ namespace MRzeszowiak.View
 		public SettingPage ()
 		{
 			InitializeComponent ();
-            Disappearing += (sender, e) => {
+            Disappearing += async (sender, e) => {
                 if (BindingContext is SettingViewModel model)
-                    model.Setting.SaveSetting();
+                    await model.Setting.SaveSettingAsync();
             };
 		}
 

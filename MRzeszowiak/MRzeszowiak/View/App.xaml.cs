@@ -8,6 +8,7 @@ using Prism.Mvvm;
 using Prism.Navigation;
 using Prism.Plugin.Popups;
 using Prism.Unity;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -20,7 +21,7 @@ namespace MRzeszowiak
 
         public static string RzeszowiakURL = "http://www.rzeszowiak.pl";
         public static string GetAppName = "MRzeszowiak";
-        public static float GetAppVersion = 0.1f;
+        public static float GetAppVersion = 0.2f;
         public static string GetAppNameAndVersion = GetAppName + " " + GetAppVersion.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture);
 
         public static Color highlightRow = Color.FromHex("#f4f4f4");
@@ -31,11 +32,11 @@ namespace MRzeszowiak
         public static double DisplayScreenHeight = 0f;
         public static double DisplayScaleFactor = 0f;
 
-        
-
         public App(string dbpath, IPlatformInitializer initializer = null) : this(initializer, true)
         {
-            Setting.SetDBPath(dbpath);
+            var dbTask = new Task(async () => { await Setting.SetDBPath(dbpath); });
+            dbTask.Start();
+            dbTask.Wait();
             var navigationParams = new NavigationParameters("LoadAtStartup=true");
             NavigationService.NavigateAsync("app:///MenuMasterDetail/MainNavigation/ListPage", navigationParams);
         }

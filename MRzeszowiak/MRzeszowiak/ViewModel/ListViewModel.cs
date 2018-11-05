@@ -111,22 +111,22 @@ namespace MRzeszowiak.ViewModel
 
             LoadNextAdvert = new Command(LoadNextItem);
             ListViewItemTapped = new Command<AdvertShort>(ListViewTappedAsync);
-            CategorySelectButtonTaped = new Command(() =>
+            CategorySelectButtonTaped = new Command(async () =>
             {
                 var parameters = new NavigationParameters()
                 {
                     {"SelectedCategory", _lastAdvertSearch?.CategorySearch }
                 };
-                _navigationService.NavigateAsync("CategorySelectPopup", parameters);
+                await _navigationService.NavigateAsync("CategorySelectPopup", parameters);
             });
 
-            SearchButtonTapped = new Command(() =>
+            SearchButtonTapped = new Command(async () =>
             {
                 var parameters = new NavigationParameters()
                 {
                     {"SearchRecord", _lastAdvertSearch}
                 };
-                _navigationService.NavigateAsync("SearchPopup", parameters);
+                await _navigationService.NavigateAsync("SearchPopup", parameters);
             });
 
             RefreshAdverList = new Command(async()=> await SearchExecute(_lastAdvertSearch, false));
@@ -225,7 +225,6 @@ namespace MRzeszowiak.ViewModel
             } 
 
             var lastAddAdvert = await _rzeszowiakRepository.GetAdvertListAsync(advertSearch);
-
             if (!lastAddAdvert.Correct)
             {
                 if(!addLoad)
@@ -243,7 +242,7 @@ namespace MRzeszowiak.ViewModel
                 {
                     if (adverId.IndexOf(item.AdverIDinRzeszowiak) != -1) continue;
                     AdvertShortList.Add(item);
-                    await Task.Delay(20);
+                    await Task.Delay(50);
                 }
 
                 if(AdvertShortList.Count == 0 && !addLoad)

@@ -88,5 +88,24 @@ namespace MRzeszowiak.Model
 
             return String.Format("{0:yyyy-MM-dd HH:mm}", dt); ;
         }
+
+        public override int GetHashCode()
+        {
+            return AdverIDinRzeszowiak;
+        }
+
+        public bool Equals(AdvertShort other)
+        {
+            if (ReferenceEquals(other, null)) return false;
+            if (ReferenceEquals(other, this)) return true;
+            return AdverIDinRzeszowiak == other?.AdverIDinRzeszowiak;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            return Equals(obj as AdvertShort);
+        }
     }
 }

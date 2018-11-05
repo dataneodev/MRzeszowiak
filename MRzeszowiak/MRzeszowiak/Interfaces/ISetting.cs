@@ -18,18 +18,18 @@ namespace MRzeszowiak.Interfaces
         byte MaxScrollingAutoLoadPage { get; set; }
         AdvertSearch AutostartAdvertSearch { get; set; }
 
-        void SetDBPath(string dbPath);
-        void SaveSetting();
+        Task SetDBPath(string dbPath);
+        Task<bool> SaveSettingAsync();
 
-        DateTime LastMailSendDate(Advert advert);
-        bool UpdateSendMailNotice(Advert advert);
+        Task<DateTime> LastMailSendDateAsync(Advert advert);
+        Task<bool> UpdateSendMailNoticeAsync(Advert advert);
 
-        bool GetFavoriteAdvertListDB(IList<AdvertShort> list);
-        Advert GetFavoriteAdvertDB(AdvertShort advertShort);
-        bool InsertOrUpdateAdvertDB(Advert advert);
-        bool DeleteAdvertDB(Advert advert);
-        bool DeleteAdvertAllDB();
-        bool IsAdvertInDB(Advert advert);
+        Task<bool> GetFavoriteAdvertListDBAsync(IList<AdvertShort> list);
+        Task<Advert> GetFavoriteAdvertDBAsync(AdvertShort advertShort);
+        Task<bool> InsertOrUpdateAdvertDBAsync(Advert advert);
+        Task<bool> DeleteAdvertDBAsync(Advert advert);
+        Task<bool> DeleteAdvertAllDBAsync();
+        Task<bool> IsAdvertInDBAsync(Advert advert);
 
         //Task<IList<AdvertSearch>> GetFavoriteAdvertSearchListDB();
         //Task<bool> InsertOrUpdateAdvertSearchDB(AdvertSearch advert);

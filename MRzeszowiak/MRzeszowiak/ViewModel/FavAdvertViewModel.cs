@@ -58,21 +58,17 @@ namespace MRzeszowiak.ViewModel
             _eventAggregator.GetEvent<AdvertAddFavEvent>().Subscribe(AddToList);
         }
 
-        public override void OnNavigatedTo(INavigationParameters parameters)
+        public async override void OnNavigatedTo(INavigationParameters parameters)
         {
             Debug.Write("FavAdvertViewModel OnNavigatedTo");
             base.OnNavigatedTo(parameters);
 
             if (parameters.ContainsKey("LoadFavAdvert"))
             {
-                Task dbLoading = new Task(() =>
-                {
-                    Activity = true;
-                    AdvertShortList.Clear();
-                    _setting.GetFavoriteAdvertListDB(AdvertShortList);
-                    Activity = false;
-                });
-                dbLoading.Start();
+                Activity = true;
+                AdvertShortList.Clear();
+                await _setting.GetFavoriteAdvertListDBAsync(AdvertShortList);
+                Activity = false;
             }                
         }
 
@@ -97,7 +93,7 @@ namespace MRzeszowiak.ViewModel
             if(await _pageDialog.DisplayAlertAsync(_setting.GetAppNameAndVersion, 
                 "Czy napewno chcesz usunąć wszystkie ulubione ogłoszenia?", "Usuń wszystko", "Anuluj"))
             {
-                if (_setting.DeleteAdvertAllDB())
+                if (await _setting.DeleteAdvertAllDBAsync())
                 {
                     _dependencyService.Get<IToast>().Show("Usunięto wszystkie ogłoszenia z bazy.");
                     AdvertShortList.Clear();

@@ -271,13 +271,13 @@ namespace MRzeszowiak.ViewModel
                 ScrollToButtom?.Invoke();
             });
 
-            FavoriteAdvert = new Command(() =>
+            FavoriteAdvert = new Command(async () =>
             {
                 if (_lastAdvert == null) return;
 
                 if (IsFavorite)
                 {
-                    if (_setting.DeleteAdvertDB(_lastAdvert))
+                    if (await _setting.DeleteAdvertDBAsync(_lastAdvert))
                     {
                         _dependencyService.Get<IToast>().Show("Usunięto ogłoszenie z ulubionych");
                         _eventAggregator.GetEvent<AdvertDeleteFavEvent>().Publish(_lastAdvertShort);
@@ -288,7 +288,7 @@ namespace MRzeszowiak.ViewModel
                 }
                 else
                 {
-                    if (_setting.InsertOrUpdateAdvertDB(_lastAdvert))
+                    if (await _setting.InsertOrUpdateAdvertDBAsync(_lastAdvert))
                     {
                         _eventAggregator.GetEvent<AdvertAddFavEvent>().Publish(_lastAdvert);
                         _dependencyService.Get<IToast>().Show("Dodano ogłoszenie do ulubionych");
@@ -299,14 +299,14 @@ namespace MRzeszowiak.ViewModel
                 }
             });
 
-            ImageTapped = new Command<int>((selecteIndex) =>
+            ImageTapped = new Command<int>(async (selecteIndex) =>
             {
                 if (ImageURLsList.Count == 0) return;
 
                 var navigationParams = new NavigationParameters();
                 navigationParams.Add("ImageSelectedIndex", selecteIndex);
                 navigationParams.Add("ImageList", ImageURLsList);
-                _navigationService.NavigateAsync("PreviewImagePage", navigationParams, useModalNavigation: false, animated: false);
+                await _navigationService.NavigateAsync("PreviewImagePage", navigationParams, useModalNavigation: false, animated: false);
             });
 
             BackButtonTapped = new Command(async () => 
@@ -347,7 +347,7 @@ namespace MRzeszowiak.ViewModel
                 var status = await _rzeszowiakRepository.SendUserMessage(_lastAdvert, message, _setting.UserEmail);
                 if (status)
                 {
-                    _setting.UpdateSendMailNotice(_lastAdvert);
+                    await _setting.UpdateSendMailNoticeAsync(_lastAdvert);
                     LastSendMailDate = DateTime.Now;
                     MailStatus = MailStatusEnum.email_send;
                     await _pageDialog.DisplayAlertAsync(_setting.GetAppNameAndVersion, "Twoja wiadomość została wysłana.", "OK");
@@ -375,9 +375,9 @@ namespace MRzeszowiak.ViewModel
         async void LoadAdvertMessage(AdvertShort advertShort, bool dbLoad = false)
         {
             if(advertShort == null)
-                throw new NullReferenceException("LoadAdvert => advertShort == null !");
+                throw new NullReferenceException("LoadAdvertMessage => advertShort == null !");
             if (advertShort.AdverIDinRzeszowiak == 0)
-                throw new ArgumentException("advertShort.AdverIDinRzeszowiak == 0");
+                throw new ArgumentException("LoadAdvertMessage => advertShort.AdverIDinRzeszowiak == 0");
 
             _lastAdvertShort = advertShort;
             ErrorMessage = String.Empty;
@@ -388,7 +388,7 @@ namespace MRzeszowiak.ViewModel
             if (!dbLoad)
                 _advert = await _rzeszowiakRepository.GetAdvertAsync(advertShort);
             else
-                _advert = _setting.GetFavoriteAdvertDB(advertShort);
+                _advert = await _setting.GetFavoriteAdvertDBAsync(advertShort);
 
             if (_advert == null)
             {
@@ -401,8 +401,8 @@ namespace MRzeszowiak.ViewModel
             else
             {
                 CopyAdverToViewModel(_advert);
-                LastSendMailDate = _setting.LastMailSendDate(_advert);
-                IsFavorite = _setting.IsAdvertInDB(_advert);
+                LastSendMailDate = await _setting.LastMailSendDateAsync(_advert);
+                IsFavorite = await _setting.IsAdvertInDBAsync(_advert);
                 if(LastSendMailDate.IsSend())
                     MailStatus = MailStatusEnum.email_send;
                 else

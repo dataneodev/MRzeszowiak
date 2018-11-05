@@ -16,6 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extends\CloneObjectSerializable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\CustomEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\DateTimeExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extends\PathExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\NoAnimationNavigationPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\PinchToZoomContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extends\WebPage.cs" />
