@@ -1,4 +1,5 @@
-﻿using Prism.Navigation;
+﻿using MRzeszowiak.ViewModel;
+using Prism.Navigation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,8 @@ namespace MRzeszowiak.View
 		public MenuMasterDetail()
 		{
             InitializeComponent();
+            if (BindingContext is MenuMasterDetailViewModel model)
+                model.SetMenuPresented = (state) => IsPresented = state;
         }
 
         public bool IsPresentedAfterNavigation

@@ -21,6 +21,7 @@ namespace MRzeszowiak.ViewModel
         };
 
         public ICommand MenuItemTapped { get; private set; }
+        public Action<bool> SetMenuPresented { get; set; }
 
         public MenuMasterDetailViewModel(INavigationService navigationService)
         {
@@ -38,6 +39,7 @@ namespace MRzeszowiak.ViewModel
                     Device.OpenUri(new Uri(App.RzeszowiakURL));
                     break;
                 case "FavAdvertPage":
+                    SetMenuPresented?.Invoke(false);
                     await _navigationService.NavigateAsync($"MainNavigation/{item.TargetPage}?LoadFavAdvert=true");
                     break;
                 default:
