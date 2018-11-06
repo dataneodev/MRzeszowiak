@@ -16,6 +16,36 @@ namespace MRzeszowiak.ViewModel
         public ISetting Setting { get; private set; }
         public ICommand SearchButtonTapped { get; set; }
 
+        public byte MaxScrollingAutoLoadPage
+        {
+            get { return Setting.MaxScrollingAutoLoadPage; }
+            set
+            {
+                Setting.MaxScrollingAutoLoadPage = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string UserEmail
+        {
+            get { return Setting.UserEmail; }
+            set
+            {
+                Setting.UserEmail = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public AdvertSearch AutostartAdvertSearch
+        {
+            get { return Setting.AutostartAdvertSearch; }
+            set
+            {
+                Setting.AutostartAdvertSearch = value;
+                OnPropertyChanged();
+            }
+        }
+
         public SettingViewModel(INavigationService navigationService, ISetting setting)
         {
             Debug.Write("SettingViewModel Contructor");
@@ -27,7 +57,7 @@ namespace MRzeszowiak.ViewModel
                 Debug.Write("SearchButtonTapped");
                 var parameters = new NavigationParameters()
                 {
-                    {"SearchRecord", Setting.AutostartAdvertSearch.CloneObjectSerializable<AdvertSearch>()},
+                    {"SearchRecord", AutostartAdvertSearch.CloneObjectSerializable<AdvertSearch>()},
                     {"SettingMode", true}
                 };
                 _navigationService.NavigateAsync("SearchPopup", parameters);
@@ -38,7 +68,7 @@ namespace MRzeszowiak.ViewModel
         {
             if (parameters.ContainsKey("SearchRecord"))
                 if (parameters["SearchRecord"] is AdvertSearch advertSearch)
-                    Setting.AutostartAdvertSearch = advertSearch;
+                    AutostartAdvertSearch = advertSearch;
         }
     }
 }

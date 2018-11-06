@@ -17,7 +17,7 @@ namespace MRzeszowiak
 {
 	public partial class App : PrismApplication
     {
-        public static ISetting Setting { get; private set; } = new SettingRepository(false);
+        public static ISetting Setting { get; private set; } = new SettingRepository();
 
         public static string RzeszowiakURL = "http://www.rzeszowiak.pl";
         public static string GetAppName = "MRzeszowiak";

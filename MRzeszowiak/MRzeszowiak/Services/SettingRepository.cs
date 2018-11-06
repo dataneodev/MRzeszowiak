@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace MRzeszowiak.Services
 {
-    public class SettingRepository : ISetting, INotifyPropertyChanged
+    public class SettingRepository : ISetting
     {
         private SQLiteAsyncConnection _sqliteConnection;
         [PrimaryKey, AutoIncrement]
@@ -22,9 +22,6 @@ namespace MRzeszowiak.Services
         private string _dbPath;
         private const string dbName = "mrzeszowiak.db";
         private string DbFullPath { get => _dbPath?.Length > 0 ? Path.Combine(_dbPath, dbName) : String.Empty; }
-        private bool _rawObj;
-        [Ignore]
-        public bool RawObj => _rawObj || (_dbPath?.Length ?? 0) == 0;
         [Ignore]
         public string UpdateServerUrl { get => "https://script.google.com/macros/s/AKfycbxx_fFWPUjtiwBU9uFcVKhvXFLa8SjfoHZbM7DmSD_WaWmArTu1/exec"; }
         [Ignore]
@@ -37,18 +34,7 @@ namespace MRzeszowiak.Services
         public string GetRzeszowiakBaseURL { get => "http://rzeszowiak.pl";  }
         [Ignore]
         public string GetProjectBaseURL { get => "https://sites.google.com/site/dataneosoftware/polski/mrzeszowiak"; }
-
-        private string userEmail;
-        public string UserEmail
-        {
-            get { return userEmail; }
-            set
-            {
-                userEmail = value;
-                OnPropertyChanged();
-            }
-        }
-
+        public string UserEmail { get; set; } = String.Empty;
         [Ignore]
         public bool IsUserMailCorrect
         {
@@ -60,30 +46,9 @@ namespace MRzeszowiak.Services
                 return regex.IsMatch(UserEmail);
             }
         }
-
-        private byte maxScrollingAutoLoadPage = 10;
-        public byte MaxScrollingAutoLoadPage
-        {
-            get { return maxScrollingAutoLoadPage; }
-            set
-            {
-                maxScrollingAutoLoadPage = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private AdvertSearch autostartAdvertSearch = new AdvertSearch();
+        public byte MaxScrollingAutoLoadPage { get; set; } = 10;
         [Ignore]
-        public AdvertSearch AutostartAdvertSearch
-        {
-            get { return autostartAdvertSearch; }
-            set
-            {
-                autostartAdvertSearch = value;
-                OnPropertyChanged();
-            }
-        }
-
+        public AdvertSearch AutostartAdvertSearch { get; set; } = new AdvertSearch();
         public string AutostartAdvertSearchSerialized
         {
             get => JsonConvert.SerializeObject(AutostartAdvertSearch);
@@ -108,20 +73,9 @@ namespace MRzeszowiak.Services
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public SettingRepository()
-        {
-            _rawObj = true;
-        }
-        public SettingRepository(bool RawObj)
-        {
-            _rawObj = RawObj;
-        }
-
         public async Task<DateTime> LastMailSendDateAsync(Advert advert)
         {
-            if (RawObj || advert == null) return DateTime.Now.AddYears(-1);
+            if (advert == null) return DateTime.Now.AddYears(-1);
             Debug.Write("LastMailSendDate");
             if (_sqliteConnection == null)
             {
@@ -137,7 +91,7 @@ namespace MRzeszowiak.Services
 
         public async Task<bool> UpdateSendMailNoticeAsync(Advert advert)
         {
-            if (RawObj || advert == null) return false;
+            if (advert == null) return false;
             Debug.Write("UpdateSendMailNoticeAsync");
             if (advert == null) return false;
             if (_sqliteConnection == null)
@@ -177,7 +131,7 @@ namespace MRzeszowiak.Services
 
         public async Task<bool> GetFavoriteAdvertListDBAsync(IList<AdvertShort> list)
         {
-            if (RawObj || list == null) return false;
+            if (list == null) return false;
             Debug.Write("GetFavoriteAdvertListDBAsync");
             if (_sqliteConnection == null)
             {
@@ -201,7 +155,7 @@ namespace MRzeszowiak.Services
         //favorite adver
         public async Task<Advert> GetFavoriteAdvertDBAsync(AdvertShort advertShort)
         {
-            if (RawObj || advertShort == null) return null;
+            if (advertShort == null) return null;
             Debug.Write("GetFavoriteAdvertDBAsync");
             if (_sqliteConnection == null)
             {
@@ -220,7 +174,7 @@ namespace MRzeszowiak.Services
             //favorite adver
         public async Task<bool> InsertOrUpdateAdvertDBAsync(Advert advert)
         {
-            if (RawObj || advert == null) return false; ;
+            if (advert == null) return false; ;
             Debug.Write("InsertOrUpdateAdvertDBAsync");
             if (_sqliteConnection == null)
             {
@@ -243,7 +197,7 @@ namespace MRzeszowiak.Services
         //favorite adver
         public async Task<bool> DeleteAdvertDBAsync(Advert advert)
         {
-            if (RawObj || advert == null) return false; ;
+            if (advert == null) return false; ;
             Debug.Write("DeleteAdvertDBAsync");
             if (_sqliteConnection == null)
             {
@@ -264,8 +218,7 @@ namespace MRzeszowiak.Services
         //favorite adver
         public async Task<bool> DeleteAdvertAllDBAsync()
         {
-            if (RawObj) return false; ;
-            Debug.Write("DeleteAdvertAllDBAsync");
+             Debug.Write("DeleteAdvertAllDBAsync");
             if (_sqliteConnection == null)
             {
                 Debug.Write("DeleteAdvertAllDBAsync => sqlite connection is not open");
@@ -277,7 +230,7 @@ namespace MRzeszowiak.Services
         //favorite adver
         public async Task<bool> IsAdvertInDBAsync(Advert advert)
         {
-            if (RawObj || advert == null) return false; ;
+            if (advert == null) return false; ;
             Debug.Write("IsAdvertInDBAsync");
             if (_sqliteConnection == null)
             {
@@ -300,22 +253,15 @@ namespace MRzeszowiak.Services
                 _dbPath = String.Empty;
                 return;
             }
-            if(!RawObj && _sqliteConnection == null)
+            if(_sqliteConnection == null)
             {
                 _sqliteConnection = new SQLiteAsyncConnection(DbFullPath);
                 await LoadSettingAsync();
             }                  
         }
 
-        protected void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string name = "")
-        {
-            if (!RawObj)
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
-
         protected async Task<bool> LoadSettingAsync()
         {
-            if (RawObj) return false;
             Debug.Write("LoadSettingAsync");
             if (_sqliteConnection == null)
             {
@@ -335,7 +281,6 @@ namespace MRzeszowiak.Services
 
         public async Task<bool> SaveSettingAsync()
         {
-            if (RawObj) return false;
             Debug.Write("SaveSettingAsync");
             if(_sqliteConnection == null)
             {
@@ -343,13 +288,11 @@ namespace MRzeszowiak.Services
                 return false;
             }
 
-            _rawObj = true;
             await _sqliteConnection.CreateTableAsync<SettingRepository>();
             if (await _sqliteConnection.Table<SettingRepository>().CountAsync() == 0)
                 await _sqliteConnection.InsertAsync(this);
             else
                 await _sqliteConnection.UpdateAsync(this);
-            _rawObj = false;
             Debug.WriteLine("SaveSettingAsync: " + this.Id);
             return true;
         }
