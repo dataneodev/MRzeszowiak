@@ -5,7 +5,6 @@
              xmlns:CarouselView="clr-namespace:CarouselView.FormsPlugin.Abstractions;assembly=CarouselView.FormsPlugin.Abstractions"
              xmlns:ViewModel="clr-namespace:MRzeszowiak.ViewModel"
              xmlns:Extends="clr-namespace:MRzeszowiak.Extends"
-             xmlns:b="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"
              xmlns:pmvvm="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
              pmvvm:ViewModelLocator.AutowireViewModel="True"
              Title="Podgląd ogłoszenia"
@@ -15,29 +14,40 @@
             <ViewModel:ImageFromFavorite x:Key="ImageFromFavorite" />
             <ViewModel:AbsHeight x:Key="AbsHeight" />
             <ViewModel:IsValueNotNull x:Key="PhoneImageVisible" />
+            <ViewModel:IsTextNotNull x:Key="IsTextNotNull" />
             <ViewModel:NegativeBool x:Key="NegativeBool" />
             <ViewModel:MailStatusEnumToString x:Key="MailStatusEnumToString" />
             <ViewModel:MailStatusEnumNotSending x:Key="MailStatusEnumNotSending" />
             <ViewModel:DateTimeToString x:Key="DateTimeToString" />
+            <ViewModel:IsCollectionNotEmpty x:Key="IsCollectionNotEmpty" />
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Content>
         <ScrollView Orientation="Vertical" x:Name="PreviewPageScroll">
             <StackLayout Orientation="Vertical" CompressedLayout.IsHeadless="True">
+                <!--error section-->
                 <ActivityIndicator VerticalOptions="CenterAndExpand" 
                                IsRunning="{Binding Activity}"
                                IsVisible="{Binding Activity}"/>
-                <AbsoluteLayout IsVisible="{Binding ErrorPanelVisible}"  HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-                    <Label IsVisible="{Binding ErrorPanelVisible}" Text="{Binding ErrorMessage}" FontSize="Medium" AbsoluteLayout.LayoutBounds="0.5,0.5,0.9,0.5"
+                <AbsoluteLayout IsVisible="{Binding ErrorMessage, Converter={StaticResource IsTextNotNull}}"  HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                    <Label Text="{Binding ErrorMessage}" FontSize="Medium" AbsoluteLayout.LayoutBounds="0.5,0.5,0.9,0.5"
                            AbsoluteLayout.LayoutFlags="All" HorizontalTextAlignment="Center"/>
-                    <Button Text="Odśwież" IsVisible="{Binding ErrorPanelVisible}"
-                            Command="{Binding RefreshAdvert}"
-                            AbsoluteLayout.LayoutBounds="0.5,0.5"
-                            AbsoluteLayout.LayoutFlags="PositionProportional"/>
+                    <Button Text="Odśwież" Command="{Binding RefreshAdvert}"
+                            AbsoluteLayout.LayoutBounds="0.5,0.5" AbsoluteLayout.LayoutFlags="PositionProportional"/>
                 </AbsoluteLayout>
-                <AbsoluteLayout HeightRequest="{Binding ImageVisible, Converter={StaticResource AbsHeight}}"
-                                HorizontalOptions="FillAndExpand" Padding="0">
-                    <CarouselView:CarouselViewControl ItemsSource="{Binding ImageURLsList}" IsVisible="{Binding ImageVisible}" IsEnabled="{Binding ImageVisible}"
+                <!--end of serror section-->
+                <!--image and back button section-->
+                <AbsoluteLayout HeightRequest="55"
+                                HorizontalOptions="FillAndExpand" Padding="0" IsVisible="True">
+                    <AbsoluteLayout.Triggers>
+                        <DataTrigger TargetType="AbsoluteLayout" Binding="{Binding ImageURLsList, Converter={StaticResource IsCollectionNotEmpty}}" Value="True">
+                            <Setter Property="HeightRequest" Value="220"/>
+                        </DataTrigger>
+                        <DataTrigger TargetType="AbsoluteLayout" Binding="{Binding ErrorMessage, Converter={StaticResource IsTextNotNull}}" Value="True">
+                            <Setter Property="IsVisible" Value="False"/>
+                        </DataTrigger>
+                    </AbsoluteLayout.Triggers>
+                    <CarouselView:CarouselViewControl ItemsSource="{Binding ImageURLsList}"
                                        ShowArrows="True" ShowIndicators="True" IsSwipeEnabled="True" HorizontalOptions="FillAndExpand" HeightRequest="220" 
                                        AbsoluteLayout.LayoutBounds="0,0,1,220" AbsoluteLayout.LayoutFlags="WidthProportional" x:Name="CarouselViewImageList">
                         <CarouselView:CarouselViewControl.ItemTemplate>
@@ -55,22 +65,31 @@
                             </DataTemplate>
                         </CarouselView:CarouselViewControl.ItemTemplate>
                     </CarouselView:CarouselViewControl>
-                    <Button Image="back.png"
-                        x:Name="BackButton"
-                        Text="" 
-                        IsVisible="{Binding ActivityForm}"
-                        AbsoluteLayout.LayoutBounds="10,10,55,40"
-                        AbsoluteLayout.LayoutFlags="None"
-                        BackgroundColor="#50e2e2e2"
-                        Command="{Binding BackButtonTapped}"/>
+                    <Button Image="back.png" x:Name="BackButton" Text="" IsVisible="False" AbsoluteLayout.LayoutBounds="10,10,55,40" AbsoluteLayout.LayoutFlags="None"
+                        BackgroundColor="#50e2e2e2" Command="{Binding BackButtonTapped}">
+                        <Button.Triggers>
+                            <MultiTrigger TargetType="Button">
+                                <MultiTrigger.Conditions>
+                                    <BindingCondition Binding="{Binding Activity}" Value="False"/>
+                                    <BindingCondition Binding="{Binding ErrorMessage, Converter={StaticResource IsTextNotNull}}" Value="False"/>
+                                </MultiTrigger.Conditions>
+                                <Setter Property="IsVisible" Value="True"/>
+                            </MultiTrigger>   
+                        </Button.Triggers>
+                    </Button>
                 </AbsoluteLayout>
-                <StackLayout Orientation="Vertical" 
-                         IsVisible="{Binding ActivityForm}"
-                         Margin="10,0,10,0">
-                    <Label Text="{Binding Title}"
-                       FontSize="Large"
-                       TextColor="Black"
-                       LineBreakMode="WordWrap"/>
+                <!--end image and back button section-->
+                <StackLayout Orientation="Vertical" IsVisible="False" Margin="10,0,10,0">
+                    <StackLayout.Triggers>
+                        <MultiTrigger TargetType="StackLayout">
+                            <MultiTrigger.Conditions>
+                                <BindingCondition Binding="{Binding Activity}" Value="False"/>
+                                <BindingCondition Binding="{Binding ErrorMessage, Converter={StaticResource IsTextNotNull}}" Value="False"/>
+                            </MultiTrigger.Conditions>
+                            <Setter Property="IsVisible" Value="True"/>
+                        </MultiTrigger>
+                    </StackLayout.Triggers>
+                    <Label Text="{Binding Title}" FontSize="Large" TextColor="Black" LineBreakMode="WordWrap"/>
                     <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
                         <!--highlihted-->
                         <Frame CornerRadius="10" Margin="0" Padding="4" IsVisible="{Binding Highlighted}" BackgroundColor="#fff268">
@@ -83,9 +102,7 @@
                                     <FormattedString.Spans>
                                         <Span Text="Cena: " FontSize="Medium"/>
                                         <Span Text="{Binding Price, Mode=OneWay}" FontAttributes="Bold" FontSize="Large" TextColor="Black"/>
-                                        <Span Text=" zł" 
-                                          FontAttributes="Bold"
-                                          FontSize="Medium"/>
+                                        <Span Text=" zł" FontAttributes="Bold" FontSize="Medium"/>
                                     </FormattedString.Spans>
                                 </FormattedString>
                             </Label.FormattedText>
@@ -104,10 +121,10 @@
                         </StackLayout>
                     </Frame>
                     <!--Additional data list-->
-                    <Frame CornerRadius="10" Margin="0" Padding="0" IsVisible="{Binding AddDataVisible}">
+                    <Frame CornerRadius="10" Margin="0" Padding="0" IsVisible="{Binding AdditionalData, Converter={StaticResource IsCollectionNotEmpty}}">
                         <ListView x:Name="AddDataList" Grid.Row="0" ItemsSource="{Binding AdditionalData}"
                                 HasUnevenRows="True" RowHeight="26" HorizontalOptions="FillAndExpand" ItemTapped="AddDataList_ItemTapped"
-                                ItemAppearing="AddDataList_ItemAppearing" IsVisible="{Binding AddDataVisible}">
+                                ItemAppearing="AddDataList_ItemAppearing">
                             <ListView.Header>
                                 <Label Text="Dane dodatkowe:" FontSize="10" Margin="8,0,8,0"/>
                             </ListView.Header>
@@ -193,31 +210,14 @@
                         </StackLayout>
                     </Frame>
                     <!--Button-->
-                    <Frame CornerRadius="10" 
-                       Margin="0" 
-                       Padding="0">
+                    <Frame CornerRadius="10" Margin="0" Padding="0">
                         <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand" Padding="4">
-                            <Button HeightRequest="44" 
-                                    WidthRequest="78"  
-                                    Image="refresh.png"  
-                                    BackgroundColor="#f4f4f4"
-                                    Command="{Binding RefreshAdvert}"/>
-                            <Button HeightRequest="44" 
-                                    WidthRequest="78"  
-                                    Image="internet.png" 
-                                    BackgroundColor="#f4f4f4"
-                                    Command="{Binding OpenAdvertPage}"/>
-                            <Button HeightRequest="44" 
-                                    WidthRequest="78"  
-                                    Image="{Binding MailStatus, Converter={StaticResource MailStatusEnumToString}}" 
-                                    BackgroundColor="#f4f4f4"
-                                    x:Name="MailButton" 
-                                    Command="{Binding MailAdvert}"/>
-                            <Button HeightRequest="44" 
-                                    WidthRequest="78"  
-                                    Image="{Binding IsFavorite, Converter={StaticResource ImageFromFavorite}}" 
-                                    BackgroundColor="#f4f4f4"
-                                    Command="{Binding FavoriteAdvert}"/>
+                            <Button HeightRequest="44" WidthRequest="78" Image="refresh.png" BackgroundColor="#f4f4f4" Command="{Binding RefreshAdvert}"/>
+                            <Button HeightRequest="44" WidthRequest="78" Image="internet.png" BackgroundColor="#f4f4f4" Command="{Binding OpenAdvertPage}"/>
+                            <Button HeightRequest="44" WidthRequest="78" Image="{Binding MailStatus, Converter={StaticResource MailStatusEnumToString}}" 
+                                    BackgroundColor="#f4f4f4" x:Name="MailButton" Command="{Binding MailAdvert}"/>
+                            <Button HeightRequest="44" WidthRequest="78" Image="{Binding IsFavorite, Converter={StaticResource ImageFromFavorite}}" 
+                                    BackgroundColor="#f4f4f4" Command="{Binding FavoriteAdvert}"/>
                         </StackLayout>
                     </Frame>
                     <!--ID-->
@@ -226,8 +226,7 @@
                             <Label.FormattedText>
                                 <FormattedString>
                                     <FormattedString.Spans>
-                                        <Span Text="ID: "
-                                          FontSize="12"/>
+                                        <Span Text="ID: " FontSize="12"/>
                                         <Span Text="{Binding AdverIDinRzeszowiak, Mode=OneWay}"
                                       FontSize="12"/>
                                     </FormattedString.Spans>
@@ -238,11 +237,8 @@
                             <Label.FormattedText>
                                 <FormattedString>
                                     <FormattedString.Spans>
-                                        <Span Text="Wyświetleń: "
-                                          FontSize="12"/>
-                                        <Span Text="{Binding Views, Mode=OneWay}"
-                                        TextColor="Black"
-                                        FontSize="12"/>
+                                        <Span Text="Wyświetleń: "  FontSize="12"/>
+                                        <Span Text="{Binding Views, Mode=OneWay}" TextColor="Black" FontSize="12"/>
                                     </FormattedString.Spans>
                                 </FormattedString>
                             </Label.FormattedText>

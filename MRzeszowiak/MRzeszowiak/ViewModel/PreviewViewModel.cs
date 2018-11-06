@@ -137,8 +137,6 @@ namespace MRzeszowiak.ViewModel
             }
         }
 
-        public bool ActivityForm => !Activity && !ErrorPanelVisible ? true : false;
-
         private bool activity = true;
         public bool Activity
         {
@@ -147,7 +145,6 @@ namespace MRzeszowiak.ViewModel
             {
                 activity = value;
                 OnPropertyChanged();
-                OnPropertyChanged("ActivityForm");
             }
         }
 
@@ -159,12 +156,9 @@ namespace MRzeszowiak.ViewModel
             {
                 errorMessage = value;
                 OnPropertyChanged();
-                OnPropertyChanged("ErrorPanelVisible");
-                OnPropertyChanged("ActivityForm");
             }
         }
-        public bool ErrorPanelVisible => (errorMessage?.Length ?? 0) > 0 ? true : false;
-
+   
         private MailStatusEnum mailStatus = MailStatusEnum.email_default;
         public MailStatusEnum MailStatus
         {
@@ -188,9 +182,7 @@ namespace MRzeszowiak.ViewModel
         }
 
         public ObservableCollection<KeyValue> AdditionalData { get; set; } = new ObservableCollection<KeyValue>();
-        public bool AddDataVisible => (AdditionalData?.Count ?? 0) > 0 ? true : false;
         public ObservableCollection<string> ImageURLsList { get; set; } = new ObservableCollection<string>();
-        public bool ImageVisible => ((ImageURLsList?.Count ?? 0) > 0 && ActivityForm) ? true : false;
         public Action ScrollToButtom;
 
         private AdvertShort _lastAdvertShort;
@@ -216,8 +208,8 @@ namespace MRzeszowiak.ViewModel
             _eventAggregator = eventAggregator ?? throw new NullReferenceException("IEventAggregator eventAggregator == null !");
             _imageContainer.OnDownloadFinish += ImageDownloadFinish;
 
-            ImageURLsList.CollectionChanged += (s, e) => { OnPropertyChanged("ImageVisible"); };
-            AdditionalData.CollectionChanged += (s, e) => { OnPropertyChanged("AddDataVisible"); };
+            ImageURLsList.CollectionChanged += (s, e) => { OnPropertyChanged("ImageURLsList"); };
+            AdditionalData.CollectionChanged += (s, e) => { OnPropertyChanged("AdditionalData"); };
 
             OpenAdvertPage = new Command(() =>
             {
@@ -428,7 +420,7 @@ namespace MRzeszowiak.ViewModel
 
             ImageURLsList.Clear();
             foreach (var item in advert?.ImageURLsList)
-                ImageURLsList.Add(item);
+                ImageURLsList.Add(item);                
 
             if ((advert.PhoneSsid.Length == 10 && advert.PhonePHPSSESION != null) || advert?.PhoneImageByteArray?.Length>0)
             {

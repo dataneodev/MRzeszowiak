@@ -21,7 +21,7 @@ namespace MRzeszowiak
 
         public static string RzeszowiakURL = "http://www.rzeszowiak.pl";
         public static string GetAppName = "MRzeszowiak";
-        public static float GetAppVersion = 0.2f;
+        public static float GetAppVersion = 0.3f;
         public static string GetAppNameAndVersion = GetAppName + " " + GetAppVersion.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture);
 
         public static Color highlightRow = Color.FromHex("#f4f4f4");
