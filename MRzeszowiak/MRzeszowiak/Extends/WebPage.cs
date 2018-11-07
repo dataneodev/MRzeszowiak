@@ -113,6 +113,8 @@ namespace MRzeszowiak.Extends
                     try
                     {
                         client.BaseAddress = BaseURI;
+                        client.DefaultRequestHeaders.Add("X-Requested-With", "XMLHttpRequest");
+
                         var keyValues = new List<KeyValuePair<string, string>>();
                         foreach (var item in postData)
                             keyValues.Add(new KeyValuePair<string, string>(item.Key, item.Value));

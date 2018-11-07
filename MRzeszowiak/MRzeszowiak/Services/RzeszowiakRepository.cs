@@ -282,13 +282,13 @@ namespace MRzeszowiak.Services
                 ["zgodaFormularzKontakt"] = "1",
             };
 
-            //var HttpResult = await GetWeb.PostWebPage(Url, postData, advert.URLPath, null);
+            var HttpResult = await GetWeb.PostWebPage(Url, postData, advert.URLPath, null);
 
-            //if(HttpResult.IndexOf("{\"status\":\"ok\", \"opis\":\"Wiadomość została wysłana.\"}", 0, true) == -1)
-            //{
-            //    Debug.Write("SendUserMessage => Confirm message not recive");
-            //    return false;
-            //}
+            if(HttpResult.IndexOf("{\"status\":\"ok\", \"opis\":\"Wiadomość została wysłana.\"}", 0, true) == -1)
+            {
+                Debug.Write("SendUserMessage => Confirm message not recive");
+                return false;
+            }
             return true;
         }
 
