@@ -31,25 +31,32 @@
                                IsVisible="{Binding Activity}"/>
                 <AbsoluteLayout IsVisible="{Binding ErrorMessage, Converter={StaticResource IsTextNotNull}}"  HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
                     <Label Text="{Binding ErrorMessage}" FontSize="Medium" AbsoluteLayout.LayoutBounds="0.5,0.5,0.9,0.5"
-                           AbsoluteLayout.LayoutFlags="All" HorizontalTextAlignment="Center"/>
-                    <Button Text="Odśwież" Command="{Binding RefreshAdvert}"
+                           AbsoluteLayout.LayoutFlags="All" HorizontalTextAlignment="Center" IsVisible="{Binding ErrorMessage, Converter={StaticResource IsTextNotNull}}"/>
+                    <Button Text="Odśwież" Command="{Binding RefreshAdvert}" IsVisible="{Binding ErrorMessage, Converter={StaticResource IsTextNotNull}}"
                             AbsoluteLayout.LayoutBounds="0.5,0.5" AbsoluteLayout.LayoutFlags="PositionProportional"/>
                 </AbsoluteLayout>
                 <!--end of serror section-->
                 <!--image and back button section-->
-                <AbsoluteLayout HeightRequest="55"
-                                HorizontalOptions="FillAndExpand" Padding="0" IsVisible="True">
+                <AbsoluteLayout HeightRequest="220" HorizontalOptions="FillAndExpand" Padding="0" IsVisible="{Binding ViewActive}" IsEnabled="{Binding ViewActive}">
                     <AbsoluteLayout.Triggers>
-                        <DataTrigger TargetType="AbsoluteLayout" Binding="{Binding ImageURLsList, Converter={StaticResource IsCollectionNotEmpty}}" Value="True">
-                            <Setter Property="HeightRequest" Value="220"/>
-                        </DataTrigger>
-                        <DataTrigger TargetType="AbsoluteLayout" Binding="{Binding ErrorMessage, Converter={StaticResource IsTextNotNull}}" Value="True">
-                            <Setter Property="IsVisible" Value="False"/>
+                        <DataTrigger TargetType="AbsoluteLayout" Binding="{Binding ImageURLsList, Converter={StaticResource IsCollectionNotEmpty}}" Value="False">
+                            <Setter Property="HeightRequest" Value="50"/>
                         </DataTrigger>
                     </AbsoluteLayout.Triggers>
-                    <CarouselView:CarouselViewControl ItemsSource="{Binding ImageURLsList}"
+                    <CarouselView:CarouselViewControl ItemsSource="{Binding ImageURLsList}" IsVisible="False" IsEnabled="False"
                                        ShowArrows="True" ShowIndicators="True" IsSwipeEnabled="True" HorizontalOptions="FillAndExpand" HeightRequest="220" 
                                        AbsoluteLayout.LayoutBounds="0,0,1,220" AbsoluteLayout.LayoutFlags="WidthProportional" x:Name="CarouselViewImageList">
+                        <CarouselView:CarouselViewControl.Triggers>
+                            <MultiTrigger TargetType="CarouselView:CarouselViewControl">
+                                <MultiTrigger.Conditions>
+                                    <BindingCondition Binding="{Binding ViewActive}" Value="True"/>
+                                    <BindingCondition Binding="{Binding ErrorMessage, Converter={StaticResource IsTextNotNull}}" Value="False"/>
+                                    <BindingCondition Binding="{Binding ImageURLsList, Converter={StaticResource IsCollectionNotEmpty}}" Value="True"/>
+                                </MultiTrigger.Conditions>
+                                <Setter Property="IsVisible" Value="True"/>
+                                <Setter Property="IsEnabled" Value="True"/>
+                            </MultiTrigger>
+                        </CarouselView:CarouselViewControl.Triggers>
                         <CarouselView:CarouselViewControl.ItemTemplate>
                             <DataTemplate>
                                 <Extends:ImageFit VerticalOptions="Center" HorizontalOptions="FillAndExpand"              
@@ -65,30 +72,11 @@
                             </DataTemplate>
                         </CarouselView:CarouselViewControl.ItemTemplate>
                     </CarouselView:CarouselViewControl>
-                    <Button Image="back.png" x:Name="BackButton" Text="" IsVisible="False" AbsoluteLayout.LayoutBounds="10,10,55,40" AbsoluteLayout.LayoutFlags="None"
-                        BackgroundColor="#50e2e2e2" Command="{Binding BackButtonTapped}">
-                        <Button.Triggers>
-                            <MultiTrigger TargetType="Button">
-                                <MultiTrigger.Conditions>
-                                    <BindingCondition Binding="{Binding Activity}" Value="False"/>
-                                    <BindingCondition Binding="{Binding ErrorMessage, Converter={StaticResource IsTextNotNull}}" Value="False"/>
-                                </MultiTrigger.Conditions>
-                                <Setter Property="IsVisible" Value="True"/>
-                            </MultiTrigger>   
-                        </Button.Triggers>
-                    </Button>
+                    <Button Image="back.png" Text="" IsVisible="{Binding ViewActive}" IsEnabled="{Binding ViewActive}" AbsoluteLayout.LayoutBounds="10,10,55,40" AbsoluteLayout.LayoutFlags="None"
+                        BackgroundColor="#50e2e2e2" Command="{Binding BackButtonTapped}"/>
                 </AbsoluteLayout>
                 <!--end image and back button section-->
-                <StackLayout Orientation="Vertical" IsVisible="False" Margin="10,0,10,0">
-                    <StackLayout.Triggers>
-                        <MultiTrigger TargetType="StackLayout">
-                            <MultiTrigger.Conditions>
-                                <BindingCondition Binding="{Binding Activity}" Value="False"/>
-                                <BindingCondition Binding="{Binding ErrorMessage, Converter={StaticResource IsTextNotNull}}" Value="False"/>
-                            </MultiTrigger.Conditions>
-                            <Setter Property="IsVisible" Value="True"/>
-                        </MultiTrigger>
-                    </StackLayout.Triggers>
+                <StackLayout Orientation="Vertical" IsVisible="{Binding ViewActive}" IsEnabled="{Binding ViewActive}" Margin="10,0,10,0">
                     <Label Text="{Binding Title}" FontSize="Large" TextColor="Black" LineBreakMode="WordWrap"/>
                     <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
                         <!--highlihted-->

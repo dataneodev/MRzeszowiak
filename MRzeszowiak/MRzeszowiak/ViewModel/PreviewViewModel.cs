@@ -145,6 +145,7 @@ namespace MRzeszowiak.ViewModel
             {
                 activity = value;
                 OnPropertyChanged();
+                OnPropertyChanged("ViewActive");
             }
         }
 
@@ -156,8 +157,11 @@ namespace MRzeszowiak.ViewModel
             {
                 errorMessage = value;
                 OnPropertyChanged();
+                OnPropertyChanged("ViewActive");
             }
         }
+
+        public bool ViewActive { get => ErrorMessage?.Length == 0 && !Activity;  }
    
         private MailStatusEnum mailStatus = MailStatusEnum.email_default;
         public MailStatusEnum MailStatus
