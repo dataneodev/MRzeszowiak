@@ -93,6 +93,7 @@
   <ItemGroup>
     <Compile Include="CustomEditorRenderer.cs" />
     <Compile Include="CustomEntryRenderer.cs" />
+    <Compile Include="SelectableLabelRenderer.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
     <Compile Include="Toast_IOS.cs" />

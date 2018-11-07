@@ -98,7 +98,7 @@
                     </StackLayout>
                     <!--description-->
                     <Frame CornerRadius="10" Margin="0" Padding="0">
-                        <Label Text="{Binding DescriptionHTML}" TextColor="Black" FontSize="Small" LineBreakMode="WordWrap" Margin="8,5,8,5"/>
+                        <Extends:SelectableLabel Text="{Binding DescriptionHTML}" TextColor="Black" FontSize="Small"  Margin="8,5,8,5"/>
                     </Frame>
                     <!--Phone number-->
                     <Frame CornerRadius="10" Margin="0" Padding="0" IsVisible="{Binding HasPhoneImage}">
