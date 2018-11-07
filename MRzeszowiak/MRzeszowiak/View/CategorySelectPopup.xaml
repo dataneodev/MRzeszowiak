@@ -35,7 +35,7 @@
                           Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0"
                           ItemsSource="{Binding ButtonList}" 
                           RowHeight="50" 
-                          HeightRequest="{Binding buttonListViewHeight}"
+                          HeightRequest="{Binding ButtonListViewHeight}"
                           HorizontalOptions="FillAndExpand"
                           VerticalOptions="FillAndExpand"
                           ItemTapped="categoryListView_ItemTapped"

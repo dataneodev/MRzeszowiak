@@ -25,7 +25,7 @@ namespace MRzeszowiak.ViewModel
 
         protected Category LastSelectedCategory { get; set; }
 
-        public short buttonListViewHeight 
+        public short ButtonListViewHeight 
         {
            get
             {
@@ -51,8 +51,7 @@ namespace MRzeszowiak.ViewModel
             ButtonCloseTappped = new Command(async () => { await _navigationService.GoBackAsync(); });
         }
 
-        public void OnNavigatedFrom(INavigationParameters parameters) { }
-        public async void OnNavigatingTo(INavigationParameters parameters) 
+        public override async void OnNavigatingTo(INavigationParameters parameters) 
         {
             if (parameters.ContainsKey("SelectedCategory"))
             {
@@ -61,7 +60,8 @@ namespace MRzeszowiak.ViewModel
                 LastSelectedCategory = cat;
                 if(cat?.GetType() == typeof(Category))
                 {
-                    if(cat.SelectedChildCategory != null)
+
+                    if(cat.ChildCategory?.Count > 0)
                         await DisplayCategoryAsync(cat);
                     else
                         await DisplayCategoryAsync(cat.Master);
@@ -72,7 +72,6 @@ namespace MRzeszowiak.ViewModel
             }
             ScrollToTop?.Invoke();
         }
-        public void OnNavigatedTo(INavigationParameters parameters) { }
 
         protected async void ButtonTappedAsync(CatButtonDisplay button)
         {
@@ -104,7 +103,7 @@ namespace MRzeszowiak.ViewModel
             button.IsVisible = isVisible;
             button.Image = image;
             button.Category = category;
-            OnPropertyChanged("buttonListViewHeight");
+            OnPropertyChanged("ButtonListViewHeight");
         }
 
         protected async void ItemTapedAsync(CatDisplay catTapped)
