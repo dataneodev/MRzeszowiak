@@ -9,6 +9,7 @@ using System.Windows.Input;
 using Xamarin.Forms;
 using Prism.Events;
 using MRzeszowiak.Interfaces;
+using System.Threading.Tasks;
 
 namespace MRzeszowiak.ViewModel
 {
@@ -137,18 +138,6 @@ namespace MRzeszowiak.ViewModel
             }
         }
 
-        private bool activity = true;
-        public bool Activity
-        {
-            get { return activity; }
-            set
-            {
-                activity = value;
-                OnPropertyChanged();
-                OnPropertyChanged("ViewActive");
-            }
-        }
-
         private string errorMessage = String.Empty;
         public string ErrorMessage
         {
@@ -161,8 +150,22 @@ namespace MRzeszowiak.ViewModel
             }
         }
 
+        private bool activity = true;
+        public bool Activity
+        {
+            get { return activity; }
+            set
+            {
+                activity = value;
+                OnPropertyChanged();
+                OnPropertyChanged("ImageVisible");
+                OnPropertyChanged("ViewActive");
+            }
+        }
+
         public bool ViewActive { get => ErrorMessage?.Length == 0 && !Activity;  }
-   
+        public bool ImageVisible => ((ImageURLsList?.Count ?? 0) > 0 && !Activity) ? true : false;
+
         private MailStatusEnum mailStatus = MailStatusEnum.email_default;
         public MailStatusEnum MailStatus
         {
@@ -212,7 +215,7 @@ namespace MRzeszowiak.ViewModel
             _eventAggregator = eventAggregator ?? throw new NullReferenceException("IEventAggregator eventAggregator == null !");
             _imageContainer.OnDownloadFinish += ImageDownloadFinish;
 
-            ImageURLsList.CollectionChanged += (s, e) => { OnPropertyChanged("ImageURLsList"); };
+            ImageURLsList.CollectionChanged += (s, e) => { OnPropertyChanged("ImageVisible"); };
             AdditionalData.CollectionChanged += (s, e) => { OnPropertyChanged("AdditionalData"); };
 
             OpenAdvertPage = new Command(() =>
@@ -378,6 +381,7 @@ namespace MRzeszowiak.ViewModel
             _lastAdvertShort = advertShort;
             ErrorMessage = String.Empty;
             Activity = true;
+
             CopyAdverToViewModel(new Advert());
 
             Advert _advert;
@@ -404,7 +408,7 @@ namespace MRzeszowiak.ViewModel
                 else
                     MailStatus = MailStatusEnum.email_default;
             }
-            Activity = false;
+            Activity = false;           
         }
 
         void CopyAdverToViewModel(Advert advert)

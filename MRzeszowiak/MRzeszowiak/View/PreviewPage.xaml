@@ -26,41 +26,30 @@
         <ScrollView Orientation="Vertical" x:Name="PreviewPageScroll">
             <StackLayout Orientation="Vertical" CompressedLayout.IsHeadless="True">
                 <!--error section-->
-                <ActivityIndicator VerticalOptions="CenterAndExpand" 
-                               IsRunning="{Binding Activity}"
-                               IsVisible="{Binding Activity}"/>
-                <AbsoluteLayout IsVisible="{Binding ErrorMessage, Converter={StaticResource IsTextNotNull}}"  HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-                    <Label Text="{Binding ErrorMessage}" FontSize="Medium" AbsoluteLayout.LayoutBounds="0.5,0.5,0.9,0.5"
-                           AbsoluteLayout.LayoutFlags="All" HorizontalTextAlignment="Center" IsVisible="{Binding ErrorMessage, Converter={StaticResource IsTextNotNull}}"/>
-                    <Button Text="Odśwież" Command="{Binding RefreshAdvert}" IsVisible="{Binding ErrorMessage, Converter={StaticResource IsTextNotNull}}"
-                            AbsoluteLayout.LayoutBounds="0.5,0.5" AbsoluteLayout.LayoutFlags="PositionProportional"/>
+                <ActivityIndicator VerticalOptions="CenterAndExpand" IsVisible="{Binding Activity}"  IsRunning="{Binding Activity}" IsEnabled="{Binding Activity}"/>
+                <AbsoluteLayout IsVisible="False" IsEnabled="False"  HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                    <AbsoluteLayout.Triggers>
+                        <MultiTrigger TargetType="AbsoluteLayout">
+                            <MultiTrigger.Conditions>
+                                <BindingCondition Binding="{Binding ErrorMessage, Converter={StaticResource IsTextNotNull}}" Value="True"/>
+                                <BindingCondition Binding="{Binding Activity}" Value="False"/>
+                            </MultiTrigger.Conditions>
+                            <Setter Property="IsVisible" Value="True"/>
+                            <Setter Property="IsEnabled" Value="True"/>
+                        </MultiTrigger>
+                    </AbsoluteLayout.Triggers>
+                    <Label Text="{Binding ErrorMessage}" FontSize="Medium" AbsoluteLayout.LayoutBounds="0.5,0.5,0.9,0.5"  AbsoluteLayout.LayoutFlags="All" HorizontalTextAlignment="Center"/>
+                    <Button Text="Odśwież" Command="{Binding RefreshAdvert}" AbsoluteLayout.LayoutBounds="0.5,0.5" AbsoluteLayout.LayoutFlags="PositionProportional"/>
                 </AbsoluteLayout>
                 <!--end of serror section-->
                 <!--image and back button section-->
-                <AbsoluteLayout HeightRequest="220" HorizontalOptions="FillAndExpand" Padding="0" IsVisible="{Binding ViewActive}" IsEnabled="{Binding ViewActive}">
-                    <AbsoluteLayout.Triggers>
-                        <DataTrigger TargetType="AbsoluteLayout" Binding="{Binding ImageURLsList, Converter={StaticResource IsCollectionNotEmpty}}" Value="False">
-                            <Setter Property="HeightRequest" Value="50"/>
-                        </DataTrigger>
-                    </AbsoluteLayout.Triggers>
-                    <CarouselView:CarouselViewControl ItemsSource="{Binding ImageURLsList}" IsVisible="False" IsEnabled="False"
-                                       ShowArrows="True" ShowIndicators="True" IsSwipeEnabled="True" HorizontalOptions="FillAndExpand" HeightRequest="220" 
+                <AbsoluteLayout HeightRequest="{Binding ImageVisible, Converter={StaticResource AbsHeight}}" HorizontalOptions="FillAndExpand" Padding="0" >
+                    <CarouselView:CarouselViewControl ItemsSource="{Binding ImageURLsList}" IsVisible="{Binding ImageVisible}" IsEnabled="{Binding ImageVisible}"
+                                       ShowArrows="True" ShowIndicators="True" IsSwipeEnabled="True" HorizontalOptions="FillAndExpand"
                                        AbsoluteLayout.LayoutBounds="0,0,1,220" AbsoluteLayout.LayoutFlags="WidthProportional" x:Name="CarouselViewImageList">
-                        <CarouselView:CarouselViewControl.Triggers>
-                            <MultiTrigger TargetType="CarouselView:CarouselViewControl">
-                                <MultiTrigger.Conditions>
-                                    <BindingCondition Binding="{Binding ViewActive}" Value="True"/>
-                                    <BindingCondition Binding="{Binding ErrorMessage, Converter={StaticResource IsTextNotNull}}" Value="False"/>
-                                    <BindingCondition Binding="{Binding ImageURLsList, Converter={StaticResource IsCollectionNotEmpty}}" Value="True"/>
-                                </MultiTrigger.Conditions>
-                                <Setter Property="IsVisible" Value="True"/>
-                                <Setter Property="IsEnabled" Value="True"/>
-                            </MultiTrigger>
-                        </CarouselView:CarouselViewControl.Triggers>
                         <CarouselView:CarouselViewControl.ItemTemplate>
                             <DataTemplate>
-                                <Extends:ImageFit VerticalOptions="Center" HorizontalOptions="FillAndExpand"              
-                                    Aspect="AspectFill" x:Name="image">
+                                <Extends:ImageFit VerticalOptions="Center" HorizontalOptions="FillAndExpand" Aspect="AspectFill" x:Name="image">
                                     <Extends:ImageFit.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding Path=BindingContext.ImageTapped, Source={x:Reference Name=PreviewPageN}}" 
                                                           CommandParameter="{Binding Path=Position, Source={x:Reference Name=CarouselViewImageList}}" NumberOfTapsRequired="1" />
@@ -72,11 +61,11 @@
                             </DataTemplate>
                         </CarouselView:CarouselViewControl.ItemTemplate>
                     </CarouselView:CarouselViewControl>
-                    <Button Image="back.png" Text="" IsVisible="{Binding ViewActive}" IsEnabled="{Binding ViewActive}" AbsoluteLayout.LayoutBounds="10,10,55,40" AbsoluteLayout.LayoutFlags="None"
+                    <Button Image="back.png" Text="" IsVisible="{Binding ViewActive}" AbsoluteLayout.LayoutBounds="10,10,55,40" AbsoluteLayout.LayoutFlags="None"
                         BackgroundColor="#50e2e2e2" Command="{Binding BackButtonTapped}"/>
                 </AbsoluteLayout>
                 <!--end image and back button section-->
-                <StackLayout Orientation="Vertical" IsVisible="{Binding ViewActive}" IsEnabled="{Binding ViewActive}" Margin="10,0,10,0">
+                <StackLayout Orientation="Vertical" IsVisible="{Binding ViewActive}" IsEnabled="{Binding ViewActive}" Margin="10,0,10,0" CompressedLayout.IsHeadless="True">
                     <Label Text="{Binding Title}" FontSize="Large" TextColor="Black" LineBreakMode="WordWrap"/>
                     <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
                         <!--highlihted-->
@@ -98,7 +87,7 @@
                     </StackLayout>
                     <!--description-->
                     <Frame CornerRadius="10" Margin="0" Padding="0">
-                        <Extends:SelectableLabel Text="{Binding DescriptionHTML}" TextColor="Black" FontSize="Small"  Margin="8,5,8,5"/>
+                        <Extends:SelectableLabel Text="{Binding DescriptionHTML}" IsSpellCheckEnabled="False" TextColor="Black" FontSize="Small"  Margin="8,5,8,5"/>
                     </Frame>
                     <!--Phone number-->
                     <Frame CornerRadius="10" Margin="0" Padding="0" IsVisible="{Binding HasPhoneImage}">

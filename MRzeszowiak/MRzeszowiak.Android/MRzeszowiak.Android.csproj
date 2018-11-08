@@ -89,7 +89,6 @@
     <Compile Include="CustomEditorRenderer.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="MultiLineRendererDroid.cs" />
-    <Compile Include="NoAnimationNavigationRenderer.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SelectableLabelRenderer.cs" />

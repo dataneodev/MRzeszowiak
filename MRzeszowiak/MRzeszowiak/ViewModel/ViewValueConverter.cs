@@ -59,9 +59,9 @@ namespace MRzeszowiak.ViewModel
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if ((bool)value)
-            { return 220; }
+                return 220;
             else
-            { return 55; }
+                return 55;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
