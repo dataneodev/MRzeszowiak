@@ -30,10 +30,7 @@
                                             <UriImageSource Uri="{Binding .}" CachingEnabled="True" CacheValidity="1"/>
                                         </Image.Source>
                                     </Image>
-                                </Extends:PinchToZoomContainer.Content>
-                                <Extends:PinchToZoomContainer.GestureRecognizers>
-                                    <TapGestureRecognizer NumberOfTapsRequired="2" Tapped="PinchToZoomContainerImage_Tapped"/>
-                                </Extends:PinchToZoomContainer.GestureRecognizers>    
+                                </Extends:PinchToZoomContainer.Content>   
                             </Extends:PinchToZoomContainer>
                         </DataTemplate>
                     </forms:CarouselViewControl.ItemTemplate>
