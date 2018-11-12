@@ -163,7 +163,7 @@ namespace MRzeszowiak.ViewModel
             }
         }
 
-        public bool ViewActive { get => ErrorMessage?.Length == 0 && !Activity;  }
+        public bool ViewActive => (ErrorMessage?.Length??0) == 0 && !Activity ? true : false; 
         public bool ImageVisible => ((ImageURLsList?.Count ?? 0) > 0 && !Activity) ? true : false;
 
         private MailStatusEnum mailStatus = MailStatusEnum.email_default;
@@ -388,7 +388,9 @@ namespace MRzeszowiak.ViewModel
             if (!dbLoad)
                 _advert = await _rzeszowiakRepository.GetAdvertAsync(advertShort);
             else
+            {
                 _advert = await _setting.GetFavoriteAdvertDBAsync(advertShort);
+            }                
 
             if (_advert == null)
             {

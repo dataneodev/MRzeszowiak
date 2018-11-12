@@ -47,6 +47,7 @@ namespace MRzeszowiak.Droid
         {
             CustomSelectionActionModeCallback = new CustomSelectionActionModeCallback();
             CustomInsertionActionModeCallback = new CustomInsertionActionModeCallback();
+            SetCursorVisible(false);
         }
 
         protected override void OnAttachedToWindow()
@@ -54,6 +55,7 @@ namespace MRzeszowiak.Droid
             base.OnAttachedToWindow(); 
             Enabled = false;
             Enabled = true;
+            
         }
 
         public new bool IsSuggestionsEnabled = false;  
