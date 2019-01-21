@@ -429,8 +429,9 @@ namespace MRzeszowiak.ViewModel
                 AdditionalData.Add(new KeyValue(item.Key, item.Value));
 
             ImageURLsList.Clear();
-            foreach (var item in advert?.ImageURLsList)
-                ImageURLsList.Add(item);                
+            if(advert?.ImageURLsList != null)
+                foreach (var item in advert?.ImageURLsList)
+                    ImageURLsList.Add(item);                
 
             if ((advert.PhoneSsid.Length == 10 && advert.PhonePHPSSESION != null) || advert?.PhoneImageByteArray?.Length>0)
             {

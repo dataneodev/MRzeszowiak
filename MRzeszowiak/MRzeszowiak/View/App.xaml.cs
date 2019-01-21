@@ -74,7 +74,7 @@ namespace MRzeszowiak
             containerRegistry.RegisterPopupNavigationService();
 
             containerRegistry.RegisterInstance<ISetting>(App.Setting);
-            containerRegistry.Register<IRzeszowiak, RzeszowiakRepository>();
+            containerRegistry.Register<IRzeszowiak, RzeszowiakRepositoryRegEx>();
             containerRegistry.Register<IRzeszowiakImageContainer, RzeszowiakImageContainer>();
  
             containerRegistry.RegisterForNavigation<MainNavigation>();

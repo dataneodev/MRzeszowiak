@@ -36,20 +36,16 @@ namespace MRzeszowiak.Extends
         private void TapGesture_Tapped(object sender, EventArgs e)
         {
             double startDScale = 1;
-            double midlleDScale = 1.5d;
-            double endDScale = 2;
+            double midlleDScale = 1.8;
+            double endDScale = 3;
 
             double gotoScale = startDScale;
             if (currentScale < midlleDScale)
                 gotoScale = midlleDScale;
             else if (currentScale < endDScale)
-            {
                 gotoScale = endDScale;
-            }
-            else
-            {
+                else
                 gotoScale = startDScale;
-            }
             startScale = 1;
             currentScale = gotoScale;
 
@@ -141,8 +137,9 @@ namespace MRzeszowiak.Extends
                 case GestureStatus.Running:
                     // Translate and ensure we don't pan beyond the wrapped user interface element bounds.
                     double scale = Content.Scale;
-                    double newX = (e.TotalX * scale) + xOffset;
-                    double newY = (e.TotalY * scale) + yOffset;
+
+                    double newX = (e.TotalX ) + xOffset;
+                    double newY = (e.TotalY ) + yOffset;
 
                     double width = (Content.Width * scale);
                     double height = (Content.Height * scale);
@@ -152,11 +149,13 @@ namespace MRzeszowiak.Extends
 
                     bool canMoveX = !(newX < 0 && (newX + width) < ScreenWidth) && !(newX > 0 && (newX + width) > ScreenWidth);
                     bool canMoveY = !(newY < 0 && (newY + height) < ScreenHeight) && !(newY > 0 && (newY + height) > ScreenHeight);
-
+ 
                     if (canMoveX)
                         Content.TranslationX = newX;
+                        
                     if (canMoveY)
-                        Content.TranslationY = newY;                       
+                        Content.TranslationY = newY;
+                                              
                     break;
 
                 case GestureStatus.Completed:

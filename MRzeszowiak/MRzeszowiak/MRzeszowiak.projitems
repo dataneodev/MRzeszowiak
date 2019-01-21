@@ -35,6 +35,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\ISetting.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IToast.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\RzeszowiakImageContainer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\RzeszowiakRepositoryRegEx.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\RzeszowiakRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\SettingRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\UpdateRepository.cs" />

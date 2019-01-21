@@ -1,11 +1,5 @@
-﻿using CarouselView.FormsPlugin.Abstractions;
-using MRzeszowiak.Model;
-using MRzeszowiak.ViewModel;
-using System;
-using System.Collections.Generic;
+﻿using MRzeszowiak.ViewModel;
 using System.Diagnostics;
-using Prism.Navigation;
-
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -30,8 +24,11 @@ namespace MRzeszowiak.View
         private void AddDataList_ItemAppearing(object sender, ItemVisibilityEventArgs e)
         {
             var slv = (sender as ListView);
-            var count = slv?.ItemsSource?.GetCount();
-            slv.HeightRequest = (count ?? 0) * (slv.RowHeight + 2) + 14;
+            if (BindingContext is PreviewViewModel model)
+            {
+                var count = model.AdditionalData?.Count ?? 0;
+                slv.HeightRequest = count * (slv.RowHeight + 2) + 14;
+            }
         }
 
         private void PanGestureRecognizer_PanUpdated(object sender, PanUpdatedEventArgs e)
